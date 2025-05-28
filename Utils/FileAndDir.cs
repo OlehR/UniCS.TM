@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 
@@ -62,5 +63,22 @@ namespace Utils
             return 20d * 1024d * 1024d;
         }
 
+        static public bool BildZIP(string pPath,string pZipFileName=null)
+        {
+            try
+            {
+                string zipFileName = pZipFileName ?? Path.Combine(Path.GetDirectoryName(pPath), Path.GetFileNameWithoutExtension(pPath)+".zip");
+                string fileName = Path.GetFileName(pPath);
+                using FileStream fs = new FileStream(zipFileName, FileMode.Create);
+                using ZipArchive arch = new ZipArchive(fs, ZipArchiveMode.Create);
+                arch.CreateEntryFromFile(pPath, fileName);             
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage($"BildZIP Error: {e.Message}{Environment.NewLine}{e.StackTrace}");
+                return false;
+            }
+            return true;
+        }        
     }
 }

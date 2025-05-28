@@ -38,7 +38,7 @@ namespace SharedLib
         {
             DateTime Date = pD == default ? DateTime.Today : pD;
             int Wh= (Global.CodeWarehouse==0) ? GetCodeWarehouse() : Global.CodeWarehouse;
-            return SQLiteMid.GetMIDFile(Date, pTmp, Wh); //  Path.Combine(Global.PathDB, $"{Date:yyyyMM}", $"MID_{Wh}_{Date:yyyyMMdd}{(pTmp ? "_tmp" : "")}.db");
+            return SQLiteMid.GetMIDFileWithDir(Date, pTmp, Wh); //  Path.Combine(Global.PathDB, $"{Date:yyyyMM}", $"MID_{Wh}_{Date:yyyyMMdd}{(pTmp ? "_tmp" : "")}.db");
         }
 
         public WDB_SQLite(DateTime parD = default(DateTime), string pConnect = null, bool pIsUseOldDB = true)//, bool pIsCreateMidFile = false)
@@ -782,8 +782,6 @@ insert into RECEIPT_Event(
         ////////////////////////// MID
 
         //public bool CreateMIDTable() => dbMid.ExecuteNonQuery(SqlCreateMIDTable) > 0;
-        public bool CreateMIDIndex(SQLite pDB) => pDB.ExecuteNonQuery(SqlCreateMIDIndex) > 0;
-
                 
         public bool UpdateQR(ReceiptWares pRW)
         {

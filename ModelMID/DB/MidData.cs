@@ -9,6 +9,7 @@ namespace ModelMID.DB
     {
         public string PathMid { get; set; }
         public int MessageNoMax { get; set; }
+        public IEnumerable<WorkPlace>  WorkPlace { get; set; }
         public IEnumerable<WaresLink> WaresLink { get; set; }
         public IEnumerable<WaresWarehouse> WaresWarehouse { get; set; }
         public IEnumerable<ClientData> ClientData { get; set; }

@@ -287,7 +287,6 @@ namespace SharedLib
                     if (res.Count() > 0)
                         FileLogger.WriteLogMessage(this, "IsDapper", $"{el}=>{res.FirstOrDefault()} SQL=>{pSql}");
                 }
-
             }
         }
 

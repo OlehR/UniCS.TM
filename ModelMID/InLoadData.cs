@@ -7,5 +7,7 @@ namespace ModelMID
     {
         public int IdWorkPlace { get; set; }
         public bool IsFull { get; set; }
+        public int MessageNoMin { get; set; }
+        public bool IsReloadFull { get; set; } = false;
     }
 }

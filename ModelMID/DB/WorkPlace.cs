@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualBasic;
 using ModelMID;
-using Newtonsoft.Json;
 using Utils;
 
 namespace ModelMID.DB
@@ -46,6 +45,7 @@ namespace ModelMID.DB
         }
 
         public eTypeWorkplace TypeWorkplace { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore]
         public IPAddress IP { get; set; }
 
         string _SettingsEx;
@@ -56,7 +56,7 @@ namespace ModelMID.DB
             {
                 _SettingsEx = value;
                 if (!string.IsNullOrEmpty(value))
-                    try { _Settings = JsonConvert.DeserializeObject<Settings>(value); } 
+                    try { _Settings = Newtonsoft.Json.JsonConvert.DeserializeObject<Settings>(value); } 
                     catch (Exception e) 
                     {
                         FileLogger.WriteLogMessage(this, "SettingsEx", e);

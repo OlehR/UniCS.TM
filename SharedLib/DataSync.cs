@@ -234,30 +234,27 @@ namespace SharedLib
                         pD.SetVersion(SQLiteMid.VerMID);
                     }
 
-                    if (!MsSQL.IsSync(Global.CodeWarehouse)) return false;
-
-                    var DW = MsSQL.GetDimWorkplace();
-                    FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Read SqlGetDimWorkplace => {DW.Count()}");
-                    db.ReplaceWorkPlace(DW);
-                    FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Write SqlGetDimWorkplace => {DW.Count()}");
-                    Global.BildWorkplace(DW);
-                    DW = null;
+                    if (!MsSQL.IsSync(Global.CodeWarehouse)) return false;                    
 
                     int MessageNoMin = db.GetConfig<int>("MessageNo");
-                    int MessageNMax = 0;
-                   
+                    
+                    MidData r = null;
                     if (Global.IsHttp)
                     {
                         bool IsFull = pIsFull;
-                        var r = AsyncHelper.RunSync(() => LoadDataAsync(Global.IdWorkPlace, IsFull, NameDB, MessageNoMin));
-                        if (r != null)
-                        {
-                            MessageNMax = r.MessageNoMax;
-                        }
+                        r = AsyncHelper.RunSync(() => LoadDataAsync(Global.IdWorkPlace, IsFull, NameDB, MessageNoMin));
+                        if(!IsFull)
+                            LoadDataSQL(pD, r);
                     }
                     else
-                        MessageNMax = MsSQL.LoadData(Global.IdWorkPlace, pIsFull, pD, MessageNoMin).MessageNoMax;
+                        r = MsSQL.LoadData(Global.IdWorkPlace, pIsFull, pD, MessageNoMin);
 
+                    FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Replace SqlGetDimWorkplace => {r?.WorkPlace?.Count()}");
+                    db.ReplaceWorkPlace(r.WorkPlace);
+                    FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Write SqlGetDimWorkplace => {r?.WorkPlace?.Count()}");
+                    Global.BildWorkplace(r.WorkPlace);
+
+                    int MessageNMax = r?.MessageNoMax ?? 0;                   
                     if (pIsFull)
                     {
                         int CW = pD.ExecuteScalar<int>("select count(*) from wares");
@@ -265,7 +262,7 @@ namespace SharedLib
                         {
                             FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "Create MIDIndex");
                             if (!Global.IsHttp)
-                                db.CreateMIDIndex(pD);                        
+                                pD?.CreateMIDIndex();
                             pD?.Close();
                             try
                             {
@@ -847,7 +844,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
         {
             try
             {
-                HttpClient client = new HttpClient();
+                HttpClient client = new();
                 client.Timeout = TimeSpan.FromMilliseconds(3000);
 
                 HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Global.Api + "CheckOneTime");
@@ -950,33 +947,56 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             return null;
         }
 
-        public async Task<MidData> LoadDataAsync(int pIdWorkPlace, bool pIsFull, string pPathDB, int pMessageNoMin)
-        {
-            var Res = await LoadDataAsync(pIdWorkPlace, pIsFull);
-            if (Res != null)
-            {
-                if(!string.IsNullOrEmpty( Res.PathMid))
-                {
-                    Http.LoadFile(Res.PathMid, pPathDB);                    
-                }
-                if (Res.MessageNoMax > pMessageNoMin)
-                {
-                }
-            }
-            return null;
-        }
-        public async Task<MidData> LoadDataAsync(int pIdWorkPlace, bool pIsFull)
+        public async Task<Result> SetPhoneNumber(SetPhone pSP)
         {
             try
             {
-                HttpClient client = new HttpClient
+                HttpClient client = new();
+                client.Timeout = TimeSpan.FromMilliseconds(3000);
+
+                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Global.Api + "CashRegister/SetPhoneNumber");
+                string data = pSP.ToJson();
+                requestMessage.Content = new StringContent(data, Encoding.UTF8, "application/json");
+                var response = await client.SendAsync(requestMessage);
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    if (!string.IsNullOrEmpty(res))
+                    {
+                        var Res = JsonConvert.DeserializeObject<Result>(res);
+                        return Res;
+                    }
+                }
+                else return new Result(response.StatusCode);
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e);
+                return new Result(e);
+            }
+            return null;
+        }
+
+        public async Task<MidData> LoadDataAsync(int pIdWorkPlace, bool pIsFull, string pPathDB, int pMessageNoMin)
+        {
+            var Res = await LoadDataAsync(new InLoadData() { IdWorkPlace = pIdWorkPlace, IsFull = pIsFull, MessageNoMin = pMessageNoMin });
+            if (!string.IsNullOrEmpty(Res?.PathMid))
+            {
+                Http.LoadFile(Res.PathMid, pPathDB);
+            }
+            return Res;
+        }
+        public async Task<MidData> LoadDataAsync(InLoadData pData)
+        {
+            try
+            {
+                HttpClient client = new()
                 {
                     Timeout = TimeSpan.FromMilliseconds(5000)
                 };
-                HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "LoadData");
-                InLoadData data = new() {IdWorkPlace= pIdWorkPlace , IsFull= pIsFull };
+                HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "LoadData");              
        
-                requestMessage.Content = new StringContent(data.ToJson(), Encoding.UTF8, "application/json");
+                requestMessage.Content = new StringContent(pData.ToJson(), Encoding.UTF8, "application/json");
                 var response = await client.SendAsync(requestMessage);
                 if (response.IsSuccessStatusCode)
                 {
@@ -989,6 +1009,105 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             }
             catch (Exception e) { FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e); }
             return null;
+        }
+
+        public bool LoadDataSQL(SQLiteMid pD, MidData pMD)
+        {
+            string MethodName = MethodBase.GetCurrentMethod().Name?? "DataSync.LoadDataSQL";
+            try
+            {
+                pD.ReplaceWaresLink(pMD.WaresLink);
+                FileLogger.WriteLogMessage(this, MethodName, $"Write ReplaceWaresLink => {pMD.WaresLink?.Count()}");
+
+                pD.ReplaceWaresWarehouse(pMD.WaresWarehouse);
+                FileLogger.WriteLogMessage(this, MethodName, $"Write ReplaceWaresWarehouse => {pMD.WaresWarehouse?.Count()}");
+
+                pD.ReplaceClientData(pMD.ClientData);
+                FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetClientData => {pMD.ClientData?.Count()}");
+
+                pD.ReplacePrice(pMD.Price);
+                FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetDimPrice => {pMD.Price?.Count()}");
+
+                pD.ReplaceUser(pMD.User);
+                FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetUser => {pMD.User?.Count()}");
+
+                pD.ReplaceSalesBan(pMD.SalesBan);
+                FileLogger.WriteLogMessage(this, MethodName, $"Write SqlSalesBan => {pMD.SalesBan?.Count()}");
+
+                try
+                {
+                    if (pD != null) pD.BeginTransaction();
+
+                    pD.ReplacePromotionSaleGift(pMD.PromotionSaleGift);
+                    FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetPromotionSaleGift => {pMD.PromotionSaleGift?.Count()}");
+
+                    if (pMD.PromotionSaleGroupWares != null)
+                    {
+                        pD.ReplacePromotionSaleGroupWares(pMD.PromotionSaleGroupWares);
+                        FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetPromotionSaleGroupWares => {pMD.PromotionSaleGroupWares?.Count()}");
+                    }
+
+                    pD.ReplacePromotionSale(pMD.PromotionSale);
+                    FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetPromotionSale => {pMD.PromotionSale?.Count()}");
+
+                    pD.ReplacePromotionSaleFilter(pMD.PromotionSaleFilter);
+                    FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetPromotionSaleFilter => {pMD.PromotionSaleFilter?.Count()}");
+
+                    pD.ReplacePromotionSaleData(pMD.PromotionSaleData);
+                    FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetPromotionSaleData => {pMD.PromotionSaleData?.Count()}");
+
+                    pD.ReplacePromotionSaleDealer(pMD.PromotionSaleDealer);
+                    FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetPromotionSaleDealer =>{pMD.PromotionSaleDealer?.Count()}");
+
+
+                    pD.ReplacePromotionSale2Category(pMD.PromotionSale2Category);
+                    FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetPromotionSale2Category => {pMD.PromotionSale2Category?.Count()}");
+
+                    pD.CommitTransaction();
+                }
+                catch (Exception e)
+                {
+                    pD.RollbackTransaction();
+                    FileLogger.WriteLogMessage(this, MethodName, e);
+                    throw;
+                }
+
+                pD.ReplaceMRC(pMD.MRC);
+                FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetMRC => {pMD.MRC?.Count()}");
+
+                pD.ReplaceClient(pMD.Client);
+                FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetDimClient => {pMD.Client?.Count()}");
+
+                pD.ReplaceWares(pMD.Wares);
+                FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetDimWares => {pMD.Wares?.Count()}");
+
+                pD.ReplaceAdditionUnit(pMD.AdditionUnit);
+                FileLogger.WriteLogMessage(this, MethodName, $"SqlGetDimAdditionUnit => {pMD.AdditionUnit?.Count()}");
+
+                pD.ReplaceBarCode(pMD.Barcode);
+                FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetDimBarCode => {pMD.Barcode?.Count()}");
+
+                pD.ReplaceUnitDimension(pMD.UnitDimension);
+                FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetDimUnitDimension => {pMD.UnitDimension?.Count()}");
+
+                pD.ReplaceGroupWares(pMD.GroupWares);
+                FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetDimGroupWares => {pMD.GroupWares?.Count()}");
+
+                pD.ReplaceTypeDiscount(pMD.TypeDiscount);
+                FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetDimTypeDiscount => {pMD.TypeDiscount?.Count()}");
+
+                pD.ReplaceFastGroup(pMD.FastGroup);
+                FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetDimFastGroup => {pMD.FastGroup?.Count()}");
+
+                pD.ReplaceFastWares(pMD.FastWares);
+                FileLogger.WriteLogMessage(this, MethodName, $"Write SqlGetDimFastWares => {pMD.FastWares?.Count()}");
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage(this, MethodName, e);
+                return false;
+            }
+            return true;
         }
     }
 

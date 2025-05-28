@@ -31,7 +31,8 @@ namespace SharedLib
             pMessageNoMin++;
             int MessageNoMax = db.ExecuteScalar<int>(SqlGetMessageNo);
             MidData Res = new MidData() { MessageNoMax = MessageNoMax };
-            Settings Settings = Global.Settings;
+            var aa = Global.GetWorkPlaceByIdWorkplace(pIdWorkPlace);
+            Settings Settings = aa.Settings;
 
             int CodeWarehouseLink = 0;
             if (Global.Settings?.IdWorkPlaceLink > 0)

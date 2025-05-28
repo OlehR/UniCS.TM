@@ -14,7 +14,7 @@ namespace Utils
     public static class FileLogger
     {
 
-        private static string _PathLog = null;
+        private static string _PathLog = "Logs";
         public static string PathLog
         {
             set { _PathLog = value; CreateDir(); }
