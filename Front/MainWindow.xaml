@@ -2308,6 +2308,11 @@ Mode=FindAncestor, AncestorType=Window}}"/>
                       Grid.Column="0" Grid.ColumnSpan="4" 
                       x:Name="IssueCardUC" VerticalAlignment="Stretch" 
                       Grid.ZIndex="4" />
+        <!-- Підтвердження номера телефону -->
+        <uc:PhoneVerification Grid.Row="0" Grid.RowSpan="5" Visibility="Visible"
+               Grid.Column="0" Grid.ColumnSpan="4" 
+               x:Name="PhoneVerificationUC" VerticalAlignment="Stretch" 
+               Grid.ZIndex="4" />
         <!-- Інформація про клієнта -->
         <uc:ClientDetails Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"
               Grid.Column="0" Grid.ColumnSpan="4" 

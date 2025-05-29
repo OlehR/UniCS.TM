@@ -108,6 +108,11 @@ namespace ModelMID
         [Description("Видача картки")]
         WaitInputIssueCard,
         /// <summary>
+        /// Підтвердження номера телефону
+        /// </summary>
+        [Description("Підтвердження номера телефону")]
+        PhoneVerification,
+        /// <summary>
         /// Знайти клієнта за номером телефону
         /// </summary>
         [Description("Пошук за номером телефону")]

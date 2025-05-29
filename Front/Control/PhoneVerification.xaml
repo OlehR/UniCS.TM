@@ -1,0 +1,104 @@
+﻿<UserControl x:Class="Front.Control.PhoneVerification"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Front.Control"
+             xmlns:vm="clr-namespace:Front.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="650" d:DesignWidth="1000">
+    <UserControl.DataContext>
+        <vm:PhoneVerificationVM/>
+    </UserControl.DataContext>
+    <Grid>
+        <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1"
+ Grid.Row="0" Grid.RowSpan="4"
+ Grid.Column="1" Grid.ColumnSpan="4"
+ Name="PhoneVerificationBorder" Visibility="Visible" Grid.ZIndex="2" 
+CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Border.Effect>
+                <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+            </Border.Effect>
+            <Grid Width="1000" Height="650">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="60"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="80"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+   HorizontalAlignment="Center" FontSize="24" FontWeight="Bold"
+   Text="Підтвердження номеру телефону"/>
+
+                <Grid Grid.Row="1" Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Власник:" FontSize="24" Margin="5" Grid.Row="2"/>
+                    <TextBlock Text="Штрих-код:" FontSize="24" Margin="5" Grid.Row="3"/>
+                    <TextBlock Text="Номер телефону" FontSize="24" Margin="5" Grid.Row="4"/>
+                    <TextBlock Text="Код підтвердження" FontSize="24" Margin="5" Grid.Row="5"/>
+
+                    <TextBlock Grid.Column="1" Grid.Row="2" TextWrapping="Wrap"
+                               Text="{Binding NameCard}" FontSize="24" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="1" Grid.Row="3" TextWrapping="Wrap"
+                                Text="{Binding Barcode}" FontSize="24" HorizontalAlignment="Center"/>
+                    <Button Style="{StaticResource WhiteButton}" Margin="5" Name="ButConfirmPhone"
+                    Grid.Column="1" Grid.Row="4"  Command="{Binding EnterPhone}"
+                    Content="{Binding Phone}"/>
+                    <Button Style="{StaticResource WhiteButton}" Margin="5" Name="ButVerifySMS"
+                    Grid.Column="1" Grid.Row="5"  Command="{Binding EnterVerifyCode}"
+                    Content="{Binding VerifyCode}"/>
+                </Grid>
+                <Border Grid.Row="1" Grid.Column="2" x:Name="BorderNumPadPhoneVerification" Visibility="{Binding NumPadVisibility}" Panel.ZIndex="2">
+                    <local:NumericPad x:Name="NumPadPhoneVerification" Width="400"  Height="480"  Visibility="{Binding NumPadVisibility}"/>
+                </Border>
+
+                <Grid 
+    Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0" Style="{StaticResource Default}" Width="150" Height="70" Name="CancelBtn"
+Content="Відмінити"   Command="{Binding Cancel}" Click="CancelClick"/>
+                    <Button Grid.Column="1"
+ Width="250" Height="70"
+Content="Зберегти номер" Click="ConfirmNumber" >
+                        <Button.Style>
+                            <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
+                                <Setter Property="IsEnabled" Value="False"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsConfirmed}" Value="True">
+                                        <Setter Property="IsEnabled" Value="True" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsConfirmed}" Value="False">
+                                        <Setter Property="IsEnabled" Value="False" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

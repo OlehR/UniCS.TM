@@ -30,6 +30,9 @@
     <Compile Update="Control\PaymentWindowKSO.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Control\PhoneVerification.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Control\RelatedProducts.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -69,6 +72,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Control\PaymentWindowKSO.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Control\PhoneVerification.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Control\RelatedProducts.xaml">
