@@ -654,9 +654,8 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                    if (response.IsSuccessStatusCode)
                    {
                        res = await response.Content.ReadAsStringAsync();
-                       Res = //JsonConvert.DeserializeObject
-                       JsonSerializer.Deserialize<Status<string>>(res);
-                       return;
+                       Res = Newtonsoft.Json.JsonConvert.DeserializeObject<Status<string>>(res);
+                       return ;
                    }
                }
                catch (Exception e) { new Status<string>(e); return; }

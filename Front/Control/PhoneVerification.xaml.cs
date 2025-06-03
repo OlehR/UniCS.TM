@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Front.ViewModels;
 using ModelMID;
+using UtilNetwork;
 
 namespace Front.Control
 {
@@ -33,6 +34,7 @@ namespace Front.Control
             if (MW != null) {
                 PhoneVerificationVM.Barcode = MW.Client?.BarCode;
                 PhoneVerificationVM.NameCard = MW.Client?.NameClient;
+                PhoneVerificationVM.CodeClient = (long)MW.Client?.CodeClient;
             }
         }
         public PhoneVerification()
@@ -77,8 +79,6 @@ namespace Front.Control
                         NumPadPhoneVerification.Visibility = Visibility.Visible;
                     }
                 };
-
-                PhoneVerificationVM.Barcode = null;
             };
 
             ButVerifySMS.Click += (sender, e) =>
@@ -130,6 +130,9 @@ namespace Front.Control
 
         private void ConfirmNumber(object sender, RoutedEventArgs e)
         {
+            
+            Result result = PhoneVerificationVM.ConfirmPhone();
+            MW.CustomMessage.Show(result.Success ? "Номер телефону збережено!" : result.TextError);
             MW.SetStateView(eStateMainWindows.WaitInput);
         }
     }

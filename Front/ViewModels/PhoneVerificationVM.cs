@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using Utils;
+using UtilNetwork;
 
 namespace Front.ViewModels
 {
@@ -42,9 +43,10 @@ namespace Front.ViewModels
                 }
             }
         }
+        public long CodeClient { get; set; } = 0;
         public string Phone { get; set; } = string.Empty;
         public string VerifyCode { get; set; } = string.Empty;
-       
+
         BL Bl;
 
         public PhoneVerificationVM()
@@ -92,7 +94,18 @@ namespace Front.ViewModels
         }
         public void SendVerifyCode()
         {
-           LastVerifyCode = Bl.ds.GetVerifySMS(Phone);
+            LastVerifyCode = Bl.ds.GetVerifySMS(Phone);
+        }
+        public Result ConfirmPhone()
+        {
+            SetPhone setPhone = new SetPhone() { CodeClient = CodeClient , Phone = Phone };
+            Result r = new();
+            Task.Run(async () =>
+            {
+                r = await Bl.ds.SetPhoneNumber(setPhone);
+            }).Wait();
+            Reset();
+            return r;
         }
     }
 }
