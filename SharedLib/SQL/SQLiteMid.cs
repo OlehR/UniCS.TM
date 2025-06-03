@@ -332,8 +332,8 @@ CREATE TABLE FAST_GROUP
 ";
         public SQLiteMid(String pConectionString) : base(pConectionString) { }
 
-        public static string GetMIDFileWithDir(DateTime pD , bool pTmp, int pWh) =>  $"MID_{pWh}_{pD:yyyyMMdd}{(pTmp ? "_tmp" : "")}.db";
-        public static string GetMIDFile(DateTime pD, bool pTmp, int pWh) => Path.Combine(Global.PathDB, $"{pD:yyyyMM}", GetMIDFileWithDir(pD, pTmp, pWh));
+        public static string GetMIDFileWithOutDir(DateTime pD , bool pTmp, int pWh) =>  $"MID_{pWh}_{pD:yyyyMMdd}{(pTmp ? "_tmp" : "")}.db";
+        public static string GetMIDFile(DateTime pD, bool pTmp, int pWh) => Path.Combine(Global.PathDB, $"{pD:yyyyMM}", GetMIDFileWithOutDir(pD, pTmp, pWh));
 
         public bool CreateMIDIndex() => ExecuteNonQuery(SqlCreateMIDIndex) > 0;
 

@@ -4,6 +4,7 @@ using System.Net;
 using System.Runtime;
 using System.Security.Principal;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.VisualBasic;
 using ModelMID;
@@ -56,7 +57,9 @@ namespace ModelMID.DB
             {
                 _SettingsEx = value;
                 if (!string.IsNullOrEmpty(value))
-                    try { _Settings = Newtonsoft.Json.JsonConvert.DeserializeObject<Settings>(value); } 
+                    try { _Settings = Newtonsoft.Json.JsonConvert.DeserializeObject
+                            //JsonSerializer.Deserialize
+                            <Settings>(value); } 
                     catch (Exception e) 
                     {
                         FileLogger.WriteLogMessage(this, "SettingsEx", e);
@@ -64,6 +67,7 @@ namespace ModelMID.DB
             }
         }
         Settings _Settings;
+        [System.Text.Json.Serialization.JsonIgnore]
         public Settings Settings { get { return _Settings; } }
     }
 

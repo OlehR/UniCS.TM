@@ -1,6 +1,6 @@
 ﻿using ModelMID;
 using ModelMID.DB;
-using Newtonsoft.Json;
+//using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,6 +16,8 @@ using System.Threading.Tasks;
 using System.Timers;
 using UtilNetwork;
 using Utils;
+using System.IO.Compression;
+using System.Text.Json;
 
 namespace SharedLib
 {
@@ -145,14 +147,14 @@ namespace SharedLib
         {
             lock (this._locker)
             {
-                FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "parIsFull=>{pIsFull}");
+                FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"parIsFull=>{pIsFull}");
                 string varMidFile = db.GetMIDFile();
                 try
                 {
                     if (!pIsFull && !File.Exists(varMidFile)) //Якщо відсутній файл
                     {
                         pIsFull = true;
-                        FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "Відсутній файл {varMidFile} parIsFull=>{pIsFull} ");
+                        FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Відсутній файл {varMidFile} parIsFull=>{pIsFull} ");
                     }
                     if (!pIsFull && File.Exists(varMidFile)) // Якщо база порожня.
                     {
@@ -162,7 +164,7 @@ namespace SharedLib
                             if (i == 0)
                             {
                                 pIsFull = true;
-                                FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "Відсутні дані {varMidFile} parIsFull=>{pIsFull} ");
+                                FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Відсутні дані {varMidFile} parIsFull=>{pIsFull} ");
                             }
                         }
                         catch (Exception) { pIsFull = true; }
@@ -174,26 +176,27 @@ namespace SharedLib
                     {
                         if (TD == default(DateTime) || DateTime.Now.Date != TD.Date)
                             pIsFull = true;
-                        FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "Устарівші дані {TD:yyyy-MM-dd} {varMidFile} parIsFull=>{pIsFull} ");
+                        FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Устарівші дані {TD:yyyy-MM-dd} {varMidFile} parIsFull=>{pIsFull} ");
                     }
 
                     Status = pIsFull ? eSyncStatus.StartedFullSync : eSyncStatus.NotDefine;
                     Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = pIsFull ? eSyncStatus.StartedFullSync : eSyncStatus.StartedPartialSync, StatusDescription = "SendAllReceipt" });
 
-                    FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "varMidFile=>{varMidFile}\n\tLoad_Full=>{TD:yyyy-MM-dd} parIsFull=>{pIsFull}");
+                    FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"varMidFile=>{varMidFile}\n\tLoad_Full=>{TD:yyyy-MM-dd} parIsFull=>{pIsFull}");
 
                     string NameDB = db.GetMIDFile(default, pIsFull);
+                    int MessageNoMin = db.GetConfig<int>("MessageNo");
                     if (pIsFull)
                     {
                         db.SetConfig<DateTime>("Load_Full", DateTime.Now.Date.AddDays(-1).Date);
                         db.SetConfig<DateTime>("Load_Update", DateTime.Now.Date.AddDays(-1).Date);
                         db.Close(true);
-                        db.GetDB();
+                        //db.GetDB();
                         Exception Ex = null;
                         if (File.Exists(varMidFile))
                         {
                             Thread.Sleep(200);
-                            FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "Try Delete file {varMidFile}");
+                            FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Try Delete file {varMidFile}");
                             try
                             {
                                 File.Delete(varMidFile);
@@ -207,7 +210,7 @@ namespace SharedLib
                         if (File.Exists(NameDB))
                         {
                             Thread.Sleep(200);
-                            FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "Try Delete file {NameDB}");
+                            FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Try Delete file {NameDB}");
                             try
                             {
                                 File.Delete(NameDB);
@@ -227,27 +230,39 @@ namespace SharedLib
                         FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "Create New DB");
                     }
 
-                    SQLiteMid pD = new(NameDB);
-                    if (pIsFull)
-                    {
-                        pD.ExecuteNonQuery(SQLiteMid.SqlCreateMIDTable);
-                        pD.SetVersion(SQLiteMid.VerMID);
-                    }
+                    SQLiteMid pD=null; 
 
                     if (!MsSQL.IsSync(Global.CodeWarehouse)) return false;                    
 
-                    int MessageNoMin = db.GetConfig<int>("MessageNo");
+                  
                     
                     MidData r = null;
+                    
                     if (Global.IsHttp)
                     {
                         bool IsFull = pIsFull;
                         r = AsyncHelper.RunSync(() => LoadDataAsync(Global.IdWorkPlace, IsFull, NameDB, MessageNoMin));
-                        if(!IsFull)
+                        pD = new(NameDB);
+                        if (!IsFull)
+                        { 
+                            if (pIsFull)
+                            {
+                                pD.ExecuteNonQuery(SQLiteMid.SqlCreateMIDTable);
+                                pD.SetVersion(SQLiteMid.VerMID);
+                            }
                             LoadDataSQL(pD, r);
+                        }
                     }
                     else
+                    {
+                        pD= new(NameDB);
+                        if (pIsFull)
+                        {
+                            pD.ExecuteNonQuery(SQLiteMid.SqlCreateMIDTable);
+                            pD.SetVersion(SQLiteMid.VerMID);
+                        }
                         r = MsSQL.LoadData(Global.IdWorkPlace, pIsFull, pD, MessageNoMin);
+                    }
 
                     FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Replace SqlGetDimWorkplace => {r?.WorkPlace?.Count()}");
                     db.ReplaceWorkPlace(r.WorkPlace);
@@ -269,9 +284,9 @@ namespace SharedLib
                                 File.Move(NameDB, varMidFile);
                                 db.LastMidFile = varMidFile;
                                 FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Set config LastMidFile=> {db.LastMidFile}");
-                                db.SetConfig<DateTime>("Load_Full", DateTime.Now);
-                                db.SetConfig<DateTime>("Load_Update", DateTime.Now);
                                 db.GetDB();
+                                db.SetConfig<DateTime>("Load_Full", DateTime.Now);
+                                db.SetConfig<DateTime>("Load_Update", DateTime.Now);                                
                             }
                             catch (Exception e)
                             {
@@ -639,7 +654,8 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                    if (response.IsSuccessStatusCode)
                    {
                        res = await response.Content.ReadAsStringAsync();
-                       Res = JsonConvert.DeserializeObject<Status<string>>(res);
+                       Res = //JsonConvert.DeserializeObject
+                       JsonSerializer.Deserialize<Status<string>>(res);
                        return;
                    }
                }
@@ -667,7 +683,8 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     var res = await response.Content.ReadAsStringAsync();
                     if (!string.IsNullOrEmpty(res))
                     {
-                        var Res = JsonConvert.DeserializeObject<Status<ExciseStamp>>(res);
+                        var Res = //JsonConvert.DeserializeObject
+                            JsonSerializer.Deserialize<Status<ExciseStamp>>(res);
                         return Res.Data;
                     }
                 }
@@ -709,7 +726,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     var res = await response.Content.ReadAsStringAsync();
                     if (!string.IsNullOrEmpty(res))
                     {
-                        var Res = JsonConvert.DeserializeObject<Status>(res);
+                        var Res = JsonSerializer.Deserialize<Status>(res);
                         if (Res.State == 0 && !Global.Settings.IsSend1C)
                         {
                             pR.StateReceipt = eStateReceipt.Send;
@@ -821,7 +838,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"res=>{res}");
                     if (!string.IsNullOrEmpty(res))
                     {
-                        var Res = JsonConvert.DeserializeObject<Status<Client>>(res);
+                        var Res = JsonSerializer.Deserialize<Status<Client>>(res);
                         if (Res?.State == 0)
                         {
                             Result = Res.Data;
@@ -856,7 +873,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     var res = await response.Content.ReadAsStringAsync();
                     if (!string.IsNullOrEmpty(res))
                     {
-                        var Res = JsonConvert.DeserializeObject<Status<OneTime>>(res);
+                        var Res = JsonSerializer.Deserialize<Status<OneTime>>(res);
                         return Res;
                     }
                 }
@@ -914,7 +931,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     var res = await response.Content.ReadAsStringAsync();
                     if (!string.IsNullOrEmpty(res))
                     {
-                        return JsonConvert.DeserializeObject<Dictionary<string, decimal>>(res);
+                        return JsonSerializer.Deserialize<Dictionary<string, decimal>>(res);
                     }
                 }
             }
@@ -939,7 +956,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     var res = await response.Content.ReadAsStringAsync();
                     if (!string.IsNullOrEmpty(res))
                     {
-                        return JsonConvert.DeserializeObject<IEnumerable<ReceiptWares>>(res);
+                        return JsonSerializer.Deserialize<IEnumerable<ReceiptWares>>(res);
                     }
                 }
             }
@@ -963,7 +980,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     var res = await response.Content.ReadAsStringAsync();
                     if (!string.IsNullOrEmpty(res))
                     {
-                        var Res = JsonConvert.DeserializeObject<Result>(res);
+                        var Res = JsonSerializer.Deserialize<Result>(res);
                         return Res;
                     }
                 }
@@ -979,22 +996,35 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
 
         public async Task<MidData> LoadDataAsync(int pIdWorkPlace, bool pIsFull, string pPathDB, int pMessageNoMin)
         {
-            var Res = await LoadDataAsync(new InLoadData() { IdWorkPlace = pIdWorkPlace, IsFull = pIsFull, MessageNoMin = pMessageNoMin });
+            var res = await LoadDataAsync(new InLoadData() { IdWorkPlace = pIdWorkPlace, IsFull = pIsFull, MessageNoMin = pMessageNoMin });
+            var Res = res?.Info;
             if (!string.IsNullOrEmpty(Res?.PathMid))
             {
-                Http.LoadFile(Res.PathMid, pPathDB);
+                string Zip = Path.Combine(Path.GetDirectoryName(pPathDB), Path.GetFileName(Res.PathMid));
+                Http.LoadFile(Res.PathMid,Zip);
+                if (File.Exists(Zip))
+                {
+                    ZipFile.ExtractToDirectory(Zip, Path.GetDirectoryName(pPathDB),true);
+                    File.Delete(Zip);
+                    FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"LoadDataAsync => {Path.Combine(pPathDB, Path.GetFileName(Res.PathMid))}");                  
+                }
+                else
+                {
+                    FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"LoadDataAsync => File not found {Path.Combine(pPathDB, Path.GetFileName(Res.PathMid))}");
+                    Res = null;
+                }
             }
             return Res;
         }
-        public async Task<MidData> LoadDataAsync(InLoadData pData)
+        public async Task<Result<MidData>> LoadDataAsync(InLoadData pData)
         {
             try
             {
                 HttpClient client = new()
                 {
-                    Timeout = TimeSpan.FromMilliseconds(5000)
+                    Timeout = TimeSpan.FromMilliseconds(30000)
                 };
-                HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "LoadData");              
+                HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "CashRegister/LoadData");              
        
                 requestMessage.Content = new StringContent(pData.ToJson(), Encoding.UTF8, "application/json");
                 var response = await client.SendAsync(requestMessage);
@@ -1003,11 +1033,16 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     var res = await response.Content.ReadAsStringAsync();
                     if (!string.IsNullOrEmpty(res))
                     {
-                        return JsonConvert.DeserializeObject<MidData>(res);
+                        var r =Newtonsoft.Json.JsonConvert.DeserializeObject
+                         //JsonSerializer.Deserialize
+                            <Result<MidData>>(res);
+                        return r;
                     }
                 }
             }
-            catch (Exception e) { FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e); }
+            catch (Exception e) { FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e); 
+                return new Result<MidData>(e);
+            }
             return null;
         }
 

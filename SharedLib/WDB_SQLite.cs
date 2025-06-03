@@ -38,7 +38,7 @@ namespace SharedLib
         {
             DateTime Date = pD == default ? DateTime.Today : pD;
             int Wh= (Global.CodeWarehouse==0) ? GetCodeWarehouse() : Global.CodeWarehouse;
-            return SQLiteMid.GetMIDFileWithDir(Date, pTmp, Wh); //  Path.Combine(Global.PathDB, $"{Date:yyyyMM}", $"MID_{Wh}_{Date:yyyyMMdd}{(pTmp ? "_tmp" : "")}.db");
+            return SQLiteMid.GetMIDFile(Date, pTmp, Wh); //  Path.Combine(Global.PathDB, $"{Date:yyyyMM}", $"MID_{Wh}_{Date:yyyyMMdd}{(pTmp ? "_tmp" : "")}.db");
         }
 
         public WDB_SQLite(DateTime parD = default(DateTime), string pConnect = null, bool pIsUseOldDB = true)//, bool pIsCreateMidFile = false)
