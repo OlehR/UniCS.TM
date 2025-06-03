@@ -427,6 +427,7 @@ namespace Front
             PaymentWindow.Init(this);
             CustomMessage.Init(this);
             IssueCardUC.Init(this);
+            PhoneVerificationUC.Init(this);
             ClientDetailsUC.Init(this);
             WeightWaresUC.Init(this);
             PaymentWindowKSO_UC.Init(this);
@@ -543,6 +544,21 @@ namespace Front
             Task.Run(() => Bl.ds.SyncDataAsync());
             Loaded += MainWindow_Loaded;
             //Loaded += (a, b) => VideoView_Loaded(); // { IsLoading = true; StarVideo(); };
+
+            Global.OnClientChanged += (pClient) =>
+            {
+                if (string.IsNullOrEmpty(pClient.MainPhone))
+                {
+                    CustomMessage.Show("Відсутній номер телефону! Додати номер телефону для отримання унікальних пропозицій?", "Відсутній номер телефону", eTypeMessage.Question);
+                    CustomMessage.Result = (bool res) =>
+                    {
+                        if (res) 
+                        {
+                            SetStateView(eStateMainWindows.PhoneVerification);
+                        }
+                    };
+                }
+            };
         }
 
         // bool IsLoading = false;
@@ -1005,6 +1021,7 @@ namespace Front
                     WaitAdminWeightButtons.Visibility = Visibility.Visible;
                     WaitAdminAdditionalText.Visibility = Visibility.Collapsed;
                     IssueCardUC.Visibility = Visibility.Collapsed;
+                    PhoneVerificationUC.Visibility = Visibility.Collapsed;
                     AdminControl.Visibility = (State == eStateMainWindows.AdminPanel ? Visibility.Visible : Visibility.Collapsed);
                     AddMissingPackage.Visibility = Visibility.Collapsed;
 
@@ -1211,6 +1228,13 @@ namespace Front
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
                             IssueCardUC.ButPhoneIssueCard.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
+                            break;
+                        case eStateMainWindows.PhoneVerification:
+                            PhoneVerificationUC.Visibility = Visibility.Visible;
+                            Background.Visibility = Visibility.Visible;
+                            BackgroundWares.Visibility = Visibility.Visible;
+                            PhoneVerificationUC.ButConfirmPhone.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
+                            PhoneVerificationUC.RefreshClient();
                             break;
                         case eStateMainWindows.WaitInput:
                             WaresList.Focus(); //Для сканера через імітацію клавіатури
