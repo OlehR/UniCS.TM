@@ -272,10 +272,11 @@ namespace SharedLib
 
         public async Task<bool> CheckOneTimeAsync(IdReceipt pReceipt,long pCodeData,eTypeCode pTypeCode)
         {
-            var RC = new OneTime(pReceipt) { CodeData = pCodeData,TypeData= pTypeCode, CodePS = db.GetCodePS(pCodeData) };            
+            var RC = new OneTime(pReceipt) { CodeData = pCodeData,TypeData= pTypeCode, CodePS = db.GetCodePS(pCodeData) }; 
+            Status<OneTime> R = null;
             if (pTypeCode == eTypeCode.OneTimeCoupon || pTypeCode == eTypeCode.OneTimeCouponGift)
             {
-                var R = await ds.CheckOneTime(RC);
+                 R = await ds.CheckOneTime(RC);
                 if( R==null || !R.status || R.Data==null || !pReceipt.Equals(R.Data) ) 
                 {
                     Global.Message?.Invoke(R==null || R.status==false || R.Data==null? $"Проблема з перевіркою купона {pCodeData} => {R?.TextState}" : 
@@ -283,8 +284,17 @@ namespace SharedLib
                     return false;
                 }               
             }
-            
-            if (RC.CodePS > 0)
+            if (pTypeCode == eTypeCode.OneTimeCouponGift)
+            {
+                var r = pReceipt as Receipt;
+                if (r != null && (r.CodeClient == 0 || r.CodeClient != R?.Data.CodeClient))
+                {
+                    Global.Message?.Invoke($"Код клієнта  купона=>{R?.Data.CodeClient} і в чеку=>{r.CodeClient} різні", eTypeMessage.Information);
+                    return false;
+                }
+            }
+
+                if (RC.CodePS > 0)
             {
                 if(pTypeCode==eTypeCode.OneTimeCouponGift)
                     db.ReplaceReceiptGift(new ReceiptGift(pReceipt) { CodePS= RC.CodePS , NumberGroup=0, CodeCoupon=pCodeData, Quantity=-1});

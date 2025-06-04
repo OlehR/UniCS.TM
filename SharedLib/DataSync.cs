@@ -683,7 +683,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     if (!string.IsNullOrEmpty(res))
                     {
                         var Res = //JsonConvert.DeserializeObject
-                            JsonSerializer.Deserialize<Status<ExciseStamp>>(res);
+                            Newtonsoft.Json.JsonConvert.DeserializeObject<Status<ExciseStamp>>(res);
                         return Res.Data;
                     }
                 }
@@ -725,7 +725,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     var res = await response.Content.ReadAsStringAsync();
                     if (!string.IsNullOrEmpty(res))
                     {
-                        var Res = JsonSerializer.Deserialize<Status>(res);
+                        var Res = Newtonsoft.Json.JsonConvert.DeserializeObject<Status>(res);
                         if (Res.State == 0 && !Global.Settings.IsSend1C)
                         {
                             pR.StateReceipt = eStateReceipt.Send;
@@ -837,7 +837,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"res=>{res}");
                     if (!string.IsNullOrEmpty(res))
                     {
-                        var Res = JsonSerializer.Deserialize<Status<Client>>(res);
+                        var Res = Newtonsoft.Json.JsonConvert.DeserializeObject<Status<Client>>(res);
                         if (Res?.State == 0)
                         {
                             Result = Res.Data;
@@ -872,7 +872,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     var res = await response.Content.ReadAsStringAsync();
                     if (!string.IsNullOrEmpty(res))
                     {
-                        var Res = JsonSerializer.Deserialize<Status<OneTime>>(res);
+                        var Res = Newtonsoft.Json.JsonConvert.DeserializeObject<Status<OneTime>>(res);
                         return Res;
                     }
                 }
@@ -930,7 +930,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     var res = await response.Content.ReadAsStringAsync();
                     if (!string.IsNullOrEmpty(res))
                     {
-                        return JsonSerializer.Deserialize<Dictionary<string, decimal>>(res);
+                        return Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, decimal>>(res);
                     }
                 }
             }
@@ -955,7 +955,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     var res = await response.Content.ReadAsStringAsync();
                     if (!string.IsNullOrEmpty(res))
                     {
-                        return JsonSerializer.Deserialize<IEnumerable<ReceiptWares>>(res);
+                        return Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<ReceiptWares>>(res);
                     }
                 }
             }
@@ -979,7 +979,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     var res = await response.Content.ReadAsStringAsync();
                     if (!string.IsNullOrEmpty(res))
                     {
-                        var Res = JsonSerializer.Deserialize<Result>(res);
+                        var Res = Newtonsoft.Json.JsonConvert.DeserializeObject<Result>(res);
                         return Res;
                     }
                 }
@@ -1021,7 +1021,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             {
                 HttpClient client = new()
                 {
-                    Timeout = TimeSpan.FromMilliseconds(30000)
+                    Timeout = TimeSpan.FromMilliseconds(90000)
                 };
                 HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "CashRegister/LoadData");              
        
