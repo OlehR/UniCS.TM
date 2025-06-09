@@ -1,15 +1,12 @@
 ﻿using ModelMID;
 using ModelMID.DB;
-//using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.IO.Pipes;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
-using System.Security.Policy;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,7 +14,6 @@ using System.Timers;
 using UtilNetwork;
 using Utils;
 using System.IO.Compression;
-using System.Text.Json;
 
 namespace SharedLib
 {
@@ -26,9 +22,7 @@ namespace SharedLib
         public WDB_SQLite db { get { return bl?.db; } }
         BL bl;
         WDB_MsSql MsSQL;
-        //DataSync1C Ds1C;
         private readonly object _locker = new object();
-        //public SoapTo1C soapTo1C = new SoapTo1C();
         public bool IsUseOldDB { get; set; } = true;
 
         public eSyncStatus Status { get; set; } = eSyncStatus.NotDefine;
@@ -45,7 +39,6 @@ namespace SharedLib
             try
             {
                 MsSQL = new WDB_MsSql();
-                //Ds1C = new DataSync1C(pBL);
             }
             catch { }
 
@@ -74,8 +67,7 @@ namespace SharedLib
                     await SendAllReceipt().ConfigureAwait(false);
 
                 if (CurDate.Hour < 7)
-                {
-                    //  ds.LoadWeightKasa();
+                {                    
                     LoadWeightKasa2Period();
                 }
                 if (parIsFull)
@@ -88,7 +80,6 @@ namespace SharedLib
                 FileLogger.WriteLogMessage($"BL.SyncDataAsync Exception =>( pTerminalId=>{parIsFull}) => (){Environment.NewLine}Message=>{e.Message}{Environment.NewLine}StackTrace=>{e.StackTrace}", eTypeLog.Error);
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = e, Status = eSyncStatus.NoFatalError, StatusDescription = $"SyncDataAsync() Exception e.Message{Environment.NewLine}" + new StackTrace().ToString() });
             }
-
             return res;
         }
 
@@ -99,15 +90,11 @@ namespace SharedLib
                 var t = new System.Timers.Timer(Global.DataSyncTime);
                 t.AutoReset = true;
                 t.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-                t.Start();
-                //OnTimedEvent(null,null);
+                t.Start();               
             }
         }
 
-        private async void OnTimedEvent(Object source, ElapsedEventArgs e)
-        {
-            await SyncDataAsync();
-        }
+        private async void OnTimedEvent(Object source, ElapsedEventArgs e) => await SyncDataAsync();        
 
         public bool SendReceiptTo1C(IdReceipt pIdR)
         {
@@ -145,48 +132,48 @@ namespace SharedLib
 
         public bool SyncData(ref bool pIsFull)
         {
+            bool IsFull = pIsFull;
             lock (this._locker)
             {
-                FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"parIsFull=>{pIsFull}");
+                FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"parIsFull=>{IsFull}");
                 string varMidFile = db.GetMIDFile();
                 try
                 {
-                    if (!pIsFull && !File.Exists(varMidFile)) //Якщо відсутній файл
+                    if (!IsFull && !File.Exists(varMidFile)) //Якщо відсутній файл
                     {
-                        pIsFull = true;
-                        FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Відсутній файл {varMidFile} parIsFull=>{pIsFull} ");
+                        IsFull = true;
+                        FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Відсутній файл {varMidFile} parIsFull=>{IsFull} ");
                     }
-                    if (!pIsFull && File.Exists(varMidFile)) // Якщо база порожня.
+                    if (!IsFull && File.Exists(varMidFile)) // Якщо база порожня.
                     {
                         try
                         {
                             int i = db.db.ExecuteScalar<int>("select count(*) from wares");
                             if (i == 0)
                             {
-                                pIsFull = true;
-                                FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Відсутні дані {varMidFile} parIsFull=>{pIsFull} ");
+                                IsFull = true;
+                                FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Відсутні дані {varMidFile} parIsFull=>{IsFull} ");
                             }
                         }
-                        catch (Exception) { pIsFull = true; }
+                        catch (Exception) { IsFull = true; }
                     }
 
-                    //WDB_SQLite SQLite;
                     var TD = db.GetConfig<DateTime>("Load_Full");
-                    if (!pIsFull)
+                    if (!IsFull)
                     {
                         if (TD == default(DateTime) || DateTime.Now.Date != TD.Date)
-                            pIsFull = true;
-                        FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Устарівші дані {TD:yyyy-MM-dd} {varMidFile} parIsFull=>{pIsFull} ");
+                            IsFull = true;
+                        FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Устарівші дані {TD:yyyy-MM-dd} {varMidFile} parIsFull=>{IsFull} ");
                     }
 
-                    Status = pIsFull ? eSyncStatus.StartedFullSync : eSyncStatus.NotDefine;
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = pIsFull ? eSyncStatus.StartedFullSync : eSyncStatus.StartedPartialSync, StatusDescription = "SendAllReceipt" });
+                    Status = IsFull ? eSyncStatus.StartedFullSync : eSyncStatus.NotDefine;
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = IsFull ? eSyncStatus.StartedFullSync : eSyncStatus.StartedPartialSync, StatusDescription = "SendAllReceipt" });
 
-                    FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"varMidFile=>{varMidFile}\n\tLoad_Full=>{TD:yyyy-MM-dd} parIsFull=>{pIsFull}");
+                    FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"varMidFile=>{varMidFile}\n\tLoad_Full=>{TD:yyyy-MM-dd} parIsFull=>{IsFull}");
 
-                    string NameDB = db.GetMIDFile(default, pIsFull);
+                    string NameDB = db.GetMIDFile(default, IsFull);
                     int MessageNoMin = db.GetConfig<int>("MessageNo");
-                    if (pIsFull)
+                    if (IsFull)
                     {
                         db.SetConfig<DateTime>("Load_Full", DateTime.Now.Date.AddDays(-1).Date);
                         db.SetConfig<DateTime>("Load_Update", DateTime.Now.Date.AddDays(-1).Date);
@@ -232,20 +219,17 @@ namespace SharedLib
 
                     SQLiteMid pD=null; 
 
-                    if (!MsSQL.IsSync(Global.CodeWarehouse)) return false;                    
+                    if (!MsSQL.IsSync(Global.CodeWarehouse)) return false; 
 
-                  
-                    
                     MidData r = null;
-                    
                     if (Global.IsHttp)
-                    {
-                        bool IsFull = pIsFull;
-                        r = AsyncHelper.RunSync(() => LoadDataAsync(Global.IdWorkPlace, IsFull, NameDB, MessageNoMin));
+                    {           
+                        bool IsReloadFull = pIsFull;
+                        r = AsyncHelper.RunSync(() => LoadDataAsync(Global.IdWorkPlace, IsFull, NameDB, MessageNoMin, IsReloadFull));
                         pD = new(NameDB);
                         if (!IsFull)
                         { 
-                            if (pIsFull)
+                            if (IsFull)
                             {
                                 pD.ExecuteNonQuery(SQLiteMid.SqlCreateMIDTable);
                                 pD.SetVersion(SQLiteMid.VerMID);
@@ -256,12 +240,17 @@ namespace SharedLib
                     else
                     {
                         pD= new(NameDB);
-                        if (pIsFull)
+                        if (IsFull)
                         {
                             pD.ExecuteNonQuery(SQLiteMid.SqlCreateMIDTable);
                             pD.SetVersion(SQLiteMid.VerMID);
                         }
-                        r = MsSQL.LoadData(Global.IdWorkPlace, pIsFull, pD, MessageNoMin);
+                        r = MsSQL.LoadData(Global.IdWorkPlace, IsFull, pD, MessageNoMin);
+                    }
+                    if (r == null)
+                    {
+                        Global.OnSyncInfoCollected?.Invoke(new SyncInformation {  Status = (IsFull ? eSyncStatus.Error : eSyncStatus.NoFatalError), StatusDescription = $"LoadData return null value" });
+                        return false;
                     }
 
                     FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Replace SqlGetDimWorkplace => {r?.WorkPlace?.Count()}");
@@ -270,7 +259,7 @@ namespace SharedLib
                     Global.BildWorkplace(r.WorkPlace);
 
                     int MessageNMax = r?.MessageNoMax ?? 0;                   
-                    if (pIsFull)
+                    if (IsFull)
                     {
                         int CW = pD.ExecuteScalar<int>("select count(*) from wares");
                         if (CW > 1000)
@@ -301,17 +290,17 @@ namespace SharedLib
                     }
                     db.BildWaresWarehouse();
                     db.SetConfig<int>("MessageNo", MessageNMax);
-                    db.SetConfig<DateTime>("Load_" + (pIsFull ? "Full" : "Update"), DateTime.Now);
+                    db.SetConfig<DateTime>("Load_" + (IsFull ? "Full" : "Update"), DateTime.Now);
 
                     FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "End");
-                    Status = eSyncStatus.SyncFinishedSuccess;// : eSyncStatus.NotDefine;
+                    Status = eSyncStatus.SyncFinishedSuccess;
                     Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.SyncFinishedSuccess, StatusDescription = "SyncData=>Ok" });
                 }
                 catch (Exception ex)
                 {
                     //bl.db = new WDB_SQLite(default);
-                    Status = pIsFull ? eSyncStatus.Error : eSyncStatus.NotDefine;
-                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = (pIsFull ? eSyncStatus.Error : eSyncStatus.NoFatalError), StatusDescription = $"SyncData Error=>{ex.Message}" });
+                    Status = IsFull ? eSyncStatus.Error : eSyncStatus.NotDefine;
+                    Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = (IsFull ? eSyncStatus.Error : eSyncStatus.NoFatalError), StatusDescription = $"SyncData Error=>{ex.Message}" });
                     Global.OnStatusChanged?.Invoke(db.GetStatus());
                     FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, ex);
                     return false;
@@ -374,48 +363,6 @@ namespace SharedLib
             //Перекидаємо лічильник на сьогодня.
             db.SetConfig<DateTime>("LastDaySend", Ldc);
         }
-
-        /*public void LoadWeightKasa(DateTime parDT = default(DateTime))
-        {
-            if (!MsSQL.IsSync(Global.CodeWarehouse)) return;
-            try
-            {
-                if (parDT == default(DateTime))
-                {
-                    parDT = db.GetConfig<DateTime>("Load_Full");
-                    var parDTU = db.GetConfig<DateTime>("Load_Update");
-                    if (parDTU > parDT)
-                        parDT = parDTU;
-                }
-
-                string SQLUpdate = @"
--- begin tran
-   update barcode_out with (serializable) set weight=@Weight,Date=@Date
-   where bar_code = @BarCode
-
-   if @@rowcount = 0
-   begin
-      insert into barcode_out (bar_code, weight,Date) values ( @BarCode,@Weight,@Date,)
-   end
--- commit tran";
-
-
-                //var path = Path.Combine(ModelMID.Global.PathDB, "config.db");
-                // var dbSqlite = new SQLite(path);
-                var SqlSelect = @"select [barcode] as BarCode, weight as Weight, DATE_CREATE as Date,STATUS
-from ( SELECT [barcode],DATE_CREATE,STATUS,weight,ROW_NUMBER() OVER (PARTITION BY barcode ORDER BY DATE_CREATE DESC) as [nn]  FROM WEIGHT where  DATE_CREATE>=:parDT ) dd
-where nn=1 ";
-                Console.WriteLine("Start LoadWeightKasa");
-                var r = db.db.Execute<object, BarCodeOut>(SqlSelect, new { parDT = parDT });
-                Console.WriteLine(r.Count().ToString());
-                MsSQL.db.BulkExecuteNonQuery<BarCodeOut>(SQLUpdate, r);
-                Console.WriteLine("Finish LoadWeightKasa");
-            }
-            catch (Exception ex)
-            {
-                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "LoadWeightKasa=> " + ex.Message });
-            }
-        }*/
 
         public void LoadWeightKasa2Period(DateTime pDT = default(DateTime))
         {
@@ -552,10 +499,8 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
 
         }
 
-        public async Task<eReturnClient> SendClientAsync(ClientNew pC)
-        {
-            return await DataSync1C.Send1CClientAsync(pC);
-        }
+        public async Task<eReturnClient> SendClientAsync(ClientNew pC)=> await DataSync1C.Send1CClientAsync(pC);
+        
         public async Task Send1CClientAsync()
         {
             DateTime Ldc, Today = DateTime.Now.Date;
@@ -697,10 +642,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             return null;
         }
 
-        public ExciseStamp CheckExciseStamp(ExciseStamp pES, int pWait = 1000)
-        {
-            return Task<ExciseStamp>.Run(() => CheckExciseStampAsync(pES, pWait)).Result;
-        }
+        public ExciseStamp CheckExciseStamp(ExciseStamp pES, int pWait = 1000) => AsyncHelper.RunSync (() => CheckExciseStampAsync(pES, pWait));        
 
         public async Task<Status> SendReceipt(Receipt pR)
         {
@@ -993,9 +935,9 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             return null;
         }
 
-        public async Task<MidData> LoadDataAsync(int pIdWorkPlace, bool pIsFull, string pPathDB, int pMessageNoMin)
+        public async Task<MidData> LoadDataAsync(int pIdWorkPlace, bool pIsFull, string pPathDB, int pMessageNoMin,bool pIsReloadFull)
         {
-            var res = await LoadDataAsync(new InLoadData() { IdWorkPlace = pIdWorkPlace, IsFull = pIsFull, MessageNoMin = pMessageNoMin });
+            var res = await LoadDataAsync(new InLoadData() { IdWorkPlace = pIdWorkPlace, IsFull = pIsFull, MessageNoMin = pMessageNoMin,IsReloadFull= pIsReloadFull });
             var Res = res?.Info;
             if (!string.IsNullOrEmpty(Res?.PathMid))
             {
