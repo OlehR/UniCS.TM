@@ -210,7 +210,6 @@ namespace SharedLib
                         continue;
                     if (el.Prefix.Equals(pBarCode[..el.Prefix.Length]))
                     {
-
                         if (el.KindBarCode == eKindBarCode.EAN13 && pBarCode.Length != 13)
                             continue;
 
@@ -270,19 +269,19 @@ namespace SharedLib
             return AddReceiptWares(W);
         }
 
-        public async Task<bool> CheckOneTimeAsync(IdReceipt pReceipt,long pCodeData,eTypeCode pTypeCode)
+        public async Task<bool> CheckOneTimeAsync(IdReceipt pReceipt, long pCodeData, eTypeCode pTypeCode)
         {
-            var RC = new OneTime(pReceipt) { CodeData = pCodeData,TypeData= pTypeCode, CodePS = db.GetCodePS(pCodeData) }; 
+            var RC = new OneTime(pReceipt) { CodeData = pCodeData, TypeData = pTypeCode, CodePS = db.GetCodePS(pCodeData) };
             Status<OneTime> R = null;
             if (pTypeCode == eTypeCode.OneTimeCoupon || pTypeCode == eTypeCode.OneTimeCouponGift)
             {
-                 R = await ds.CheckOneTime(RC);
-                if( R==null || !R.status || R.Data==null || !pReceipt.Equals(R.Data) ) 
+                R = await ds.CheckOneTime(RC);
+                if (R == null || !R.status || R.Data == null || !pReceipt.Equals(R.Data))
                 {
-                    Global.Message?.Invoke(R==null || R.status==false || R.Data==null? $"Проблема з перевіркою купона {pCodeData} => {R?.TextState}" : 
+                    Global.Message?.Invoke(R == null || R.status == false || R.Data == null ? $"Проблема з перевіркою купона {pCodeData} => {R?.TextState}" :
                                     $"Даний купон=>{pCodeData} вже використано в чеку {R.Data.IdWorkplace}/ {R.Data.NumberReceipt1C}", eTypeMessage.Information);
                     return false;
-                }               
+                }
             }
             if (pTypeCode == eTypeCode.OneTimeCouponGift)
             {
@@ -294,10 +293,10 @@ namespace SharedLib
                 }
             }
 
-                if (RC.CodePS > 0)
+            if (RC.CodePS > 0)
             {
-                if(pTypeCode==eTypeCode.OneTimeCouponGift)
-                    db.ReplaceReceiptGift(new ReceiptGift(pReceipt) { CodePS= RC.CodePS , NumberGroup=0, CodeCoupon=pCodeData, Quantity=-1});
+                if (pTypeCode == eTypeCode.OneTimeCouponGift)
+                    db.ReplaceReceiptGift(new ReceiptGift(pReceipt) { CodePS = RC.CodePS, NumberGroup = 0, CodeCoupon = pCodeData, Quantity = -1 });
                 db.ReplaceOneTime(RC);
                 _ = db.RecalcPriceAsync(new(pReceipt));
                 return true;
