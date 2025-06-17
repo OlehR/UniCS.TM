@@ -21,7 +21,6 @@ namespace SharedLib
     {
         public WDB_SQLite db { get { return bl?.db; } }
         BL bl;
-        WDB_MsSql MsSQL;
         private readonly object _locker = new object();
         public bool IsUseOldDB { get; set; } = true;
 
@@ -35,24 +34,19 @@ namespace SharedLib
             }
         }
         public DataSync(BL pBL)
-        {
-            try
-            {
-                MsSQL = new WDB_MsSql();
-            }
-            catch { }
-
+        {            
             if (pBL != null)
             {
                 bl = pBL; ///!!!TMP Трохи костиль 
                 StartSyncData();
             }
         }
+        bool IsSync(int p) => true ;
 
         public async Task<bool> SyncDataAsync(bool parIsFull = false)
         {
             bool res = false;
-            if (!MsSQL.IsSync(Global.CodeWarehouse))
+            if (!IsSync(Global.CodeWarehouse))
             {
                 FileLogger.WriteLogMessage(this, "SyncDataAsync", $"Обмін заблоковано", eTypeLog.Expanded);
                 return res;
@@ -68,7 +62,7 @@ namespace SharedLib
 
                 if (CurDate.Hour < 7)
                 {                    
-                    LoadWeightKasa2Period();
+                    await LoadWeightKasa2PeriodAsync();
                 }
                 if (parIsFull)
                     _ = SendRWDeleteAsync();
@@ -99,7 +93,7 @@ namespace SharedLib
         public bool SendReceiptTo1C(IdReceipt pIdR)
         {
             using var ldb = new WDB_SQLite(pIdR.DTPeriod);
-            if (!MsSQL.IsSync(Global.CodeWarehouse))
+            if (!IsSync(Global.CodeWarehouse))
             {
                 FileLogger.WriteLogMessage(this, "SendReceiptTo1C", $"Обмін заблоковано CodeReceipt=>{pIdR.CodeReceipt}", eTypeLog.Expanded);
                 return false;
@@ -109,7 +103,6 @@ namespace SharedLib
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             _ = DataSync1C.SendReceiptTo1CAsync(R, ldb);
             _ = SendReceipt(R); // В сховище чеків
-
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             return true;
         }
@@ -177,8 +170,7 @@ namespace SharedLib
                     {
                         db.SetConfig<DateTime>("Load_Full", DateTime.Now.Date.AddDays(-1).Date);
                         db.SetConfig<DateTime>("Load_Update", DateTime.Now.Date.AddDays(-1).Date);
-                        db.Close(true);
-                        //db.GetDB();
+                        
                         Exception Ex = null;
                         if (File.Exists(varMidFile))
                         {
@@ -217,26 +209,24 @@ namespace SharedLib
                         FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "Create New DB");
                     }
 
-                    SQLiteMid pD=null; 
+                    if (!IsSync(Global.CodeWarehouse)) return false;
 
-                    if (!MsSQL.IsSync(Global.CodeWarehouse)) return false; 
-
+                    SQLiteMid pD = null;
                     MidData r = null;
-                    if (Global.IsHttp)
-                    {           
-                        bool IsReloadFull = pIsFull;
+                    //if (Global.IsHttp){
+                    bool IsReloadFull = pIsFull;
                         r = AsyncHelper.RunSync(() => LoadDataAsync(Global.IdWorkPlace, IsFull, NameDB, MessageNoMin, IsReloadFull));
                         pD = new(NameDB);
                         if (!IsFull)
                         { 
-                            if (IsFull)
+                            /* (IsFull)
                             {
                                 pD.ExecuteNonQuery(SQLiteMid.SqlCreateMIDTable);
                                 pD.SetVersion(SQLiteMid.VerMID);
-                            }
+                            }*/
                             LoadDataSQL(pD, r);
                         }
-                    }
+                    /*}
                     else
                     {
                         pD= new(NameDB);
@@ -246,18 +236,19 @@ namespace SharedLib
                             pD.SetVersion(SQLiteMid.VerMID);
                         }
                         r = MsSQL.LoadData(Global.IdWorkPlace, IsFull, pD, MessageNoMin);
-                    }
+                    }*/
                     if (r == null)
                     {
                         Global.OnSyncInfoCollected?.Invoke(new SyncInformation {  Status = (IsFull ? eSyncStatus.Error : eSyncStatus.NoFatalError), StatusDescription = $"LoadData return null value" });
                         return false;
                     }
-
-                    FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Replace SqlGetDimWorkplace => {r?.WorkPlace?.Count()}");
-                    db.ReplaceWorkPlace(r.WorkPlace);
-                    FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Write SqlGetDimWorkplace => {r?.WorkPlace?.Count()}");
-                    Global.BildWorkplace(r.WorkPlace);
-
+                    if (r?.WorkPlace?.Any() == true)
+                    {
+                        FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Replace SqlGetDimWorkplace => {r?.WorkPlace?.Count()}");
+                        db.ReplaceWorkPlace(r.WorkPlace);
+                        FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Write SqlGetDimWorkplace => {r?.WorkPlace?.Count()}");
+                        Global.BildWorkplace(r.WorkPlace);
+                    }
                     int MessageNMax = r?.MessageNoMax ?? 0;                   
                     if (IsFull)
                     {
@@ -265,17 +256,16 @@ namespace SharedLib
                         if (CW > 1000)
                         {
                             FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "Create MIDIndex");
-                            if (!Global.IsHttp)
-                                pD?.CreateMIDIndex();
+                            // (!Global.IsHttp)  pD?.CreateMIDIndex();
                             pD?.Close();
                             try
                             {
+                                db.Close(true);
                                 File.Move(NameDB, varMidFile);
                                 db.LastMidFile = varMidFile;
                                 FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Set config LastMidFile=> {db.LastMidFile}");
                                 db.GetDB();
-                                db.SetConfig<DateTime>("Load_Full", DateTime.Now);
-                                db.SetConfig<DateTime>("Load_Update", DateTime.Now);                                
+                                db.SetConfig<DateTime>("Load_Full", DateTime.Now);                                                          
                             }
                             catch (Exception e)
                             {
@@ -290,7 +280,7 @@ namespace SharedLib
                     }
                     db.BildWaresWarehouse();
                     db.SetConfig<int>("MessageNo", MessageNMax);
-                    db.SetConfig<DateTime>("Load_" + (IsFull ? "Full" : "Update"), DateTime.Now);
+                    db.SetConfig<DateTime>("Load_Update", DateTime.Now);
 
                     FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "End");
                     Status = eSyncStatus.SyncFinishedSuccess;
@@ -308,34 +298,6 @@ namespace SharedLib
             }
             return true;
         }
-
-        public class TableStruc
-        {
-            public int Cid { get; set; }
-            public string Name { get; set; }
-            public string Type { get; set; }
-            public string Dflt_value { get; set; }
-            public int PK { get; set; }
-        }
-
-        /*public string BildSqlUpdate(string parTableName)
-        {
-            var r = db.db.Execute<TableStruc>($"PRAGMA table_info('{parTableName}');");
-            var ListField = "";
-            var Where = "";
-            var On = "";
-
-            foreach (var el in r)
-            {
-                ListField += (ListField.Length > 0 ? ", " : "") + el.Name;
-                if (el.PK == 1)
-                    On += (On.Length > 0 ? " and " : "") + $"main.{el.Name}=upd.{el.Name}";
-                else
-                    Where += (Where.Length > 0 ? " or " : "") + $"main.{el.Name}!=upd.{el.Name}";
-            }
-            var Res = $"replace parTableName ({ListField}) \n select {ListField} from main.{parTableName}\n join upd.{parTableName} on ( {On})\n where {Where}";
-            return Res;
-        }*/
 
         public void SendOldReceipt()
         {
@@ -364,7 +326,7 @@ namespace SharedLib
             db.SetConfig<DateTime>("LastDaySend", Ldc);
         }
 
-        public void LoadWeightKasa2Period(DateTime pDT = default(DateTime))
+        public async Task LoadWeightKasa2PeriodAsync(DateTime pDT = default(DateTime))
         {
             try
             {
@@ -377,8 +339,7 @@ namespace SharedLib
                 bool isCalc = false;
                 while (pDT < DateTime.Now.Date)
                 {
-                    LoadWeightKasa2(pDT, 0);
-                    LoadWeightKasa2(pDT, 1);
+                    isCalc= await LoadWeightKasa2Async(pDT);
                     pDT = pDT.AddDays(1);
                     isCalc = true;
                 }
@@ -393,34 +354,38 @@ namespace SharedLib
             }
         }
 
-        public void LoadWeightKasa2(DateTime parDT, int TypeSource = 0)
-        {
-            if (!MsSQL.IsSync(Global.CodeWarehouse)) return;
+        public async Task<bool> LoadWeightKasa2Async(DateTime parDT)
+        {  
             try
             {
                 using var ldb = new WDB_SQLite(parDT);
-                string SQLUpdate = @"insert into  DW.dbo.Weight_Receipt  (Type_Source,code_wares, weight,Date,ID_WORKPLACE, CODE_RECEIPT,QUANTITY) values (@TypeSource, @CodeWares,@Weight,@Date,@IdWorkplace,@CodeReceipt,@Quantity)";
-                var dbMs = new MSSQL();
+                var r = ldb.GetWeightReceipt();
 
-                var SqlSelect = TypeSource == 0 ? "select 0 as TypeSource,CODE_WARES as CodeWares,FIX_WEIGHT/1000.0 as WEIGHT,DATE_CREATE as date, ID_WORKPLACE as IdWorkplace, CODE_RECEIPT as CodeReceipt, QUANTITY as Quantity  from WARES_RECEIPT where FIX_WEIGHT>0" :
-                    @"select 1  as TypeSource,re.CODE_WARES as CodeWares,re.PRODUCT_CONFIRMED_WEIGHT/1000.0 as WEIGHT,wr.DATE_CREATE as date, re.ID_WORKPLACE as IdWorkplace, re.CODE_RECEIPT as CodeReceipt, wr.QUANTITY as Quantity,wr.FIX_WEIGHT/1000.0 as FIX_WEIGHT
-from RECEIPT_EVENT RE 
-join WARES_RECEIPT wr on re.ID_WORKPLACE=wr.ID_WORKPLACE and wr.CODE_RECEIPT=re.CODE_RECEIPT and re.code_wares=wr.code_wares
-where RE.EVENT_TYPE=1"
-                    ;
-                Console.WriteLine("Start LoadWeightKasa2");
-                var r = ldb.db.Execute<WeightReceipt>(SqlSelect);
-                Console.WriteLine(parDT.ToString() + " " + r.Count().ToString());
-                dbMs.BulkExecuteNonQuery<WeightReceipt>(SQLUpdate, r);
-                Console.WriteLine("Finish LoadWeightKasa2");
+                HttpClient client = new();
+                client.Timeout = TimeSpan.FromMilliseconds(3000);
+
+                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Global.Api + "CashRegister/SetWeightReceipt");
+                string data = r.ToJson();
+                requestMessage.Content = new StringContent(data, Encoding.UTF8, "application/json");
+                var response = await client.SendAsync(requestMessage);
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    if (!string.IsNullOrEmpty(res))
+                    {
+                        var Res = Newtonsoft.Json.JsonConvert.DeserializeObject<Status>(res);
+                        return Res?.status??false;
+                    }
+                }
             }
             catch (Exception ex)
             {
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "LoadWeightKasa2=> " + ex.Message });
             }
-        }
+            return false;
+        }      
 
-        public async Task<string> GetQrCoffe(ReceiptWares pReceiptWares, int pOrder, int pWait = 5)
+public async Task<string> GetQrCoffe(ReceiptWares pReceiptWares, int pOrder, int pWait = 5)
         {
             var Url = "https://dashboard.prostopay.net/api/v1/qreceipt/generate";
             string res = null;
@@ -496,7 +461,6 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             {
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "SendRWDeleteAsync=>" + Ldc.ToString() + " " + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
             }
-
         }
 
         public async Task<eReturnClient> SendClientAsync(ClientNew pC)=> await DataSync1C.Send1CClientAsync(pC);
@@ -552,7 +516,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     string s = "ПСЮ00000000";
                     pNumberOrder = pNumberOrder.Trim();
                     pNumberOrder = s.Substring(0, 11 - pNumberOrder.Length) + pNumberOrder;
-                    if (!MsSQL.IsSync(Global.CodeWarehouse)) return;
+                    if (!IsSync(Global.CodeWarehouse)) return;
 
                     var Order = await GetClientOrder(pNumberOrder);// MsSQL.GetClientOrder(pNumberOrder);
                     if (Order != null && Order.Any())
@@ -942,12 +906,15 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             if (!string.IsNullOrEmpty(Res?.PathMid))
             {
                 string Zip = Path.Combine(Path.GetDirectoryName(pPathDB), Path.GetFileName(Res.PathMid));
-                Http.LoadFile(Res.PathMid,Zip);
+                if(Res.PathMid.StartsWith("http"))
+                    Http.LoadFile(Res.PathMid,Zip);
+                else
+                    File.Copy(Res.PathMid, Zip, true);
                 if (File.Exists(Zip))
                 {
-                    ZipFile.ExtractToDirectory(Zip, Path.GetDirectoryName(pPathDB),true);
+                    ZipFile.ExtractToDirectory(Zip, Path.GetDirectoryName(pPathDB), true);
                     File.Delete(Zip);
-                    FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"LoadDataAsync => {Path.Combine(pPathDB, Path.GetFileName(Res.PathMid))}");                  
+                    FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"LoadDataAsync => {Path.Combine(pPathDB, Path.GetFileName(Res.PathMid))}");
                 }
                 else
                 {
@@ -1085,16 +1052,5 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             }
             return true;
         }
-    }
-
-    public class WeightReceipt
-    {
-        public int TypeSource { get; set; }
-        public long CodeWares { get; set; }
-        public decimal Weight { get; set; }
-        public DateTime Date { get; set; }
-        public int IdWorkplace { get; set; }
-        public int CodeReceipt { get; set; }
-        public decimal Quantity { get; set; }
     }
 }

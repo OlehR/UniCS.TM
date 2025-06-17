@@ -184,7 +184,7 @@ namespace Front.Equipments
                 Key = (int)pRW.TypeWares * 10 + pRW.TypeVat;
             if (Tax.ContainsKey(Key))
                 return Tax[Key];
-            return DefaultTax;
+            return DefaultTax??"-99";
         }
 
         /// <summary>

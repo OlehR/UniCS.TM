@@ -17,6 +17,6 @@ namespace ModelMID.DB
     {
         public int CodeWarehouse { get; set; }
         public eTypeData TypeData { get; set; }
-        public int Data { get; set; }
+        public Int64 Data { get; set; }
     }
 }

@@ -165,12 +165,12 @@ namespace SharedLib
             catch
             { Global.MaxWeightBag = 100; }
 
-            try
+            /*try
             {
                 Global.IsHttp = !AppConfiguration["MID:IsHttp"]?.ToLower().Equals("false")??true;
             }
             catch
-            { Global.IsHttp = true; }
+            { Global.IsHttp = true; }*/
 
             var IdWorkPlaces = new List<IdWorkPlaces>();
             var _IdWorkPlaces = new List<int>() { Global.IdWorkPlace };

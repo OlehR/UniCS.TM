@@ -67,15 +67,10 @@ namespace Test
             Console.WriteLine(Res);
             return Res;
         }
-
         
-
-
-        
+        /*
   static void CreateBarCode()
         {
-
-
             string dataDir = @"d:\temp\BarCode\";
             string sql = @"SELECT w.code_wares as CodeWares ,w.name_wares as NameWares,b.bar_code as BarCode
     FROM dbo.Wares w
@@ -140,7 +135,7 @@ namespace Test
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "LoadWeightKasa2=> " + ex.Message });
             }
             return null;
-        }
+        }*/
         
     }
 

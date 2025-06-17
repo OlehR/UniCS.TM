@@ -935,7 +935,6 @@ namespace Front.Control
                 WindowChangeReceiptStatus.Visibility = Visibility.Visible;
                 BackgroundReceipts.Visibility = Visibility.Visible;
 
-
                 var ListStateReceiptRadiobuton = new ObservableCollection<StateReceiptRadiobuton>();
                 foreach (eStateReceipt type in Enum.GetValues(typeof(eStateReceipt)))
                 {
@@ -1011,7 +1010,7 @@ namespace Front.Control
             StringBuilder Res = new();
 
 
-            var MsSQL = new WDB_MsSql();
+            //var MsSQL = new WDB_MsSql();
             var Receipts = Bl.GetReceipts(DateSoSearch, DateSoSearch, Global.IdWorkPlace);
 
             decimal Sum1CTotal = 0, Sum = 0;

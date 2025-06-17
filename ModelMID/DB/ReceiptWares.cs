@@ -14,17 +14,17 @@ namespace ModelMID
 
     public class ReceiptWares : IdReceiptWares, ICloneable
     {
-        public int IdWorkplacePay { get { if (_IdWorkplacePay == 0) _IdWorkplacePay = Global.GetIdWorkPlacePay(CodeDirection, CodeTM, new int[]{ CodeGroup,CodeGroupUp,CodeDirection},CodeWares); return _IdWorkplacePay; } set { _IdWorkplacePay = value; } }
+        public int IdWorkplacePay { get { if (_IdWorkplacePay == 0) _IdWorkplacePay = Global.GetIdWorkPlacePay(CodeDirection, CodeTM, new Int64[]{ CodeGroup,CodeGroupUp,CodeDirection},CodeWares); return _IdWorkplacePay; } set { _IdWorkplacePay = value; } }
         int _IdWorkplacePay;
 
         /// <summary>
         /// Код групи товару
         /// </summary>
-        public int CodeGroup { get; set; }
+        public Int64 CodeGroup { get; set; }
         /// <summary>
         /// Код групи товару 2 рівня(передостанній)
         /// </summary>
-        public int CodeGroupUp { get; set; }
+        public Int64 CodeGroupUp { get; set; }
 
         /// <summary>
         /// Назва товару
@@ -393,7 +393,7 @@ namespace ModelMID
         /// </summary>        
 
         public bool IsLast { get; set; }
-        public int CodeDirection { get; set; }
+        public Int64 CodeDirection { get; set; }
 
         /// <summary>
         /// Торгова марка (в 1С - Бренд) 

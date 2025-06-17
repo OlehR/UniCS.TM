@@ -38,7 +38,8 @@ namespace Utils
                     };
                 var res = JsonConvert.SerializeObject(s, Setting);
                 return res;
-            }catch(Exception) { 
+            }catch(Exception ex) { 
+                FileLogger.WriteLogMessage("Utils.ToJSON", ex);
                 return ""; 
             }
         }

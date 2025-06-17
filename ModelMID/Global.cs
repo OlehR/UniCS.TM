@@ -12,7 +12,7 @@ namespace ModelMID
     public class Global
     {
         public static bool Is1C = false;
-        public static bool IsHttp = false;
+        //public static bool IsHttp = false;
         public static Action<Receipt> OnReceiptCalculationComplete { get; set; }
         public static Action<SyncInformation> OnSyncInfoCollected { get; set; }
         public static Action<StatusBD> OnStatusChanged { get; set; }
@@ -26,10 +26,10 @@ namespace ModelMID
 
         public static SortedList<int, WorkPlace> WorkPlaceByWorkplaceId;
 
-        public static SortedList<int, int> IdWorkPlacePayDirection = new SortedList<int, int>();
-        public static SortedList<int, int> IdWorkPlacePayTM = new SortedList<int, int>();
-        public static SortedList<int, int> IdWorkPlacePayGroup = new SortedList<int, int>();
-        public static SortedList<long, int> IdWorkPlacePayWares = new SortedList<long, int>();
+        public static SortedList<Int64, int> IdWorkPlacePayDirection = new SortedList<Int64, int>();
+        public static SortedList<Int64, int> IdWorkPlacePayTM = new SortedList<Int64, int>();
+        public static SortedList<Int64, int> IdWorkPlacePayGroup = new SortedList<Int64, int>();
+        public static SortedList<Int64, int> IdWorkPlacePayWares = new SortedList<Int64, int>();
 
         public static Settings Settings { get; set; }
 
@@ -220,7 +220,7 @@ namespace ModelMID
             return null;
         }
 
-        public static int GetIdWorkPlacePay(int pCodeDirection, int pCodeTM, int[] pCodeGroup = null,long pCodeWares=0)
+        public static int GetIdWorkPlacePay(Int64 pCodeDirection, Int64 pCodeTM, Int64[] pCodeGroup = null,long pCodeWares=0)
         {
             if (IdWorkPlacePayWares.ContainsKey(pCodeWares))
                 return IdWorkPlacePayWares[pCodeWares];

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Dapper;
 using ModelMID;
 using ModelMID.DB;
+using UtilNetwork;
 using Utils;
 using static Dapper.SqlMapper;
 
@@ -538,7 +539,7 @@ namespace SharedLib
         /// </summary>
         public virtual IEnumerable<ReceiptWares> FindWares(string pBarCode = null, string pName = null, long pCodeWares = 0, int pCodeUnit = 0, int pCodeFastGroup = 0, int pArticl = -1, int pOffSet = -1, int pLimit = 10)
         {
-            var Lim = pOffSet >= 0 ? $" limit {pLimit} offset {pOffSet}" : "";
+           var Lim = pOffSet >= 0 ? $" limit {pLimit} offset {pOffSet}" : "";
             var Wares = db.Execute<object, ReceiptWares>(SqlFoundWares + Lim, new { CodeWares = pCodeWares, CodeUnit = pCodeUnit, BarCode = pBarCode, NameUpper = (pName == null ? null : "%" + pName.ToUpper().Replace(" ", "%") + "%"), CodeDealer = Global.DefaultCodeDealer, CodeFastGroup = pCodeFastGroup, Articl = pArticl });
 
             if (pBarCode?.Length == 13 && Wares?.Any() != true) //Пошук по штрихкоду виробника
@@ -1302,6 +1303,17 @@ where wrl.IdWorkplace = @IdWorkplace and wrl.CodePeriod = @CodePeriod and wrl.Co
                 var a = e.Message;
             }
             return false;
+        }
+
+        public IEnumerable<WeightReceipt> GetWeightReceipt()
+        {
+            string SQL = @"select 0 as TypeSource,CODE_WARES as CodeWares,FIX_WEIGHT/1000.0 as WEIGHT,DATE_CREATE as date, ID_WORKPLACE as IdWorkplace, CODE_RECEIPT as CodeReceipt, QUANTITY as Quantity  from WARES_RECEIPT where FIX_WEIGHT>0
+union
+select 1  as TypeSource,re.CODE_WARES as CodeWares,re.PRODUCT_CONFIRMED_WEIGHT/1000.0 as WEIGHT,wr.DATE_CREATE as date, re.ID_WORKPLACE as IdWorkplace, re.CODE_RECEIPT as CodeReceipt, wr.QUANTITY as Quantity--,wr.FIX_WEIGHT/1000.0 as FIX_WEIGHT
+from RECEIPT_EVENT RE 
+join WARES_RECEIPT wr on re.ID_WORKPLACE=wr.ID_WORKPLACE and wr.CODE_RECEIPT=re.CODE_RECEIPT and re.code_wares=wr.code_wares
+where RE.EVENT_TYPE=1";
+            return dbRC.Execute<WeightReceipt>(SQL);
         }
     }
 }
