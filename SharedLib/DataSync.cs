@@ -262,10 +262,9 @@ namespace SharedLib
                             {
                                 db.Close(true);
                                 File.Move(NameDB, varMidFile);
-                                db.LastMidFile = varMidFile;
-                                FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Set config LastMidFile=> {db.LastMidFile}");
+                                db.SetConfig<DateTime>("Load_Full", DateTime.Now);                               
                                 db.GetDB();
-                                db.SetConfig<DateTime>("Load_Full", DateTime.Now);                                                          
+                                FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Set config LastMidFile=> {db.LastMidFile}");
                             }
                             catch (Exception e)
                             {
