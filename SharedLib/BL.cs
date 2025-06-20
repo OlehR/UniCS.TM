@@ -288,7 +288,9 @@ namespace SharedLib
                 var r = pReceipt as Receipt;
                 if (r != null && (r.CodeClient == 0 || r.CodeClient != R?.Data.CodeClient))
                 {
-                    Global.Message?.Invoke($"Код клієнта  купона=>{R?.Data.CodeClient} і в чеку=>{r.CodeClient} різні", eTypeMessage.Information);
+                    Global.Message?.Invoke(r.CodeClient==0? $"Відскануйте свою картку лояльності" :
+                         "Цей купон належить іншому клієнту"//$"Код клієнта  купона=>{R?.Data.CodeClient} і в чеку=>{r.CodeClient} різні"
+                        , eTypeMessage.Information);
                     return false;
                 }
             }
