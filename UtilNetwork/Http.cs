@@ -30,7 +30,6 @@ namespace UtilNetwork
                     client = new HttpClient();
                     string encoded = System.Convert.ToBase64String(Encoding.GetEncoding("ISO-8859-1").GetBytes(pLogin + ":" + pPassWord));
                     client.DefaultRequestHeaders.Add("Authorization", "Basic " + encoded);
-
                 }
 
                 client.Timeout = TimeSpan.FromSeconds(pTimeOut);
@@ -41,7 +40,7 @@ namespace UtilNetwork
 
                 StringContent content = null;
                 if (pData != null) content = new StringContent(pData, Encoding.UTF8, pContentType);
-                HttpResponseMessage response = await client.PostAsync(pURL, content).ConfigureAwait(continueOnCapturedContext: false);
+                using HttpResponseMessage response = await client.PostAsync(pURL, content).ConfigureAwait(continueOnCapturedContext: false);
                 if (response.IsSuccessStatusCode)
                 {
                     string result = await response.Content.ReadAsStringAsync();

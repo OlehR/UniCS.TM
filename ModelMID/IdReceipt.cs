@@ -8,7 +8,7 @@ namespace ModelMID
     public class IdReceipt
     {
 
-        protected string PrefixWarehouse { get { return "X"; } }
+        protected string PrefixWarehouse { get { return $"{(IdWorkplace%10000):D4}"; } }
 
         protected string Prefix
         {

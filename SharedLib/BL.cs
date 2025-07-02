@@ -279,7 +279,9 @@ namespace SharedLib
                 if (R == null || !R.status || R.Data == null || !pReceipt.Equals(R.Data))
                 {
                     Global.Message?.Invoke(R == null || R.status == false || R.Data == null ? $"Проблема з перевіркою купона {pCodeData} => {R?.TextState}" :
-                                    $"Даний купон=>{pCodeData} вже використано в чеку {R.Data.IdWorkplace}/ {R.Data.NumberReceipt1C}", eTypeMessage.Information);
+                                    (R.Data.State>0? $"Даний купон=>{pCodeData} вже використано в чеку {R.Data.IdWorkplace}/{R.Data.NumberReceipt1C}" : 
+                                    $"Купон=>{pCodeData} тимчасово недоступний .Оскільки була спроба використати в чеку => {R.Data.NumberReceipt1C}")                                    
+                                    , eTypeMessage.Information);
                     return false;
                 }
             }

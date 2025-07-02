@@ -65,7 +65,7 @@ namespace ModelMID
         public Int64 CodePS { get; set; }
         public int CodeGroupFilter { get; set; }
         /// <summary>
-        /// Тип (10- товари,11- по товару, 12-Товари від кількості, 15-по групі, 20-Час,30-клієнт,4-Номер чека, 50-склади, 60-Форма оплати,70- Купони ) ( select t.*, t.rowid from C.DATA_NAME t where t.data_level=53)
+        /// Тип (10- товари,11- по товару, 12-Товари від кількості, 15-по групі,16- Набір товарів, 20-Час, 30-клієнт, 40-Номер чека, 50-склади, 60-Форма оплати,70- Купони ) ( select t.*, t.rowid from C.DATA_NAME t where t.data_level=53)
         /// </summary>
         public int TypeGroupFilter { get; set; }
         /// <summary>

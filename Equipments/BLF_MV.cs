@@ -36,7 +36,7 @@ namespace Front.Equipments
             if (MW.State == eStateMainWindows.WaitInputIssueCard) return;
 
 
-            if (Global.Settings.IsUseCardSparUkraine && MW.State == eStateMainWindows.FindClientByPhone)
+            if (Global.Settings.IsUseCardSparUkraine ) //&& MW.State == eStateMainWindows.FindClientByPhone
             {
                 // pBarCode = "MTE2MmZlMGNjLTNlZmQtNDYxZC05NThiLTFjYmI3NjQ4YjM1NDIzLjAxLjIwMjQgMTM6MDE6Mjg=";
                 if (pBarCode.Length > 56)

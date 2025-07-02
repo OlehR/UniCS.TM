@@ -272,6 +272,11 @@ CREATE TABLE FAST_GROUP
             IsDefault INTEGER NOT NULL default 0,
             Sort INTEGER NOT NULL
         );
+
+ CREATE TABLE SegmentWares(
+     CodeWares INTEGER NOT NULL,
+     CodeSegment INTEGER NOT NULL
+ );
 ";
 
         readonly static string SqlCreateMIDIndex = @"
@@ -329,6 +334,8 @@ CREATE TABLE FAST_GROUP
 
         CREATE UNIQUE INDEX  WaresLink_ID ON WaresLink (CodeWares,CodeWaresTo);
         CREATE INDEX  WaresLink_CWT ON WaresLink (CodeWaresTo);
+ 
+        CREATE UNIQUE INDEX  SegmentWares_ID ON SegmentWares (CodeWares,CodeSegment);
 ";
         public SQLiteMid(String pConectionString) : base(pConectionString) { }
 
