@@ -13,81 +13,155 @@ namespace UtilNetwork
 {
     public class SocketServer
     {
-        Func< string, Status> Action;
+        Func<string, Status> Action;
         bool IsStart = false;
         Socket listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         IPEndPoint ipPoint = new IPEndPoint(IPAddress.Any, 3443);//(IPAddress.Parse(IP), IpPort);
         int SizeBuffer;
-        public SocketServer( int pPort, Func< string, Status> pS,int pSizeBuffer=1024)
+        public SocketServer(int pPort, Func<string, Status> pS, int pSizeBuffer = 1024)
         {
-            Action=pS; 
+            Action = pS;
             ipPoint = new IPEndPoint(IPAddress.Any, pPort);
             SizeBuffer = pSizeBuffer;
         }
 
+        //public async Task StartAsync()
+        //{
+        //    try
+        //    {
+        //        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Start Socket");
+        //        // связываем сокет с локальной точкой, по которой будем принимать данные
+        //        listenSocket.Bind(ipPoint);
+
+        //        // начинаем прослушивание
+        //        listenSocket.Listen(10);
+        //        //Console.WriteLine("Сервер запущен. Ожидание подключений...");
+
+        //        IsStart = true;
+        //        while (IsStart)
+        //        {
+        //            Socket handler = await listenSocket.AcceptAsync();
+        //            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Connect Socket");
+        //            //Console.WriteLine("Connect");
+        //            try
+        //            {
+        //                // получаем сообщение
+        //                StringBuilder builder = new StringBuilder();
+        //                int bytes = 0; // количество полученных байтов
+        //                byte[] data = new byte[SizeBuffer]; // буфер для получаемых данных
+
+        //                do
+        //                {
+        //                    bytes = await handler.ReceiveAsync(data, SocketFlags.None);
+        //                    builder.Append(Encoding.UTF8.GetString(data, 0, bytes)); //!!!! в цілому неправильне місце для конвертації в string. Вирішуємо за рахунок великого буфера.
+        //                    Console.WriteLine(builder.ToString());
+        //                }
+        //                while (handler.Available > 0);
+
+        //                var res = Action(builder.ToString());//
+        //                //Console.WriteLine(DateTime.Now.ToShortTimeString() + ": " + builder.ToString());
+
+        //                data = Encoding.UTF8.GetBytes(res.ToJSON());
+
+        //                //Console.WriteLine("Відправляємо відповідь");
+        //                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Socket Відправляємо відповідь {res}");
+        //                await handler.SendAsync(data, SocketFlags.None);
+        //            }
+        //            catch (Exception ex) {
+        //                try
+        //                {
+        //                    Status res= new Status(ex);
+        //                    var data = Encoding.UTF8.GetBytes(res.ToJSON());
+        //                    await handler.SendAsync(data, SocketFlags.None);
+        //                }
+        //                catch (Exception) { };
+        //                FileLogger.WriteLogMessage(this, "StartAsync", ex);
+        //            }
+        //            finally
+        //            {
+        //                // закрываем сокет
+        //                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Socket Close");
+        //                handler.Shutdown(SocketShutdown.Both);
+        //                handler.Close();
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Socket {ex.Message}");
+        //        //Console.WriteLine(ex.Message);
+        //    }           
+        //}
         public async Task StartAsync()
         {
             try
             {
-                // связываем сокет с локальной точкой, по которой будем принимать данные
-                listenSocket.Bind(ipPoint);
+                FileLogger.WriteLogMessage(this, nameof(StartAsync), "Start Socket");
 
-                // начинаем прослушивание
+                listenSocket.Bind(ipPoint);
                 listenSocket.Listen(10);
-                //Console.WriteLine("Сервер запущен. Ожидание подключений...");
 
                 IsStart = true;
+
                 while (IsStart)
                 {
                     Socket handler = await listenSocket.AcceptAsync();
-                    Console.WriteLine("Connect");
-                    try
+
+                    _ = Task.Run(async () =>
                     {
-                        // получаем сообщение
-                        StringBuilder builder = new StringBuilder();
-                        int bytes = 0; // количество полученных байтов
-                        byte[] data = new byte[SizeBuffer]; // буфер для получаемых данных
+                        FileLogger.WriteLogMessage(this, nameof(StartAsync), "Connect Socket");
 
-                        do
-                        {
-                            bytes = await handler.ReceiveAsync(data, SocketFlags.None);
-                            builder.Append(Encoding.UTF8.GetString(data, 0, bytes)); //!!!! в цілому неправильне місце для конвертації в string. Вирішуємо за рахунок великого буфера.
-                            Console.WriteLine(builder.ToString());
-                        }
-                        while (handler.Available > 0);
-
-                        var res = Action(builder.ToString());//
-                        //Console.WriteLine(DateTime.Now.ToShortTimeString() + ": " + builder.ToString());
-
-                        data = Encoding.UTF8.GetBytes(res.ToJSON());
-
-                        //Console.WriteLine("Відправляємо відповідь");
-                        await handler.SendAsync(data, SocketFlags.None);
-                    }
-                    catch (Exception ex) {
                         try
                         {
-                            Status res= new Status(ex);
-                            var data = Encoding.UTF8.GetBytes(res.ToJSON());
+                            StringBuilder builder = new StringBuilder();
+                            int bytes = 0;
+                            byte[] data = new byte[SizeBuffer];
+
+                            do
+                            {
+                                bytes = await handler.ReceiveAsync(data, SocketFlags.None);
+                                builder.Append(Encoding.UTF8.GetString(data, 0, bytes));
+                                Console.WriteLine(builder.ToString());
+                            }
+                            while (handler.Available > 0);
+
+                            var res = Action(builder.ToString());
+
+                            data = Encoding.UTF8.GetBytes(res.ToJSON());
+                            FileLogger.WriteLogMessage(this, nameof(StartAsync), $"Socket Відправляємо відповідь {res.ToJSON()}");
+
                             await handler.SendAsync(data, SocketFlags.None);
                         }
-                        catch (Exception) { };
-                        FileLogger.WriteLogMessage(this, "StartAsync", ex);
-                    }
-                    finally
-                    {
-                        // закрываем сокет
-                        handler.Shutdown(SocketShutdown.Both);
-                        handler.Close();
-                    }
+                        catch (Exception ex)
+                        {
+                            try
+                            {
+                                Status res = new Status(ex);
+                                var data = Encoding.UTF8.GetBytes(res.ToJSON());
+                                await handler.SendAsync(data, SocketFlags.None);
+                            }
+                            catch(Exception exx)
+                            {
+                                FileLogger.WriteLogMessage(this, nameof(StartAsync), exx);
+                            }
+
+                            FileLogger.WriteLogMessage(this, nameof(StartAsync), ex);
+                        }
+                        finally
+                        {
+                            FileLogger.WriteLogMessage(this, nameof(StartAsync), "Socket Close");
+
+                            try { handler.Shutdown(SocketShutdown.Both); } catch { }
+                            handler.Close();
+                        }
+                    });
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-            }           
+                FileLogger.WriteLogMessage(this, nameof(StartAsync), $"Socket {ex.Message}");
+            }
         }
-
         public void Stop()
         {
             IsStart = false;
@@ -99,19 +173,19 @@ namespace UtilNetwork
         Socket client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Any, 3443);//(IPAddress.Parse(IP), IpPort);
 
-        public SocketClient(IPAddress pIP,int pPort)
-        {    
+        public SocketClient(IPAddress pIP, int pPort)
+        {
             ipEndPoint = new IPEndPoint(pIP, pPort);
         }
 
         public async Task<Status> StartAsync(string pData)
         {
-            Status res =null;           
+            Status res = null;
             try
             {
                 await client.ConnectAsync(ipEndPoint);
                 var messageBytes = Encoding.UTF8.GetBytes(pData);
-                var aa = await client.SendAsync(messageBytes, SocketFlags.None);                
+                var aa = await client.SendAsync(messageBytes, SocketFlags.None);
 
                 // Receive ack.
                 var buffer = new byte[10000];
@@ -121,7 +195,7 @@ namespace UtilNetwork
                 if (received.IsCompleted)
                 {
                     var r = Encoding.UTF8.GetString(buffer, 0, received.Result);
-                    res=JsonConvert.DeserializeObject<Status> (r);                   
+                    res = JsonConvert.DeserializeObject<Status>(r);
                 }
                 else
                 { res = new(-1, "TimeOut"); }
@@ -137,7 +211,7 @@ namespace UtilNetwork
             return res;
         }
 
-        public async Task<Status<D>> StartAsync<D>(string pData, bool IsResultStatus =true)
+        public async Task<Status<D>> StartAsync<D>(string pData, bool IsResultStatus = true)
         {
             Status<D> res = null;
             try
@@ -157,7 +231,7 @@ namespace UtilNetwork
                     if (IsResultStatus)
                         res = JsonConvert.DeserializeObject<Status<D>>(r);
                     else
-                        res = new() { Data = JsonConvert.DeserializeObject<D>(r) };                
+                        res = new() { Data = JsonConvert.DeserializeObject<D>(r) };
                 }
                 else
                 { res = new(-1, "TimeOut"); }
@@ -182,10 +256,10 @@ namespace UtilNetwork
             {
                 await client.ConnectAsync(ipEndPoint);
                 //var messageBytes = Encoding.UTF8.GetBytes(pData);
-                var aa = await client.SendAsync(pData, SocketFlags.None);               
+                var aa = await client.SendAsync(pData, SocketFlags.None);
 
                 var received = client.ReceiveAsync(buffer, SocketFlags.None);
-               
+
                 if (received.IsCompleted)
                 {
                     var r = Encoding.UTF8.GetString(buffer, 0, received.Result);
@@ -202,7 +276,7 @@ namespace UtilNetwork
             {
                 client.Shutdown(SocketShutdown.Both);
             }
-            return (res,buffer);
+            return (res, buffer);
         }
 
     }
