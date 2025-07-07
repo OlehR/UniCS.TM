@@ -132,7 +132,7 @@ namespace Front.Control
         {
             
             Result result = PhoneVerificationVM.ConfirmPhone();
-            MW.CustomMessage.Show(result.Success ? "Номер телефону збережено!" : result.TextError);
+            MW.CustomMessage.Show(result.TextError == "ok" ? "Номер телефону збережено!" : result.TextError);
             MW.SetStateView(eStateMainWindows.WaitInput);
         }
     }
