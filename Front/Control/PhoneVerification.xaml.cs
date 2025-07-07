@@ -35,6 +35,7 @@ namespace Front.Control
                 PhoneVerificationVM.Barcode = MW.Client?.BarCode;
                 PhoneVerificationVM.NameCard = MW.Client?.NameClient;
                 PhoneVerificationVM.CodeClient = (long)MW.Client?.CodeClient;
+                PhoneVerificationVM.UserBarCode  =  MW.AdminSSC?.BarCode ;
             }
         }
         public PhoneVerification()

@@ -47,6 +47,8 @@ namespace Front.ViewModels
         public string Phone { get; set; } = string.Empty;
         public string VerifyCode { get; set; } = string.Empty;
 
+        public string UserBarCode { get; set; } = string.Empty;
+
         BL Bl;
 
         public PhoneVerificationVM()
@@ -98,8 +100,10 @@ namespace Front.ViewModels
         }
         public Result ConfirmPhone()
         {
-            SetPhone setPhone = new SetPhone() { CodeClient = CodeClient , Phone = Phone };
-            Result r = new();
+            SetPhone setPhone = new SetPhone() { CodeClient = CodeClient , Phone = Phone,
+                UserBarCode = UserBarCode, CodeWarehouse= Global.CodeWarehouse,  IdWorkPlace = Global.IdWorkPlace };
+        
+            Result r = new(); 
             Task.Run(async () =>
             {
                 r = await Bl.ds.SetPhoneNumber(setPhone);
