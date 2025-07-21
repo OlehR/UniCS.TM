@@ -32,7 +32,7 @@ namespace Front.Equipments
         {
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pBarCode=>{pBarCode},  pTypeBarCode=>{pTypeBarCode})");
             if (string.IsNullOrEmpty(pBarCode)) return;
-            if (pBarCode.ToUpper().StartsWith("HTTP")&& !pBarCode.Contains("T.GOV.UA"))
+            if (pBarCode.ToUpper().StartsWith("HTTP")&& !pBarCode.ToUpper().Contains("T.GOV.UA"))
                 return; //Не обробляємо QR посилання на сайти.
             EF?.ForceGoodReadTone();
             

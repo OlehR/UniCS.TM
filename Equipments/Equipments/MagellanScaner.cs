@@ -56,7 +56,7 @@ namespace Front.Equipments
                                  BarCode = BarCode.Substring(0, BarCode.IndexOf('S'));// BarCode.IndexOf('S'));                                
                             
                             pOnBarCode(BarCode, null);
-                            ForceGoodReadTone();
+                            //ForceGoodReadTone();
                         };
                     State = eStateEquipment.On;
                 }
