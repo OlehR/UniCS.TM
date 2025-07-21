@@ -1089,7 +1089,9 @@ namespace Front
         public void StartMultipleTone() { Scaner?.StartMultipleTone(); }
         public void StopMultipleTone() { Scaner?.StopMultipleTone(); }
 
-#endregion
+        public void ForceGoodReadTone() { Scaner?.ForceGoodReadTone(); }
+
+        #endregion
     }
 
 }
