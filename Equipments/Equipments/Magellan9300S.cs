@@ -1,17 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RJCP.IO.Ports;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Timers;
 using Front.Equipments.Utils;
-using System.Configuration;
 using Utils;
 
 namespace Front.Equipments
@@ -22,6 +15,8 @@ namespace Front.Equipments
         private const string EnableDevice = "01";
         private const string DisableDevice = "02";
         private const string ScannerStatus = "03";
+        private readonly byte[] DisableQR = [81, 00, 00, 00, 06, 00, 10, 03, 0xd7, 00, 0x8f];
+        private readonly byte[] EnableQR  = [81, 00, 00, 00, 06, 00, 10, 03, 0xd7, 01, 0x8e];
         private const string SoftResetScanner = "320";
         private const string EnableToneScanner = "32F";
         private const string DisableToneScanner = "339";
@@ -33,7 +28,7 @@ namespace Front.Equipments
         private const string ScaleStatus = "13";
         private const string GetWeightWithStatus = "14";
         private const string ScaleDisplayStatus = "23";
-        private const int TimerInterval = 250;
+        private const double TimerInterval = 250;
         private readonly IConfiguration _configuration;
         private readonly ILogger<Magellan9300S> _logger;
         private string _tmpStr = string.Empty;
@@ -44,10 +39,10 @@ namespace Front.Equipments
         private double _currentWeight;
         private eDeviceConnectionStatus _currentStatus = eDeviceConnectionStatus.InitializationError;
         private int InitDeley = 500;
+       
+        private string _port => _configuration["Devices:Magellan9300S:Port"];
 
-        private string _port => this._configuration["Devices:Magellan9300S:Port"];
-
-        private int _baudRate => int.Parse(this._configuration["Devices:Magellan9300S:BaudRate"] ?? "9600");
+        private int _baudRate => int.Parse(_configuration["Devices:Magellan9300S:BaudRate"] ?? "9600");
 
         private bool IsUsePrefix = true;
 
@@ -61,7 +56,7 @@ namespace Front.Equipments
         {
             get
             {
-                SerialPortStreamWrapper serialDevice = this._serialDevice;
+                SerialPortStreamWrapper serialDevice = _serialDevice;
                 return serialDevice != null;//&& __nonvirtual(serialDevice.IsOpen);
             }
         }
@@ -72,14 +67,12 @@ namespace Front.Equipments
         {
             if (logger != null)
                 logger.LogDebug("Magellan9300S CTOR");
-            this._configuration = configuration;
-            this._logger = logger;
-            SerialPortStreamWrapper portStreamWrapper = new SerialPortStreamWrapper(this._port, this._baudRate, Parity.Odd, StopBits.One, 7, new Func<byte[], bool>(this.OnDataReceived));
-            portStreamWrapper.RtsEnable = true;
-            this._serialDevice = portStreamWrapper;
-            this._timer = new System.Timers.Timer(250.0);
-            this._timer.Elapsed += new ElapsedEventHandler(this.OnTimedEvent);
-            this._timer.AutoReset = true;
+            _configuration = configuration;
+            _logger = logger;
+            _serialDevice = new(_port, _baudRate, Parity.Odd, StopBits.One, 7, new Func<byte[], bool>(OnDataReceived)) { RtsEnable = true }; 
+            _timer = new System.Timers.Timer(TimerInterval);
+            _timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+            _timer.AutoReset = true;
 
             string v = _configuration["Devices:Magellan9300S:IsUsePrefix"];
             if (!string.IsNullOrEmpty(v)) { IsUsePrefix = bool.Parse(v); }
@@ -87,39 +80,43 @@ namespace Front.Equipments
 
         public eDeviceConnectionStatus Init()
         {
-            lock (this._locker)
+            lock (_locker)
             {
                 try
                 {
-                    this._tmpStr = string.Empty;
-                    if (this._currentStatus == eDeviceConnectionStatus.Enabled)
+                    _tmpStr = string.Empty;
+                    if (_currentStatus == eDeviceConnectionStatus.Enabled)
                         return eDeviceConnectionStatus.Enabled;
-                    Action<DeviceLog> onDeviceWarning1 = this.OnDeviceWarning;
+                    Action<DeviceLog> onDeviceWarning1 = OnDeviceWarning;
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "[Magellan9300S] - Start Initialization");
                     
-                    this.CloseIfOpen();
-                    this._serialDevice.OnReceivedData = (Func<byte[], bool>)null;
-                    this._serialDevice.Open();
-                    this._serialDevice.Write(this.GetCommand("01"));
-                    this._serialDevice.Write(this.GetCommand("339"));
-                    byte[] buffer = new byte[this._serialDevice.ReadBufferSize];
-                    this._serialDevice.Read(buffer, 0, buffer.Length);
-                    this._serialDevice.DiscardInBuffer();
-                    this._serialDevice.DiscardOutBuffer();
-                    this._serialDevice.Write(this.GetCommand("3p="));
+                    CloseIfOpen();
+                    _serialDevice.OnReceivedData = (Func<byte[], bool>)null;
+                    byte[] buffer = new byte[_serialDevice.ReadBufferSize];
+                    _serialDevice.Open();
+                    _serialDevice.Write(EnableQR);
+                    _serialDevice.Read(buffer, 0, buffer.Length);
+
+                    _serialDevice.Write(GetCommand(EnableDevice));
+                    _serialDevice.Write(GetCommand(DisableToneScanner));
+                    
+                    _serialDevice.Read(buffer, 0, buffer.Length);
+                    _serialDevice.DiscardInBuffer();
+                    _serialDevice.DiscardOutBuffer();
+                    _serialDevice.Write(GetCommand(HealthScanner));
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "[Magellan9300S] - Get info about scanner");
                     
-                    for (int index = 0; this._serialDevice.ReadBufferSize < 1 && index < 10; ++index)
+                    for (int index = 0; _serialDevice.ReadBufferSize < 1 && index < 10; ++index)
                         Thread.Sleep(InitDeley);
-                    byte[] numArray = new byte[this._serialDevice.ReadBufferSize];
-                    this._serialDevice.Read(numArray, 0, numArray.Length);
+                    byte[] numArray = new byte[_serialDevice.ReadBufferSize];
+                    _serialDevice.Read(numArray, 0, numArray.Length);
                     string str = Encoding.ASCII.GetString(numArray);
                      
                     bool flag = str.ContainsIgnoreCase("OK");
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"[Magellan9300S] - Flag=>{flag}");
          
-                    this._currentStatus = flag ? eDeviceConnectionStatus.Enabled : eDeviceConnectionStatus.InitializationError;
-                    return this._currentStatus;
+                    _currentStatus = flag ? eDeviceConnectionStatus.Enabled : eDeviceConnectionStatus.InitializationError;
+                    return _currentStatus;
                 }
                 catch (Exception ex)
                 {
@@ -133,35 +130,35 @@ namespace Front.Equipments
                 }
                 finally
                 {
-                    this._serialDevice.OnReceivedData = new Func<byte[], bool>(this.OnDataReceived);
+                    _serialDevice.OnReceivedData = new Func<byte[], bool>(OnDataReceived);
                 }
             }
         }
 
         public void GetReadDataSync(string command, Action<string> onDatAction)
         {
-            if (!this.IsReady || onDatAction == null)
+            if (!IsReady || onDatAction == null)
                 return;
-            this._serialDevice.Write(this.GetCommand(command));
+            _serialDevice.Write(GetCommand(command));
             do
                 ;
-            while (this._serialDevice.ReadBufferSize < 1);
-            byte[] numArray = new byte[this._serialDevice.ReadBufferSize];
-            this._serialDevice.Read(numArray, 0, numArray.Length);
+            while (_serialDevice.ReadBufferSize < 1);
+            byte[] numArray = new byte[_serialDevice.ReadBufferSize];
+            _serialDevice.Read(numArray, 0, numArray.Length);
             onDatAction(Encoding.ASCII.GetString(numArray));
         }
 
         public eDeviceConnectionStatus TestDevice()
         {
-            lock (this._locker)
+            lock (_locker)
             {
-                this.CloseIfOpen();
+                CloseIfOpen();
                 try
                 {
-                    this._serialDevice.Open();
-                    this._serialDevice.OnReceivedData = (Func<byte[], bool>)null;
+                    _serialDevice.Open();
+                    _serialDevice.OnReceivedData = (Func<byte[], bool>)null;
                     eDeviceConnectionStatus result = eDeviceConnectionStatus.InitializationError;
-                    this.GetReadDataSync("3p=", (Action<string>)(res =>
+                    GetReadDataSync(HealthScanner, (Action<string>)(res =>
                     {
                         if (!res.ContainsIgnoreCase("OK"))
                         {
@@ -169,7 +166,7 @@ namespace Front.Equipments
                         }
                         else
                         {
-                            this.ForceGoodReadTone();
+                            ForceGoodReadTone();
                             result = eDeviceConnectionStatus.Enabled;
                         }
                     }));
@@ -177,7 +174,7 @@ namespace Front.Equipments
                     if (result == eDeviceConnectionStatus.InitializationError)
                         return result;
                     result = eDeviceConnectionStatus.InitializationError;
-                    this.GetReadDataSync("14", (Action<string>)(res =>
+                    GetReadDataSync(GetWeightWithStatus, (Action<string>)(res =>
                     {
                         if (!res.StartsWith("S14"))
                         {
@@ -208,32 +205,32 @@ namespace Front.Equipments
                 }
                 finally
                 {
-                    this._serialDevice.OnReceivedData = new Func<byte[], bool>(this.OnDataReceived);
+                    _serialDevice.OnReceivedData = new Func<byte[], bool>(OnDataReceived);
                 }
             }
         }
 
         public string GetInfo()
         {
-            lock (this._locker)
+            lock (_locker)
             {
-                this.CloseIfOpen();
+                CloseIfOpen();
                 try
                 {
-                    this._serialDevice.Open();
-                    this._serialDevice.OnReceivedData = (Func<byte[], bool>)null;
-                    this._serialDevice.Write(this.GetCommand("3p<"));
+                    _serialDevice.Open();
+                    _serialDevice.OnReceivedData = (Func<byte[], bool>)null;
+                    _serialDevice.Write(GetCommand(IdentificationStatus));
                     Thread.Sleep(InitDeley);
                     int num1 = 0;
                     string result = "";
                     byte[] numArray;
                     for (numArray = new byte[1]; num1 < 10 && numArray[numArray.Length - 1] != (byte)13; ++num1)
                     {
-                        int bytesToRead = this._serialDevice.BytesToRead;
+                        int bytesToRead = _serialDevice.BytesToRead;
                         if (bytesToRead > 0)
                         {
                             byte[] buffer = new byte[bytesToRead];
-                            this._serialDevice.Read(buffer, 0, buffer.Length);
+                            _serialDevice.Read(buffer, 0, buffer.Length);
                             if (numArray[0] == (byte)0)
                                 numArray = buffer;
                             else
@@ -324,37 +321,37 @@ namespace Front.Equipments
                 }
                 finally
                 {
-                    this._serialDevice.OnReceivedData = new Func<byte[], bool>(this.OnDataReceived);
+                    _serialDevice.OnReceivedData = new Func<byte[], bool>(OnDataReceived);
                 }
             }
         }
 
         public void StartGetWeight()
         {
-            if (!this._serialDevice.IsOpen)
-                this._serialDevice.Open();
-            this._attempt = 0;
-            this._timer.Start();
+            if (!_serialDevice.IsOpen)
+                _serialDevice.Open();
+            _attempt = 0;
+            _timer.Start();
         }
 
         public void StopGetWeight()
         {
-            this._serialDevice.Write(this.GetCommand("12"));
-            this._timer.Stop();
+            _serialDevice.Write(GetCommand(ScaleCancel));
+            _timer.Stop();
         }
 
         public void ForceGoodReadTone()
         {
             try
             {
-                if (!this.IsReady)
+                if (!IsReady)
                     return;
-                this._serialDevice?.Write(this.GetCommand("334"));
+                _serialDevice?.Write(GetCommand(BeepScanner));
             }
             catch (Exception ex)
             {
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
-                Action<DeviceLog> onDeviceWarning = this.OnDeviceWarning;
+                Action<DeviceLog> onDeviceWarning = OnDeviceWarning;
                 if (onDeviceWarning == null)
                     return;
                 BarcodeScannerLog barcodeScannerLog = new BarcodeScannerLog();
@@ -364,43 +361,43 @@ namespace Front.Equipments
             }
         }
 
-        private void OnTimedEvent(object sender, ElapsedEventArgs e) => this._serialDevice?.Write(this.GetCommand("14")); //11
+        private void OnTimedEvent(object sender, ElapsedEventArgs e) => _serialDevice?.Write(GetCommand(GetWeightWithStatus)); //11
 
         private void CloseIfOpen()
         {
-            if (this.IsReady)
-                this._serialDevice.Close();
-            this._serialDevice.Dispose();
-            SerialPortStreamWrapper portStreamWrapper = new SerialPortStreamWrapper(this._port, this._baudRate, Parity.Odd, StopBits.One, 7, new Func<byte[], bool>(this.OnDataReceived));
+            if (IsReady)
+                _serialDevice.Close();
+            _serialDevice.Dispose();
+            SerialPortStreamWrapper portStreamWrapper = new SerialPortStreamWrapper(_port, _baudRate, Parity.Odd, StopBits.One, 7, new Func<byte[], bool>(OnDataReceived));
             portStreamWrapper.RtsEnable = true;
-            this._serialDevice = portStreamWrapper;
+            _serialDevice = portStreamWrapper;
         }
 
         private bool OnDataReceived(byte[] data)
         {
-            if (this.IsSystemResponse(data))
+            if (IsSystemResponse(data))
                 return false;
-            this._tmpStr += Encoding.ASCII.GetString(data);
-            if (!this._tmpStr.Contains("\r"))
+            _tmpStr += Encoding.ASCII.GetString(data);
+            if (!_tmpStr.Contains("\r"))
                 return false;
-            this._tmpStr = this._tmpStr.Replace("\r", string.Empty);
-            if (this._tmpStr.StartsWith("S08"))
+            _tmpStr = _tmpStr.Replace("\r", string.Empty);
+            if (_tmpStr.StartsWith("S08"))
             {
                 int ind = _tmpStr.IndexOf("S14");
                 if (ind > 0)
-                    this.BarcodeProcessing(this._tmpStr.Substring(3, ind - 3));
+                    BarcodeProcessing(_tmpStr.Substring(3, ind - 3));
                 else
-                    this.BarcodeProcessing(this._tmpStr.Substring(3));
+                    BarcodeProcessing(_tmpStr.Substring(3));
             }
-                //this.BarcodeProcessing(this._tmpStr.Substring(3));
+                //BarcodeProcessing(_tmpStr.Substring(3));
             else if (_tmpStr.StartsWith("S11")) //11
-                this.WeightProcessing(this._tmpStr.Substring(3));
+                WeightProcessing(_tmpStr.Substring(3));
 
-            else if (this._tmpStr.StartsWith("S144")) //14
-                this.WeightProcessing14(this._tmpStr.Substring(4));
-            else if (this._tmpStr.StartsWith("S143") || this._tmpStr.StartsWith("S141")) //14
-                this.WeightProcessing14("0");
-            this._tmpStr = string.Empty;
+            else if (_tmpStr.StartsWith("S144")) //14
+                WeightProcessing14(_tmpStr.Substring(4));
+            else if (_tmpStr.StartsWith("S143") || _tmpStr.StartsWith("S141")) //14
+                WeightProcessing14("0");
+            _tmpStr = string.Empty;
             return true;
         }
 
@@ -409,10 +406,10 @@ namespace Front.Equipments
             double result;
             if (double.TryParse(weightStr, NumberStyles.Any, (IFormatProvider)CultureInfo.InvariantCulture, out result))
             { 
-                Action<double> onWeightChanged = this.OnWeightChanged;
+                Action<double> onWeightChanged = OnWeightChanged;
                 if (onWeightChanged != null)
                     onWeightChanged(result);
-                this._attempt = 0;
+                _attempt = 0;
             }
             
         }
@@ -422,24 +419,22 @@ namespace Front.Equipments
             double result;
             if (!double.TryParse(weightStr, NumberStyles.Any, (IFormatProvider)CultureInfo.InvariantCulture, out result))
                 result = -1.0;
-            if (result == this._currentWeight && this._attempt == 3)
+            if (result == _currentWeight && _attempt == 3)
             {
-                Action<double> onWeightChanged = this.OnWeightChanged;
+                Action<double> onWeightChanged = OnWeightChanged;
                 if (onWeightChanged != null)
                     onWeightChanged(result);
-                this._attempt = 0;
+                _attempt = 0;
             }
-            else if (result == this._currentWeight)
-                ++this._attempt;
+            else if (result == _currentWeight)
+                ++_attempt;
             else
-                this._currentWeight = result;
+                _currentWeight = result;
         }
 
         private void BarcodeProcessing(string barcode)
         {
-            ILogger<Magellan9300S> logger = this._logger;
-            if (logger != null)
-                logger.LogDebug("[M9300S] Scanned code - " + barcode);
+            _logger?.LogDebug("[M9300S] Scanned code - " + barcode);
             if (IsUsePrefix)
             {
                 PrefixOfCodes prefixByString = PrefixOfCodes.GetPrefixByString(barcode);
@@ -455,10 +450,10 @@ namespace Front.Equipments
 
         public void Dispose()
         {
-            this.OnBarcodeScannerChange = (Action<string>)null;
-            this.OnWeightChanged = (Action<double>)null;
-            this._serialDevice?.Close();
-            this._serialDevice?.Dispose();
+            OnBarcodeScannerChange = (Action<string>)null;
+            OnWeightChanged = (Action<double>)null;
+            _serialDevice?.Close();
+            _serialDevice?.Dispose();
         }
     }
 
