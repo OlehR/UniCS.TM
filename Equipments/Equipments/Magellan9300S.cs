@@ -16,7 +16,7 @@ namespace Front.Equipments
         private const string DisableDevice = "02";
         private const string ScannerStatus = "03";
         private readonly byte[] DisableQR = [81, 00, 00, 00, 06, 00, 10, 03, 0xd7, 00, 0x8f];
-        private readonly byte[] EnableQR  = [81, 00, 00, 00, 06, 00, 10, 03, 0xd7, 01, 0x8e];
+        private readonly byte[] EnableQR  = [0x81, 00, 00, 00, 06, 00, 0x10, 03, 0xd7, 01, 0x8e];
         private const string SoftResetScanner = "320";
         private const string EnableToneScanner = "32F";
         private const string DisableToneScanner = "339";
