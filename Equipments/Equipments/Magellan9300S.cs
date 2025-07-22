@@ -15,8 +15,10 @@ namespace Front.Equipments
         private const string EnableDevice = "01";
         private const string DisableDevice = "02";
         private const string ScannerStatus = "03";
-        private readonly byte[] DisableQR = [81, 00, 00, 00, 06, 00, 10, 03, 0xd7, 00, 0x8f];
+        private readonly byte[] DisableQR = [0x81, 00, 00, 00, 06, 00, 10, 03, 0xd7, 00, 0x8f];
         private readonly byte[] EnableQR  = [0x81, 00, 00, 00, 06, 00, 0x10, 03, 0xd7, 01, 0x8e];
+        private readonly byte[] EnableQR2 = [0x81, 00, 00, 00, 0x05, 00, 0x11, 0x03, 0xd7, 0x8f];
+        private readonly byte[] EnableQR3 = [0x81, 00, 00, 00, 0x03, 00, 0x12, 0x6a];
         private const string SoftResetScanner = "320";
         private const string EnableToneScanner = "32F";
         private const string DisableToneScanner = "339";
@@ -95,6 +97,12 @@ namespace Front.Equipments
                     byte[] buffer = new byte[_serialDevice.ReadBufferSize];
                     _serialDevice.Open();
                     _serialDevice.Write(EnableQR);
+                    _serialDevice.Read(buffer, 0, buffer.Length);
+
+                    _serialDevice.Write(EnableQR2);
+                    _serialDevice.Read(buffer, 0, buffer.Length);
+
+                    _serialDevice.Write(EnableQR3);
                     _serialDevice.Read(buffer, 0, buffer.Length);
 
                     _serialDevice.Write(GetCommand(EnableDevice));
