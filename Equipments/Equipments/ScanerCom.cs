@@ -1,14 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RJCP.IO.Ports;
-using System;
-using System.Globalization;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Timers;
 using Front.Equipments.Utils;
-using Front.Equipments.Virtual;
 using Utils;
 
 namespace Front.Equipments
