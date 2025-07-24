@@ -280,7 +280,7 @@ namespace SharedLib
                 {
                     Global.Message?.Invoke(R == null || R.status == false || R.Data == null ? $"Проблема з перевіркою купона {pCodeData} => {R?.TextState}" :
                                     (R.Data.State>0? $"Даний купон=>{pCodeData} вже використано в чеку {R.Data.IdWorkplace}/{R.Data.NumberReceipt1C}" : 
-                                    $"Купон=>{pCodeData} тимчасово недоступний .Оскільки була спроба використати в чеку => {R.Data.NumberReceipt1C}")                                    
+                                    $"Купон=>{pCodeData} тимчасово недоступний. Оскільки була спроба використати в чеку => {R.Data.NumberReceipt1C} Повторно можна використати {R.Data.DateCreate.AddMinutes(5)}")                                    
                                     , eTypeMessage.Information);
                     return false;
                 }
@@ -291,7 +291,7 @@ namespace SharedLib
                 if (r != null && (r.CodeClient == 0 || r.CodeClient != R?.Data.CodeClient))
                 {
                     Global.Message?.Invoke(r.CodeClient==0? $"Відскануйте свою картку лояльності" :
-                         "Цей купон належить іншому клієнту"//$"Код клієнта  купона=>{R?.Data.CodeClient} і в чеку=>{r.CodeClient} різні"
+                         $"Цей купон належить іншому клієнту ({r.CodeClient}/{R?.Data.CodeClient})"//$"Код клієнта  купона=>{R?.Data.CodeClient} і в чеку=>{r.CodeClient} різні"
                         , eTypeMessage.Information);
                     return false;
                 }

@@ -24,7 +24,8 @@ namespace ModelMID
         WaresWeight = 1, //Ваговий
         WaresUnit = 2, //Штучний
         DiscountAfterWares = 3, //Знижка , яка надається після сканування товару.
-        Coupon = 4        
+        Coupon = 4 ,
+        PriceTag = 5 //Цінник
     }
 
     public enum eKindBarCode
@@ -45,5 +46,10 @@ namespace ModelMID
         public int LenghtOperator { get; set; }
         public int LenghtQuantity { get; set; }
         public int TotalLenght { get { return KindBarCode == eKindBarCode.EAN13 ? 13 : (Prefix?.Length??0) + LenghtCode + LenghtOperator + LenghtQuantity; } }
+        /// <summary>
+        /// //Роздільник між кодом товару, ціною та кількістю
+        /// </summary>
+        public char Separator { get; set; }
+        
     }
 }
