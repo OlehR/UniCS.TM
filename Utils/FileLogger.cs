@@ -9,7 +9,8 @@ namespace Utils
     {
         Full = 0,
         Expanded = 1,
-        Error = 2
+        Error = 2,
+        None = 3
     }
     public static class FileLogger
     {
@@ -23,7 +24,7 @@ namespace Utils
 
 
         private static int IdWorkplace=0;
-        public static eTypeLog TypeLog = eTypeLog.Full;
+        public static eTypeLog TypeLog = eTypeLog.None;
 
         public static string GetFileName { get { return $"{Path.Combine(PathLog, $"Log_{IdWorkplace}_{DateTime.Now:yyyyMMdd}.log")}"; } }
         public static string GetFileNameDate(DateTime pD) { return $"{Path.Combine(PathLog, $"Log_{IdWorkplace}_{pD:yyyyMMdd}.log")}"; } 
