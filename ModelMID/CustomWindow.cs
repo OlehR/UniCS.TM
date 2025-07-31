@@ -121,7 +121,8 @@ namespace ModelMID
                         //if (pObject is bool IsCashRegister == true)
                         Buttons = new ObservableCollection<CustomButton>()
                         {
-                            new CustomButton() {CustomWindow = this,  Id = 33, Text = "Підтвердження акцизу", IsNeedAdmin = true }
+                            //new CustomButton() {CustomWindow = this,  Id = 33, Text = "Підтвердження акцизу", IsNeedAdmin = true }
+                             new CustomButton() {CustomWindow = this,  Id = 34, Text = "Видалити позицію без акцизу!", IsNeedAdmin = false }
                         };
                         /*else
                             Buttons = new ObservableCollection<CustomButton>()

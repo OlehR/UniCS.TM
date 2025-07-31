@@ -32,22 +32,22 @@ namespace Front.Equipments
         {
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pBarCode=>{pBarCode},  pTypeBarCode=>{pTypeBarCode})");
             if (string.IsNullOrEmpty(pBarCode)) return;
-            if (pBarCode.ToUpper().StartsWith("HTTP")&& !pBarCode.ToUpper().Contains("T.GOV.UA"))
+            if (pBarCode.ToUpper().StartsWith("HTTP") && !pBarCode.ToUpper().Contains("T.GOV.UA"))
                 return; //Не обробляємо QR посилання на сайти.
             EF?.ForceGoodReadTone();
-            
+
             if (MW.State == eStateMainWindows.StartWindow)
                 SetStateView(eStateMainWindows.WaitInput);
             if (MW.State == eStateMainWindows.WaitInputIssueCard) return;
 
 
-            if (Global.Settings.IsUseCardSparUkraine ) //&& MW.State == eStateMainWindows.FindClientByPhone
+            if (Global.Settings.IsUseCardSparUkraine) //&& MW.State == eStateMainWindows.FindClientByPhone
             {
                 // pBarCode = "MTE2MmZlMGNjLTNlZmQtNDYxZC05NThiLTFjYmI3NjQ4YjM1NDIzLjAxLjIwMjQgMTM6MDE6Mjg=";
                 if (pBarCode.Length > 56)
                 {
                     var QR = pBarCode.FromBase64();
-                    if (!string.IsNullOrEmpty(QR)  && QR.Length >= 56)
+                    if (!string.IsNullOrEmpty(QR) && QR.Length >= 56)
                     {
                         string BarCode = QR[1..37];
                         string Time = QR[37..56];
@@ -106,7 +106,7 @@ namespace Front.Equipments
                 if (MW.curReceipt != null)
                 {
                     var c = Bl.GetClientByBarCode(MW.curReceipt, pBarCode.ToLower());
-                    if (c != null) return;                    
+                    if (c != null) return;
                 }
                 FileLogger.WriteLogMessage(this, "GetBarCode", $"Штрихкод {pBarCode} не знайдено State=>{MW.State} TypeAccessWait=>{MW.TypeAccessWait}");
                 if (MW.IsAddNewWares)
@@ -117,8 +117,8 @@ namespace Front.Equipments
                     if (MW.CS?.IsProblem == true)
                         Global.Message?.Invoke($"Не можливо додати товар оскільки є проблеми з ваговою платформою!", eTypeMessage.Error);
                     else
-                        if(!Global.Settings.IsUseCardSparUkraine || MW.State != eStateMainWindows.FindClientByPhone)
-                            Global.Message?.Invoke($"Не можливо додати товар в  режимі {MW.State.GetDescription()}", eTypeMessage.Error);
+                        if (!Global.Settings.IsUseCardSparUkraine || MW.State != eStateMainWindows.FindClientByPhone)
+                        Global.Message?.Invoke($"Не можливо додати товар в  режимі {MW.State.GetDescription()}", eTypeMessage.Error);
                 }
 
                 return;
@@ -140,7 +140,7 @@ namespace Front.Equipments
             }
 
             Regex regex = new Regex(@"^[A-Z]{4}\d{6}$");
-            
+
             if (regex.IsMatch(pBarCode))
                 return pBarCode;
             return null;
@@ -210,7 +210,7 @@ namespace Front.Equipments
             {
                 if (StartScan != DateTime.MinValue)
                 {
-                    Bl.db.InsertReceiptEvent( new ReceiptEvent(MW.curReceipt) { ResolvedAt = StartScan, EventType = eReceiptEventType.TimeScanReceipt, EventName = "Час сканування чека" });
+                    Bl.db.InsertReceiptEvent(new ReceiptEvent(MW.curReceipt) { ResolvedAt = StartScan, EventType = eReceiptEventType.TimeScanReceipt, EventName = "Час сканування чека" });
                     StartScan = DateTime.MinValue;
                 }
             }
@@ -296,14 +296,14 @@ namespace Front.Equipments
         {
             if (res != null)
             {
-                if (res.CustomWindow?.Id == eWindows.NoPricePromotion && MW.curReceipt?.Client!=null)
+                if (res.CustomWindow?.Id == eWindows.NoPricePromotion && MW.curReceipt?.Client != null)
                 {
                     PricePromotion PP = res.CustomWindow.DataEx as PricePromotion;
-                     
-                    Bl.db.ReplaceReceiptWaresPromotionNoPrice(new ReceiptWaresPromotionNoPrice(new IdReceiptWares(MW.curReceipt)) 
-                        { CodePS = PP?.CodePs??0, DataEx=res.Id, TypeDiscount=PP?.TypeDiscount??eTypeDiscount.NotDefine, Data=1 });
-                    if (PP?.IsOneTime==true )
-                     Bl.db.ReplaceOneTime(new OneTime(MW.curReceipt) {CodePS = PP.CodePs,CodeData = MW.curReceipt?.Client?.CodeClient??0,TypeData = eTypeCode.Client });
+
+                    Bl.db.ReplaceReceiptWaresPromotionNoPrice(new ReceiptWaresPromotionNoPrice(new IdReceiptWares(MW.curReceipt))
+                    { CodePS = PP?.CodePs ?? 0, DataEx = res.Id, TypeDiscount = PP?.TypeDiscount ?? eTypeDiscount.NotDefine, Data = 1 });
+                    if (PP?.IsOneTime == true)
+                        Bl.db.ReplaceOneTime(new OneTime(MW.curReceipt) { CodePS = PP.CodePs, CodeData = MW.curReceipt?.Client?.CodeClient ?? 0, TypeData = eTypeCode.Client });
                     PayAndPrint();
                     return;
                 }
@@ -324,8 +324,8 @@ namespace Front.Equipments
                         SetStateView(eStateMainWindows.StartWindow);
                     }
                     return;
-                }              
-                
+                }
+
                 if (res.CustomWindow?.Id == eWindows.ConfirmWeight)
                 {
                     if (res.Id == -1)
@@ -371,6 +371,11 @@ namespace Front.Equipments
                     {
                         ExciseStampNone();
                     }
+                    if (res.Id == 34) // видалити позицію в якій відсутній акциз або він затертий
+                    {
+                        MW.TypeAccessWait = eTypeAccess.DelWares;
+                        SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.DelWares);
+                    }
                     return;
                 }
                 if (res.CustomWindow?.Id == eWindows.ConfirmAge)
@@ -381,7 +386,7 @@ namespace Front.Equipments
                     if (res.Id == 1)
                         Task.Run(new Action(() => { Bl.AddEventAge(MW.curReceipt); PayAndPrint(); }));
                     return;
-                }               
+                }
 
                 if (res.CustomWindow?.Id == eWindows.UseBonus)
                 {
@@ -396,14 +401,14 @@ namespace Front.Equipments
                     idReceipt = MW.curReceipt,
                     Id = res.CustomWindow?.Id ?? eWindows.NoDefinition,
                     IdButton = res.Id,
-                    Text = res.CustomWindow?.InputText, 
+                    Text = res.CustomWindow?.InputText,
                     ExtData = res.CustomWindow?.Id == eWindows.ConfirmWeight ? MW.CS?.RW : null
                 };
                 Bl.SetCustomWindows(r);
                 SetStateView(eStateMainWindows.WaitInput);
             }
-           
-        }        
+
+        }
         public Status CallBackApi(string pDataApi)
         {
             Status Res = null;
@@ -438,8 +443,8 @@ namespace Front.Equipments
                     case eCommand.GeneralCondition:
                         CommandRemoteInfo = JsonSerializer.Deserialize<CommandAPI<InfoRemoteCheckout>>(pDataApi);
                         var r = Bl.GetUserByBarCode(CommandRemoteInfo.Data.UserBarcode);
-                        MW.RemoteCheckout = CommandRemoteInfo.Data; 
-        
+                        MW.RemoteCheckout = CommandRemoteInfo.Data;
+
                         Res = new Status(0, $"Загальний стан каси: {MW.RemoteWorkplace.Name}");
                         break;
                     case eCommand.Confirm:
