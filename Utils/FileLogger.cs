@@ -1,20 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Utils
 {
     public enum eTypeLog
-    {
+    {   
         Full = 0,
         Expanded = 1,
         Error = 2,
-        None = 3
+        None = 3,
+        Memory = 4
     }
     public static class FileLogger
     {
-
+        public static StringBuilder Str = new StringBuilder();
         private static string _PathLog = "Logs";
         public static string PathLog
         {
@@ -114,12 +116,24 @@ namespace Utils
         }
 
         public static void WriteLogMessage( string message, eTypeLog pTypeLog = eTypeLog.Full)
-        {
+        {  
 #if DEBUG
             message.WriteConsoleDebug();
 #endif
-            if (TypeLog > pTypeLog)
+            if (TypeLog > pTypeLog && TypeLog!= eTypeLog.Memory)
                 return;
+            if(message.Length > 10000 )
+                message = message.Substring(0, 10000); // Ограничение на размер сообщения
+            string str = $@"[{DateTime.Now:dd-MM-yyyy HH:mm:ss:ffff}] {Enum.GetName(typeof(eTypeLog), pTypeLog)} {message}{Environment.NewLine}";
+            if (TypeLog == eTypeLog.Memory)
+            {
+                if (Str.Length > 1000000) // Ограничение на размер памяти
+                {
+                    Str= Str.Remove(0, Str.Length - 100000);
+                }
+                Str.AppendLine(str);
+                return;
+            }
 
             Task.Run(() =>
             {
@@ -127,14 +141,12 @@ namespace Utils
                 {
                     try
                     {
-                        File.AppendAllText(GetFileName,
-                        $@"[{DateTime.Now:dd-MM-yyyy HH:mm:ss:ffff}] {Enum.GetName(typeof(eTypeLog), pTypeLog)} {message}{Environment.NewLine}");
+                        File.AppendAllText(GetFileName, str);                      
                     }
                     catch (Exception e)
                     {
                        var s = e.Message;
-                    }
-                    
+                    }                    
                 }
             });
         }
