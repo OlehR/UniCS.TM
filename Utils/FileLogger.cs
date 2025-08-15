@@ -47,12 +47,14 @@ namespace Utils
             WriteLogMessage($"{Environment.NewLine}{Environment.NewLine}");
         }
 
-        public static void Init(string pPathLog, int pIdWorkplace)
+        public static void Init(string pPathLog, int pIdWorkplace,eTypeLog? pTypeLog= null)
         {
             if (!string.IsNullOrEmpty(pPathLog))
                 PathLog = pPathLog;
             CreateDirectoryLog();
             IdWorkplace = pIdWorkplace;
+            if (pTypeLog != null)
+                TypeLog = pTypeLog??eTypeLog.Memory;
         }
 
         public static void CreateDirectoryLog()
