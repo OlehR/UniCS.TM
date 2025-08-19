@@ -1,4 +1,14 @@
-﻿using System;
+﻿using Equipments;
+using Equipments.Model;
+using Front.Control;
+using Front.Equipments;
+using Front.Models;
+using Front.ViewModels;
+using ModelMID;
+using ModelMID.DB;
+using Newtonsoft.Json;
+using SharedLib;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -8,15 +18,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using Equipments;
-using Equipments.Model;
-using Front.Control;
-using Front.Equipments;
-using Front.Models;
-using ModelMID;
-using ModelMID.DB;
-using Newtonsoft.Json;
-using SharedLib;
 using Utils;
 using Pr = Equipments.Model.Price;
 
@@ -25,7 +26,6 @@ namespace Front
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         long LastCodeWares = 0;
-
         void SetClient()
         {
             OnPropertyChanged(nameof(ClientName));
@@ -200,12 +200,12 @@ namespace Front
             {
                 if (TypeAccessWait > 0)//TypeAccessWait != eTypeAccess.NoDefinition 
                 {
-                    SetConfirm(pUser);
+                    Blf.SetConfirm(pUser);
                     return;
                 }
 
                 if (Access.GetRight(pUser, eTypeAccess.AdminPanel))
-                    ShowAdmin(pUser);
+                    Blf.ShowAdmin(pUser);
                 else
                     CustomMessage.Show($"Не достатньо прав на вхід в адмін панель для  {pUser.NameUser}", "Увага", eTypeMessage.Error);
             };
@@ -253,7 +253,7 @@ namespace Front
         }
         #endregion
 
-        public bool SetConfirm(User pUser, bool pIsFirst = false, bool pIsAccess = false)
+        /*public bool SetConfirm(User pUser, bool pIsFirst = false, bool pIsAccess = false)
         {
             if (pUser == null)
             {
@@ -346,124 +346,27 @@ namespace Front
                     break;
                 case eTypeAccess.AdminPanel:
                     TypeAccessWait = eTypeAccess.NoDefine;
-                    ShowAdmin(pUser);
+                    Blf.ShowAdmin(pUser);
                     break;
                 case eTypeAccess.UseBonus:
                     var task = Task.Run(() => Blf.PrintAndCloseReceipt(null, eTypePay.Bonus, 0, 0, 0, Client?.SumMoneyBonus ?? 0m));
                     break;
             }
             return true;
-        }
+        }*/
 
-        void ShowAdmin(User pUser)
-        {
-            AdminControl.Init(pUser);
-            SetStateView(eStateMainWindows.AdminPanel);
-        }
+        
 
         public void ShowWeightWares(GW pGV = null)
         {
             if (pGV != null)
             {
                 CurW = pGV;
-                Image im = null;
-                foreach (var el in WeightWaresUC.GridWeightWares.Children)
-                {
-                    im = el as Image;
-                    if (im != null)
-                        break;
-                }
-                if (im != null)
-                    WeightWaresUC.GridWeightWares.Children.Remove(im);
-                if (File.Exists(CurW.Pictures))
-                {
-                    im = new Image
-                    {
-                        Source = new BitmapImage(new Uri(CurW.Pictures)),
-                        VerticalAlignment = VerticalAlignment.Center
-                    };
-                    Grid.SetRow(im, 1);
-                    WeightWaresUC.GridWeightWares.Children.Add(im);
-                }
+                WeightWaresUC.Init(pGV);                
                 SetStateView(eStateMainWindows.WaitWeight);
                 return;
             }
         }
         
-
-        /*Status CallBackApi(string pDataApi)
-        {
-            Status Res = null;
-            try
-            {
-                CommandAPI<dynamic> pC = JsonConvert.DeserializeObject<CommandAPI<dynamic>>(pDataApi);
-                CommandAPI<int> CommandInt;
-                CommandAPI<string> CommandString;
-                CommandAPI<InfoRemoteCheckout> CommandRemoteInfo;
-                switch (pC.Command)
-                {
-                    case eCommand.GetCurrentReceipt:
-                        Res = new Status(0, curReceipt?.ToJSON());
-                        break;
-                    case eCommand.GetReceipt:
-                        var Command = JsonConvert.DeserializeObject<CommandAPI<IdReceipt>>(pDataApi);
-                        Res = new Status(0, Bl.GetReceiptHead(Command.Data, true)?.ToJSON());
-                        break;
-                    case eCommand.XReport:
-                        CommandInt = JsonConvert.DeserializeObject<CommandAPI<int>>(pDataApi);
-                        Res = new Status(0, EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = CommandInt.Data })?.ToJSON());
-                        break;
-                    case eCommand.OpenShift:
-                        CommandString = JsonConvert.DeserializeObject<CommandAPI<string>>(pDataApi);
-                        var u = Bl.GetUserByBarCode(CommandString.Data);
-                        if (u != null)
-                        {
-                            AdminControl.OpenShift(u);
-                            Res = new Status(0, $"Зміна відкрита:{u.NameUser}");
-                        }
-                        break;
-                    case eCommand.GeneralCondition:
-                        CommandRemoteInfo = JsonConvert.DeserializeObject<CommandAPI<InfoRemoteCheckout>>(pDataApi);
-                        var r = Bl.GetUserByBarCode(CommandRemoteInfo.Data.UserBarcode);
-                        RemoteCheckout = CommandRemoteInfo.Data;
-                        RemoteWorkplace = Bl.db.GetWorkPlace().FirstOrDefault(el => el.IdWorkplace == RemoteCheckout.RemoteIdWorkPlace);
-                        if (RemoteCheckout.RemoteCigarettesPrices.Count > 1)
-                            RemotePrices.ItemsSource = RemoteCheckout.RemoteCigarettesPrices;
-                        OnPropertyChanged(nameof(RemoteWorkplace));
-                        OnPropertyChanged(nameof(RemoteCheckout));
-                        Res = new Status(0, $"Загальний стан каси: {RemoteWorkplace.Name}");
-                        break;
-                    case eCommand.Confirm:
-                        CommandRemoteInfo = JsonConvert.DeserializeObject<CommandAPI<InfoRemoteCheckout>>(pDataApi);
-                        if (CommandRemoteInfo.Data.StateMainWindows == eStateMainWindows.BlockWeight || CommandRemoteInfo.Data.StateMainWindows == eStateMainWindows.ProblemWeight
-                            || CommandRemoteInfo.Data.TypeAccess == eTypeAccess.FixWeight)
-                        {
-                            CS.RW.FixWeightQuantity = CS.RW.Quantity;
-                            CS.RW.FixWeight += Convert.ToDecimal(CS.СurrentlyWeight);
-                            CS.StateScale = eStateScale.Stabilized;
-                            SetStateView(eStateMainWindows.WaitInput);
-                        }
-                        if (CommandRemoteInfo.Data.StateMainWindows == eStateMainWindows.WaitAdmin && CommandRemoteInfo.Data.TypeAccess == eTypeAccess.ChoicePrice)
-                        {
-                            Bl.AddEventAge(curReceipt);
-                            Blf.AddWares(CurWares.CodeWares, CurWares.CodeUnit, CommandRemoteInfo.Data.QuantityCigarettes, CommandRemoteInfo.Data.SelectRemoteCigarettesPrice.price);
-                            QuantityCigarettes = 1;
-                            SetStateView(eStateMainWindows.WaitInput);
-                        }
-                        Res = new Status(0, $"{CommandRemoteInfo.Data.StateMainWindows} {CommandRemoteInfo.Data.TypeAccess}");
-                        break;
-                    case eCommand.DeleteReceipt:
-                        if (curReceipt != null && curReceipt.StateReceipt == eStateReceipt.Prepare)
-                            Bl.SetStateReceipt(curReceipt, eStateReceipt.Canceled);
-
-                        SetCurReceipt(null);
-                        SetStateView(eStateMainWindows.StartWindow);
-                        Res = new Status(0, $"Чек видалено!");
-                        break;
-                }
-            }
-            catch (Exception ex) { Res = new Status(ex); }
-            return Res;
-        }*/
     }
 }

@@ -79,6 +79,43 @@ namespace Utils
                 return false;
             }
             return true;
-        }        
+        }
+
+        /// <summary>
+        /// Видаляє всі файли і піддиректорії в папці.
+        /// </summary>
+        public static void ClearDirectory(string directoryPath)
+        {
+            if (!Directory.Exists(directoryPath))
+                return;
+
+            // Видаляємо файли
+            foreach (var file in Directory.GetFiles(directoryPath))
+            {
+                File.Delete(file);
+            }
+
+            // Видаляємо піддиректорії рекурсивно
+            foreach (var dir in Directory.GetDirectories(directoryPath))
+            {
+                Directory.Delete(dir, true);
+            }
+        }
+
+        /// <summary>
+        /// Рахує кількість файлів та їх загальний розмір у байтах.
+        /// </summary>
+        public static (int fileCount, long totalSize) GetDirectoryStats(string directoryPath)
+        {
+            if (!Directory.Exists(directoryPath))
+                return (0, 0);
+
+            var files = Directory.GetFiles(directoryPath, "*", SearchOption.AllDirectories);
+
+            int fileCount = files.Length;
+            long totalSize = files.Sum(f => new FileInfo(f).Length);
+
+            return (fileCount, totalSize);
+        }
     }
 }

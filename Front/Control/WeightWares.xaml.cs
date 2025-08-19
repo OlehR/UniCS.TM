@@ -1,8 +1,10 @@
-﻿using Front.Models;
+﻿using Front.Control;
+using Front.Models;
 using Front.ViewModels;
 using ModelMID;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,8 +48,30 @@ namespace Front.Control
         {
             MW.EF.StoptWeight();
             MW.Weight = 0d;
-            MW.SetStateView(eStateMainWindows.WaitInput);            
+            MW.SetStateView(eStateMainWindows.WaitInput);
         }
 
+        public void Init(GW pGV = null)
+        {
+            Image im = null;
+            foreach (var el in GridWeightWares.Children)
+            {
+                im = el as Image;
+                if (im != null)
+                    break;
+            }
+            if (im != null)
+                GridWeightWares.Children.Remove(im);
+            if (File.Exists(pGV.Pictures))
+            {
+                im = new Image
+                {
+                    Source = new BitmapImage(new Uri(pGV.Pictures)),
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+                Grid.SetRow(im, 1);
+                GridWeightWares.Children.Add(im);
+            }
+        }
     }
 }

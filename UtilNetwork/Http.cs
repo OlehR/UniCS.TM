@@ -15,7 +15,13 @@ namespace UtilNetwork
         {
             try
             {
-                var handler = new HttpClientHandler();
+                var cookieContainer = new CookieContainer();
+
+                var handler = new HttpClientHandler()
+                {
+                    CookieContainer = cookieContainer,
+                    UseCookies = true // This is true by default, but explicitly setting it can be helpful for clarity.
+                };
                 handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
 
                 HttpClient client;

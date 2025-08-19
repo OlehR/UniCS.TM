@@ -26,7 +26,7 @@ namespace Front.Control
     /// <summary>
     /// Interaction logic for Admin.xaml
     /// </summary>
-    public partial class Admin_control : UserControl, INotifyPropertyChanged
+    public partial class Admin_control : UserControl, INotifyPropertyChanged, IAC
     {
 
         BLF Blf;
@@ -58,7 +58,7 @@ namespace Front.Control
         BL Bl;
         public string ControlScaleWeightDouble { get; set; } = "0";
         MainWindow MW;
-        public Receipt curReceipt = null;
+        public Receipt curReceipt { get; set; } = null;
 
         LogRRO SelectedListJournal = null;
         public bool IsSelectedListJournal { get { return SelectedListJournal != null; } }
@@ -155,6 +155,8 @@ namespace Front.Control
             catch (Exception ex) { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex); }
 
         }
+
+        public void SetVisibility(bool pIsVisible) => Visibility = (pIsVisible ? Visibility.Visible : Visibility.Collapsed);        
 
         public void Init(MainWindow pMW)
         {
@@ -667,7 +669,7 @@ namespace Front.Control
             MW.IsFullReturn = pIsFull;
             MW.TypeAccessWait = eTypeAccess.ReturnReceipt;
 
-            if (!MW.SetConfirm(AdminUser ?? MW?.AdminSSC, true))
+            if (!MW.Blf.SetConfirm(AdminUser ?? MW?.AdminSSC, true))
                 MW.SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.ReturnReceipt, null);
         }
 

@@ -42,7 +42,7 @@ namespace Front
         public BLF Blf { get; set; } = null;
         public EquipmentFront EF { get; set; } = null;
         public ControlScale CS { get; set; }
-        Action<eCommand, WorkPlace, Status> SocketAnsver;
+        public Action<eCommand, WorkPlace, Status> SocketAnsver { get; set; } = null;
         public WorkPlace MainWorkplace { get; set; } = new();
 
         //WorkPlace _RemoteWorkplace = new();
@@ -60,7 +60,8 @@ namespace Front
         /// </summary>
         public bool IsOrderReceipt { get { return !string.IsNullOrEmpty(curReceipt?.NumberOrder); } }
         public bool IsReceiptPostponeNotNull { get { return ReceiptPostpone == null; } }
-        public bool IsFullReturn = false;
+        public bool IsFullReturn { get; set; } = false;
+        public IAC AC { get; set; }
         public bool IsReceiptPostpone { get { return ReceiptPostpone == null || (curReceipt == null || curReceipt.Wares == null || !curReceipt.Wares.Any()); } }
         public ReceiptWares CurWares { get; set; } = null;
         public Client Client { get { return curReceipt?.Client; } }
@@ -71,6 +72,8 @@ namespace Front
         public eStateMainWindows State { get; set; } = eStateMainWindows.StartWindow;
         public eTypeAccess TypeAccessWait { get; set; }
         public ObservableCollection<ReceiptWares> ListWares { get; set; }
+
+        public ObservableCollection<Pr>  OCPrices { get; set; } 
         public CustomWindow customWindow { get; set; }
         public string WaresQuantity { get { return curReceipt?.Wares?.Count().ToString() ?? "0"; } }
         public decimal MoneySum { get { return EF.SumReceiptFiscal(curReceipt); } }
@@ -393,7 +396,7 @@ namespace Front
 
             InitializeComponent();
             MainWorkplace = Bl.db.GetWorkPlace().FirstOrDefault(el => el.CodeWarehouse == Global.CodeWarehouse && el.IdWorkplace == Global.Settings.IdWorkPlaceMain);
-
+            AC = AdminControl;
             //поточний час
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
@@ -1041,9 +1044,9 @@ namespace Front
                             TypeAccessWait = eTypeAccess.ChoicePrice;
                             if (CurWares?.Prices?.Any() == true)
                             {
-                                var rrr = new ObservableCollection<Pr>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Pr(r.Price, Access.GetRight(TypeAccessWait), r.TypeWares)));
-                                rrr.First().IsEnable = true;
-                                Prices.ItemsSource = rrr;
+                                OCPrices = new ObservableCollection<Pr>(CurWares.Prices.OrderByDescending(r => r.Price).Select(r => new Pr(r.Price, Access.GetRight(TypeAccessWait), r.TypeWares)));
+                                OCPrices.First().IsEnable = true;
+                                Prices.ItemsSource = OCPrices;
                             }
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
@@ -1328,7 +1331,7 @@ namespace Front
                     return;
                 CurWares = el;
                 TypeAccessWait = eTypeAccess.DelWares;
-                if (!SetConfirm(Access.СurUser, true, !el.IsConfirmDel))
+                if (!Blf.SetConfirm(Access.СurUser, true, !el.IsConfirmDel))
                     SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.DelWares, el);
             }
         }
@@ -1518,7 +1521,7 @@ namespace Front
 
         private void ButtonAdmin(object sender, RoutedEventArgs e) => SetStateView(eStateMainWindows.WaitAdminLogin);
 
-        private void LoginCancel(object sender, RoutedEventArgs e) => SetConfirm(null);
+        private void LoginCancel(object sender, RoutedEventArgs e) => Blf.SetConfirm(null);
 
         private void LoginButton(object sender, RoutedEventArgs e)
         {
@@ -1712,11 +1715,11 @@ namespace Front
                 CustomMessage.Result = (bool res) =>
                 {
                     if (res)
-                        SendRemoteComand(comand, remoteInfo, "DeleteReceipt");
+                        Blf.SendRemoteComand(comand, remoteInfo, "DeleteReceipt");
                 };
             }
             else
-                SendRemoteComand(comand, remoteInfo, "Confirm");
+                Blf.SendRemoteComand(comand, remoteInfo, "Confirm");
         }
 
         private void AddPriceRemoteWares(object sender, RoutedEventArgs e)
@@ -1734,28 +1737,8 @@ namespace Front
                     SelectRemoteCigarettesPrice = price,
                     QuantityCigarettes = QuantityCigarettes
                 };
-                SendRemoteComand(eCommand.Confirm, remoteInfo, RemoteCheckout.TypeAccess.GetDescription());
+                Blf.SendRemoteComand(eCommand.Confirm, remoteInfo, RemoteCheckout.TypeAccess.GetDescription());
             }
-        }
-
-        public void SendRemoteComand(eCommand comand, InfoRemoteCheckout remoteInfo, string LogText = "Confirm")
-        {
-            if (RemoteWorkplace != null)
-                Task.Run(async () =>
-                {
-                    CommandAPI<InfoRemoteCheckout> Command = new() { Command = comand, Data = remoteInfo };
-                    try
-                    {
-                        var r = new SocketClient(RemoteWorkplace.IP, Global.PortAPI);
-                        var Ansver = await r.StartAsync(Command.ToJSON());
-                        SocketAnsver?.Invoke(comand, MainWorkplace, Ansver);
-                    }
-                    catch (Exception ex)
-                    {
-                        FileLogger.WriteLogMessage(this, $"{LogText} DNSName=>{RemoteWorkplace.DNSName} {Command} ", ex);
-                        SocketAnsver?.Invoke(comand, MainWorkplace, new Status(ex));
-                    }
-                });
         }
 
         private void IssueCardButton(object sender, RoutedEventArgs e) => SetStateView(eStateMainWindows.WaitInputIssueCard);
@@ -1780,7 +1763,7 @@ namespace Front
                 }
                 OnPropertyChanged(nameof(VerifyCode));
                 if (LastVerifyCode.Data == VerifyCode)
-                    SetConfirm(AdminSSC, false, true);
+                    Blf.SetConfirm(AdminSSC, false, true);
                 else
                     CustomMessage.Show($"Введений код не вірний!", "Помилка!", eTypeMessage.Error);
 

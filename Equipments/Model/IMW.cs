@@ -8,6 +8,7 @@ using ModelMID;
 using ModelMID.DB;
 using SharedLib;
 using Utils;
+using Pr = Equipments.Model.Price;
 
 namespace Front.Equipments
 {
@@ -19,6 +20,7 @@ namespace Front.Equipments
         public Sound s { get; set; }
         public ControlScale CS { get; set; }
         public BL Bl { get; set; }
+        public IAC AC { get; set; }
         public EquipmentFront EF { get; set; }
         public eStateMainWindows State { get; set; }
         public eTypeAccess TypeAccessWait { get; set; }
@@ -47,14 +49,17 @@ namespace Front.Equipments
         /// Чи можна добавляти товар 
         /// </summary>
         public bool IsAddNewWares { get { return (curReceipt == null ? true : !curReceipt.IsLockChange) && (CS == null ? true : !CS.IsProblem) && (State == eStateMainWindows.WaitInput || State == eStateMainWindows.StartWindow); } }
-
+        public ObservableCollection<Pr> OCPrices { get; set; }
         public ObservableCollection<ReceiptWares> ListWares {get;set;}
         public virtual void RunOnUiThread(Action pA) { }
-
         public string[] PathVideo { get; set; }
-
+        public bool IsConfirmAdmin { get; set; }
         public int QuantityCigarettes { get; set; }
+        public WorkPlace MainWorkplace { get; set; }
         public WorkPlace RemoteWorkplace { get; set; }
         public InfoRemoteCheckout RemoteCheckout { get; set; }
+        Action<eCommand, WorkPlace, Status> SocketAnsver { get; set; }
+        public bool IsFullReturn { get; set; }
+        public void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine, eTypeAccess pTypeAccess = eTypeAccess.NoDefine, ReceiptWares pRW = null, CustomWindow pCW = null, eSender pS = eSender.NotDefine);
     }
 }

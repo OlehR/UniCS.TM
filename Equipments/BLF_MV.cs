@@ -1,11 +1,14 @@
-﻿using System.Collections.ObjectModel;
-using System.Text.Json;
-using System.Text.RegularExpressions;
-using Equipments.Model;
+﻿using Equipments.Model;
 using ModelMID;
 using ModelMID.DB;
 using SharedLib;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Text.Json;
+using System.Text.RegularExpressions;
+using UtilNetwork;
 using Utils;
+using Pr = Equipments.Model.Price;
 
 namespace Front.Equipments
 {
@@ -478,6 +481,141 @@ namespace Front.Equipments
             }
             catch (Exception ex) { Res = new Status(ex); }
             return Res;
+        }
+
+
+        public void SendRemoteComand(eCommand comand, InfoRemoteCheckout remoteInfo, string LogText = "Confirm")
+        {
+            if (MW.RemoteWorkplace != null)
+                Task.Run(async () =>
+                {
+                    CommandAPI<InfoRemoteCheckout> Command = new() { Command = comand, Data = remoteInfo };
+                    try
+                    {
+                        var r = new SocketClient(MW.RemoteWorkplace.IP, Global.PortAPI);
+                        var Ansver = await r.StartAsync(Command.ToJSON());
+                        MW.SocketAnsver?.Invoke(comand, MW.MainWorkplace, Ansver);
+                    }
+                    catch (Exception ex)
+                    {
+                        FileLogger.WriteLogMessage(this, $"{LogText} DNSName=>{MW.RemoteWorkplace.DNSName} {Command} ", ex);
+                        MW.SocketAnsver?.Invoke(comand, MW.MainWorkplace, new Status(ex));
+                    }
+                });
+        }
+
+
+        public bool SetConfirm(User pUser, bool pIsFirst = false, bool pIsAccess = false)
+        {
+            if (pUser == null)
+            {
+                switch (MW.TypeAccessWait)
+                {
+                    case eTypeAccess.DelReciept:
+                    case eTypeAccess.DelWares:
+                        MW.TypeAccessWait = eTypeAccess.NoDefine;
+                        SetStateView(eStateMainWindows.WaitInput);
+                        break;
+                    default:
+                        SetStateView(eStateMainWindows.WaitAdmin);
+                        break;
+                }
+                return true;
+            }
+
+            //!!!TMP НЕ зовсім правильно треба провірити права перед розблокуванням кнопок
+            //if (pUser.TypeUser >= eTypeUser.AdminSSC && customWindow?.Buttons != null)
+            // foreach (var item in customWindow.Buttons)
+            //   item.IsNeedAdmin = false;
+
+            //IsIgnoreExciseStamp = Access.GetRight(pUser, eTypeAccess.ExciseStamp);
+            if (MW.TypeAccessWait == eTypeAccess.FixWeight)
+            {
+                MW.IsConfirmAdmin = Access.GetRight(pUser, eTypeAccess.FixWeight);
+                if (MW.State == eStateMainWindows.BlockWeight)
+                    SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.FixWeight);
+            }
+            else
+              if (MW.TypeAccessWait == eTypeAccess.ExciseStamp)
+                MW.IsConfirmAdmin = Access.GetRight(pUser, eTypeAccess.ExciseStamp);
+
+            if (MW.TypeAccessWait == eTypeAccess.NoDefine || MW.TypeAccessWait < 0)
+                return false;
+            if (!Access.GetRight(pUser, MW.TypeAccessWait) && !pIsAccess)
+            {
+                if (!pIsFirst)
+                    Global.Message?.Invoke($"Не достатньо прав для операції {MW.TypeAccessWait} {Environment.NewLine}в {pUser.NameUser} з правами {pUser.TypeUser}", eTypeMessage.Error);              
+                return false;
+            }
+            VR.SendMessage(Global.IdWorkPlace, $"{MW.TypeAccessWait} =>{pUser.NameUser}", 0, 0, MW.curReceipt?.SumTotal ?? 0, VR.eTypeVRMessage.Confirm);
+
+            Bl.db.InsertReceiptEvent(
+                new(MW.curReceipt)
+                {
+                    EventType = eReceiptEventType.Other,
+                    EventName = MW.TypeAccessWait.ToString(),
+                    UserName = pUser.CodeUser.ToString(),
+                    CodeWares = MW.CurWares?.CodeWares ?? 0
+                });
+            switch (MW.TypeAccessWait)
+            {
+                case eTypeAccess.DelWares:
+                    if (MW.curReceipt?.IsLockChange == false)
+                    {
+                        Bl.ChangeQuantity(MW.CurWares, 0, pUser);
+                        MW.CurWares = null;//.Quantity = 0;
+                        MW.TypeAccessWait = eTypeAccess.NoDefine;
+                        SetStateView(eStateMainWindows.WaitInput);
+                    }
+                    break;
+                case eTypeAccess.DelReciept:
+                    VR.SendMessage(Global.IdWorkPlace, $"{MW.TypeAccessWait} => {pUser.NameUser}", 0, 0, MW.curReceipt?.SumTotal ?? 0, VR.eTypeVRMessage.DelReceipt);
+                    Bl.SetStateReceipt(MW.curReceipt, eStateReceipt.Canceled);
+                    SetCurReceipt(null);
+                    MW.TypeAccessWait = eTypeAccess.NoDefine;
+                    SetStateView(eStateMainWindows.StartWindow);
+                    break;
+                case eTypeAccess.ReturnReceipt:
+                    Bl.CreateRefund(MW.AC.curReceipt, MW.IsFullReturn);
+                    SetStateView(eStateMainWindows.WaitInputRefund);
+                    break;
+
+                case eTypeAccess.ConfirmAge:
+                    Bl.AddEventAge(MW.curReceipt);
+                    MW.TypeAccessWait = eTypeAccess.NoDefine;
+                    PayAndPrint();
+                    break;
+                case eTypeAccess.ChoicePrice:
+                    foreach (Pr el in MW.OCPrices)
+                    {
+                        el.IsEnable = true;
+                        el.IsConfirmAge = true;
+                    }
+                    MW.TypeAccessWait = eTypeAccess.NoDefine;
+                    break;
+                case eTypeAccess.AddNewWeight:
+                case eTypeAccess.FixWeight:
+                    //SetStateView(eStateMainWindows.WaitAdmin);
+                    break;
+                case eTypeAccess.ExciseStamp:
+                    MW.TypeAccessWait = eTypeAccess.NoDefine;
+                    SetStateView(eStateMainWindows.WaitAdmin);
+                    break;
+                case eTypeAccess.AdminPanel:
+                    MW.TypeAccessWait = eTypeAccess.NoDefine;
+                    ShowAdmin(pUser);
+                    break;
+                case eTypeAccess.UseBonus:
+                    var task = Task.Run(() => PrintAndCloseReceipt(null, eTypePay.Bonus, 0, 0, 0, MW.Client?.SumMoneyBonus ?? 0m));
+                    break;
+            }
+            return true;
+        }
+
+        public void ShowAdmin(User pUser)
+        {
+            MW.AC.Init(pUser);
+            SetStateView(eStateMainWindows.AdminPanel);
         }
 
 

@@ -425,7 +425,7 @@ namespace Front.Control
         {
             // MessageBox.Show("Оплата бонусами!");
             MW.TypeAccessWait = eTypeAccess.UseBonus;
-            if (!MW.SetConfirm(MW?.AdminSSC, true))
+            if (!MW.Blf.SetConfirm(MW?.AdminSSC, true))
                 MW.SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.UseBonus, null);
         }
 
