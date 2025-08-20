@@ -62,8 +62,9 @@ namespace UtilNetwork
                 return new HttpResult() { HttpState = eStateHTTP.Exeption, Result = e.Message };
             }
         }
-        public static async Task<string> UploadFileAsync(string url, string filePath)
+        public static async Task<string> UploadFileAsync(string url, string filePath,string pFileName=null)
         {
+            pFileName= pFileName ?? Path.GetFileName(filePath);
             using (var httpClient = new HttpClient())
             {
                 using (var form = new MultipartFormDataContent())
@@ -72,7 +73,7 @@ namespace UtilNetwork
                     {
                         var streamContent = new StreamContent(fileStream);
                         streamContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-                        form.Add(streamContent, "formFile", Path.GetFileName(filePath));
+                        form.Add(streamContent, "formFile", pFileName);
 
                         var response = await httpClient.PostAsync(url, form);
                         response.EnsureSuccessStatusCode();
