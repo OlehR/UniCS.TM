@@ -59,8 +59,14 @@ namespace Utils
 
         public static void CreateDirectoryLog()
         {
-            if (!Directory.Exists(PathLog))
-                Directory.CreateDirectory(PathLog);
+            try
+            {
+                if (!Directory.Exists(PathLog))
+                    Directory.CreateDirectory(PathLog);
+            }catch(Exception e)
+            {
+                TypeLog = eTypeLog.Memory;
+            }
         }
         public static void ExtLogForClass(Type type, int hashCode, string message, string parameters = null)
         {
