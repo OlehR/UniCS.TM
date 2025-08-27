@@ -1,4 +1,5 @@
 ﻿using Equipments.Model;
+using Model;
 using ModelMID;
 using ModelMID.DB;
 using SharedLib;

@@ -14,6 +14,7 @@ using System.Timers;
 using UtilNetwork;
 using Utils;
 using System.IO.Compression;
+using Model;
 
 namespace SharedLib
 {

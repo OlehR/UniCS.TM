@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ModelMID
+﻿namespace Model
 {
     public enum eTypeCode
     {
@@ -14,9 +10,9 @@ namespace ModelMID
         OneTimeCoupon = 5,
         Client = 6,
         BarCode2Category = 7,
-        OneTimeCouponGift =8
+        OneTimeCouponGift = 8
     }
-    
+
 
     public enum eTypeBarCode
     {
@@ -24,7 +20,7 @@ namespace ModelMID
         WaresWeight = 1, //Ваговий
         WaresUnit = 2, //Штучний
         DiscountAfterWares = 3, //Знижка , яка надається після сканування товару.
-        Coupon = 4 ,
+        Coupon = 4,
         PriceTag = 5 //Цінник
     }
 
@@ -32,7 +28,7 @@ namespace ModelMID
     {
         NotDefine = 0,
         EAN13 = 1,
-        Code128=2,
+        Code128 = 2,
         QR = 3
     }
 
@@ -45,11 +41,12 @@ namespace ModelMID
         public int LenghtCode { get; set; }
         public int LenghtOperator { get; set; }
         public int LenghtQuantity { get; set; }
-        public int TotalLenght { get { return KindBarCode == eKindBarCode.EAN13 ? 13 : (Prefix?.Length??0) + LenghtCode + LenghtOperator + LenghtQuantity; } }
+        public int TotalLenght { get { return KindBarCode == eKindBarCode.EAN13 ? 13 : (Prefix?.Length ?? 0) + LenghtCode + LenghtOperator + LenghtQuantity; } }
         /// <summary>
         /// //Роздільник між кодом товару, ціною та кількістю
         /// </summary>
-        public char Separator { get; set; }
-        
+        public string Separator { get; set; }
+
     }
+
 }
