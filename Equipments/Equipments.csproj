@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -25,6 +25,9 @@
     <Reference Include="Interop.ECRCommXLib">
       <HintPath>..\SharedLib\dll\Interop.ECRCommXLib.dll</HintPath>
     </Reference>
+	  <Reference Include="Interop.CoreScanner">
+		  <HintPath>..\SharedLib\dll\Interop.CoreScanner.dll</HintPath>
+	  </Reference>
     <Reference Include="ModernExpo.SelfCheckout.Devices.BST106M60S">
       <HintPath>..\SharedLib\dll\ModernExpo.SelfCheckout.Devices.BST106M60S.dll</HintPath>
     </Reference>

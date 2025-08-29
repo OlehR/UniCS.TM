@@ -159,6 +159,10 @@ namespace Front
                                 Sc = new MagellanScaner(el, config, LF, BarCode);
                                 Scaner = Sc;
                                 break;
+                            case eModelEquipment.ZebraScaner:
+                                Sc = new ZebraScaner(el, config, LF, BarCode);
+                                Scaner = Sc; // потрібно для того, щоб працювало пікання при скануванні
+                                break;
                             case eModelEquipment.VirtualScaner:
                                 Sc = new VirtualScaner(el, config, LF, BarCode);
                                 break;
@@ -189,6 +193,9 @@ namespace Front
                     {
                         case eModelEquipment.MagellanScale:
                             Scale = new MagellanScale(((MagellanScaner)Scaner), Weight);//TMP!!! OnControlWeight - Нафіг                        
+                            break;
+                        case eModelEquipment.ZebraScale:
+                            Scale = new ZebraScale(ElEquipment, config, LF, Weight);
                             break;
                         case eModelEquipment.VirtualScale:
                             Scale = new VirtualScale(ElEquipment, config, LF, Weight);

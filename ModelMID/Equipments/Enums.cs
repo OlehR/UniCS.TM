@@ -341,7 +341,12 @@ namespace Front.Equipments
         /// <summary>
         /// Контрольна вага на основі основної.
         /// </summary>
-        VirtualControlScale
+        VirtualControlScale,
+        [Description("Зебра сканер")]
+        ZebraScaner,
+        [Description("Зебра вага")]
+        ZebraScale,
+
 
     }   
 
@@ -358,10 +363,12 @@ namespace Front.Equipments
                 case eModelEquipment.VirtualScaner:
                 case eModelEquipment.ScanerKeyBoard:
                 case eModelEquipment.ScanerCom:
+                case eModelEquipment.ZebraScaner:
                     return eTypeEquipment.Scaner;
                 case eModelEquipment.MagellanScale:
                 case eModelEquipment.VirtualScale:
                 case eModelEquipment.ScaleCom:
+                case eModelEquipment.ZebraScale:
                     return eTypeEquipment.Scale;
                 case eModelEquipment.ScaleModern:
                 case eModelEquipment.VirtualControlScale:
