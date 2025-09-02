@@ -29,19 +29,16 @@ namespace UtilNetwork
             TextError = p.ToString();
             Info = "";
         }
-        public Result(HttpResult httpResult, string pInfo = "")
+        public Result(HttpResult httpResult, string pInfo = null)
         {
             StateHTTP = httpResult.HttpState;
-
-            if (httpResult.HttpState == eStateHTTP.HTTP_OK)
-                Info = httpResult.Result;
-            else
+            if (httpResult.HttpState != eStateHTTP.HTTP_OK)                
             {
                 State = -1;
                 TextError = httpResult.HttpState.ToString();
             }
             
-            Info = pInfo;
+            Info = pInfo?? httpResult.Result;
         }
         public Result(Exception e)
         {
