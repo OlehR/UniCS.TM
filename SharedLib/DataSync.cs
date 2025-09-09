@@ -14,7 +14,7 @@ using System.Timers;
 using UtilNetwork;
 using Utils;
 using System.IO.Compression;
-using Model;
+//using Model;
 
 namespace SharedLib
 {
@@ -691,7 +691,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     try
                     {
                         ///!!!TMP треба буде перейти на цей механізм
-                        _ = CheckOneTime(new OneTime(pIdReceipt) { CodePS = Cat2First.CodePS, TypeData = eTypeCode.BarCode2Category, CodeData = pBarCode.ToLong() });
+                        _ = CheckOneTime(new OneTime(pIdReceipt) { CodePS = Cat2First.CodePS, TypeData = Model.eTypeCode.BarCode2Category, CodeData = pBarCode.ToLong() });
 
                         isGood = await DataSync1C.IsUseDiscountBarCode(pBarCode);
                         Global.ErrorDiscountOnLine = 0;
@@ -725,7 +725,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             return true;
         }
 
-        public async Task<Client> GetDiscount(FindClient pFC)
+        public async Task<ModelMID.Client> GetDiscount(FindClient pFC)
         {
             Client Result = null;
             try

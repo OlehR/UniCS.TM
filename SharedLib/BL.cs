@@ -403,11 +403,11 @@ namespace SharedLib
 
         public Receipt GetReceiptHead(IdReceipt pIdR, bool parWithDetail = false) => db.GetReceiptHead(pIdR, parWithDetail);        
 
-        public Client GetClientByCode(IdReceipt pIdReceipt, long pCode) => SetClient(pIdReceipt, db.FindClient(null, null, null, pCode));
+        public ModelMID.Client GetClientByCode(IdReceipt pIdReceipt, long pCode) => SetClient(pIdReceipt, db.FindClient(null, null, null, pCode));
 
-        public Client GetClientByBarCode(IdReceipt pIdReceipt, string pBarCode) => SetClient(pIdReceipt, db.FindClient(pBarCode));
-        public Client GetClientByPhone(IdReceipt pIdReceipt, string pPhone) => SetClient(pIdReceipt, db.FindClient(null, pPhone), pPhone);
-        Client SetClient(IdReceipt pIdReceipt, IEnumerable<Client> pClients, string pPhone = null)
+        public ModelMID.Client GetClientByBarCode(IdReceipt pIdReceipt, string pBarCode) => SetClient(pIdReceipt, db.FindClient(pBarCode));
+        public ModelMID.Client GetClientByPhone(IdReceipt pIdReceipt, string pPhone) => SetClient(pIdReceipt, db.FindClient(null, pPhone), pPhone);
+        ModelMID.Client SetClient(IdReceipt pIdReceipt, IEnumerable<ModelMID.Client> pClients, string pPhone = null)
         {
             var r = pClients.Where(el => el.StatusCard == eStatusCard.Active);
             if (!r.Any())
@@ -435,7 +435,7 @@ namespace SharedLib
             return null;
         }
 
-        private void UpdateClientInReceipt(IdReceipt pIdReceipt, Client pClient, bool pIsGetDiscount = true)
+        private void UpdateClientInReceipt(IdReceipt pIdReceipt, ModelMID.Client pClient, bool pIsGetDiscount = true)
         {
             var State = GetStateReceipt(pIdReceipt);
             if (State != eStateReceipt.Prepare)
@@ -801,7 +801,7 @@ namespace SharedLib
         {
             Task.Run(async () =>
             {
-                Client cl = await ds.GetDiscount(pFC);
+                ModelMID.Client cl = await ds.GetDiscount(pFC);
                 if (pFC.Client != null)
                 {
                     //cl = await ds.Ds1C.GetBonusAsync(pFC.Client, pFC.CodeWarehouse);

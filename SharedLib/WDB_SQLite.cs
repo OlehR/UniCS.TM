@@ -864,7 +864,7 @@ Where ID_WORKPLACE = @IdWorkplace
         public IEnumerable<Client> FindClient(string parBarCode = null, string parPhone = null, string parName = null, long parCodeClient = 0)
         {
             var Res = db.Execute<object, Client>(SqlFindClient, new { CodeClient = parCodeClient, Phone = parPhone, BarCode = parBarCode, Name = (parName == null ? null : "%" + parName + "%") });
-            return Res != null && Res.Any(el => el.StatusCard == eStatusCard.Active) ? Res.Where(el => el.StatusCard == eStatusCard.Active) : Res;
+            return Res != null && Res.Any(el => el.StatusCard == Model.eStatusCard.Active) ? Res.Where(el => el.StatusCard == Model.eStatusCard.Active) : Res;
         }
 
         public SpeedScan SpeedScan()
