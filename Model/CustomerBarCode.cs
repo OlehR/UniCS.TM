@@ -17,11 +17,28 @@
     public enum eTypeBarCode
     {
         NotDefine = 0,
-        WaresWeight = 1, //Ваговий
-        WaresUnit = 2, //Штучний
-        DiscountAfterWares = 3, //Знижка , яка надається після сканування товару.
+        /// <summary>
+        /// Ваговий
+        /// </summary>
+        WaresWeight = 1,
+        /// <summary>
+        /// Штучний
+        /// </summary>
+        WaresUnit = 2,
+        /// <summary>
+        /// Знижка , яка надається після сканування товару.
+        /// </summary>
+        DiscountAfterWares = 3, 
         Coupon = 4,
-        PriceTag = 5 //Цінник
+        /// <summary>
+        /// Цінник
+        /// </summary>
+        PriceTag = 5,
+        /// <summary>
+        /// Ручний ввід(код чи артикул)
+        /// </summary>
+        ManualInput = 6
+
     }
 
     public enum eKindBarCode
