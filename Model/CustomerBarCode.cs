@@ -58,6 +58,7 @@
         public int LenghtCode { get; set; }
         public int LenghtOperator { get; set; }
         public int LenghtQuantity { get; set; }
+        public int LenghtPrice { get; set; }
         public int TotalLenght { get { return KindBarCode == eKindBarCode.EAN13 ? 13 : (Prefix?.Length ?? 0) + LenghtCode + LenghtOperator + LenghtQuantity; } }
         /// <summary>
         /// //Роздільник між кодом товару, ціною та кількістю
