@@ -11,7 +11,7 @@ namespace UtilNetwork
 {    
     public class Http
     {
-        public static async Task<HttpResult> HTTPRequestAsync(String pURL, String pData, String pContentType, String pLogin, String pPassWord, double pTimeOut = 15)
+        public static async Task<HttpResult> HTTPRequestAsync(String pURL, String pData, String pContentType, String pLogin=null, String pPassWord=null, double pTimeOut = 15)
         {
             try
             {
