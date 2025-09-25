@@ -18,7 +18,7 @@ namespace Front.Equipments
         protected static bool CancelRequested;
 
         protected byte MerchantId;
-        List<Merchants> Merchants = new List<Merchants>();
+        List<Merchants> Merchants = [];
         public BankTerminal(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefine, ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : 
             base(pEquipment, pConfiguration, pModelEquipment, pLoggerFactory) 
         {
@@ -63,10 +63,8 @@ namespace Front.Equipments
             {
                 StatusPos = (eStatusPos)LastStatMsgCode;
                 OnStatus?.Invoke(new PosStatus() { Status = StatusPos });
-            }
-            
+            }            
         }
-
     }
 
     public class Merchants
