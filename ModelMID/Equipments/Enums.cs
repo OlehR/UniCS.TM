@@ -286,7 +286,9 @@ namespace Front.Equipments
         [Description("Фіскальний апарат")]
         RRO,
         [Description("Друкарка")]
-        Printer
+        Printer,
+        [Description("Кеш машина")]
+        CashMachine
     }
 
     /// <summary>
@@ -316,6 +318,8 @@ namespace Front.Equipments
         BT_Android,
         [Description("Віртуальний POS-термінал")]
         VirtualBankPOS,
+        [Description("Glory Кеш машина")]
+        GloryCash,
         [Description("ФР Exellio")]
         ExellioFP,
         [Description("Програмний ФР pRRO_SG")]
@@ -390,6 +394,8 @@ namespace Front.Equipments
                     return eTypeEquipment.RRO;
                 case eModelEquipment.Printer_Sam4sGcube102:
                     return eTypeEquipment.Printer;
+                case eModelEquipment.GloryCash:
+                    return eTypeEquipment.CashMachine;
                 default:
                     return eTypeEquipment.NotDefine;
             }
