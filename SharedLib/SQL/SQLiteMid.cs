@@ -130,7 +130,7 @@ alter TABLE TYPE_DISCOUNT add IsСertificate INTEGER NOT NULL DEFAULT(0);--Ver=>
             PHONE TEXT,
             PHONE_ADD TEXT,
             PERCENT_DISCOUNT NUMBER,
-            BARCODE TEXT NOT NULL,
+            BARCODE TEXT,
             STATUS_CARD INTEGER DEFAULT(0),
             view_code INTEGER NULL,
 	        BirthDay DATETIME NULL,

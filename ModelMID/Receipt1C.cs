@@ -28,10 +28,12 @@ namespace ModelMID
         /// Номер каси
         /// </summary>
         public int NumberCashDesk { get; set; }
+        public string NumberCashDesk1C { get; set; }
         public string Description { get; set; }
         public UInt64 NumberReceipt { get; set; }
         public long CodeClientCard { get; set; }
         public int CodeWarehouse { get; set; }
+        public string CodeWarehouse1C { get; set; }
         public string RefundNumber { get; set; }
         /// <summary>
         /// Штрихкод касирів
@@ -108,6 +110,7 @@ namespace ModelMID
     {
         public int Order { get; set; }
         public long CodeWares { get; set; }
+        public string CodeWares1С { get; set; }
         public decimal Quantity { get; set; }
         public string AbrUnit { get; set; }
         public decimal Price { get; set; }
@@ -157,7 +160,8 @@ namespace ModelMID
         /// <summary>
         /// Номер каси
         /// </summary>
-        public int NumberCashDesk { get; set; }        
+        public int NumberCashDesk { get; set; }
+        public string NumberCashDesk1C { get; set; }
         /// <summary>
         /// Штрихкод касирів
         /// </summary>

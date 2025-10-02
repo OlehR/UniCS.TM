@@ -86,7 +86,7 @@ namespace Front.Equipments.Implementation
             if (Res?.info?.printinfo?.sum_receipt != 0 || Res?.info?.printinfo?.round != 0)
                 try
                 {
-                    var pay = new Payment(pR) { IsSuccess = true, TypePay = eTypePay.FiscalInfo, SumPay = Res.info.printinfo.sum_receipt, SumExt = Res.info.printinfo.round };
+                    var pay = new Payment(pR) { IsSuccess = true, TypePay = eTypePay.FiscalInfo, SumPay = Res.info.printinfo.sum_receipt, SumExt = Res.info.printinfo.round, PosAddAmount= Res.info.printinfo.pays?.FirstOrDefault()?.change??0 };
                     pR.Payment = pR.Payment == null ? new List<Payment>() { pay } : pR.Payment.Append<Payment>(pay);
                     db.ReplacePayment(pay, true);
                 }
@@ -513,7 +513,8 @@ namespace Front.Equipments.Implementation.ModelVchasno
             }
         }
         public decimal sum { get; set; }
-        public decimal round { get { return Math.Abs(-sum + (pays?.Sum(r => r.sum) ?? 0m)) < 0.1m ? -sum + pays?.Sum(r => r.sum) ?? 0m : 0m; } }
+        public bool autoround { get { return true; } }
+        //public decimal round { get { return Math.Abs(-sum + (pays?.Sum(r => r.sum) ?? 0m)) < 0.1m ? -sum + pays?.Sum(r => r.sum) ?? 0m : 0m; } }
         public string purchase_receipt_fisn {  get; set; }
         public string purchase_rro_fisn { get; set; }        
         public string comment_up { get; set; }
@@ -577,7 +578,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
         public CardPay() { }
         public CardPay(Payment pP)
         {
-            sum = pP.SumPay;
+            sum = (pP.TypePay== eTypePay.Cash&& pP.SumExt> pP.SumPay ?pP.SumExt  :pP.SumPay);
             paysys = pP.IssuerName;
             rrn = pP.CodeAuthorization;
             cardmask = pP.NumberCard;
@@ -611,8 +612,8 @@ namespace Front.Equipments.Implementation.ModelVchasno
         public PaysRRO() { }
         public PaysRRO(Payment pP) : base(pP)
         {
-            if (pP.TypePay == eTypePay.Cash)
-                change = pP.SumExt > pP.SumPay ? pP.SumExt - pP.SumPay : 0m;
+           // if (pP.TypePay == eTypePay.Cash)
+           //    change = pP.SumExt > pP.SumPay ? pP.SumExt - pP.SumPay : 0m;
         }
 
         public string currency { get; set; }
@@ -807,6 +808,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
         public decimal sum_disc { set; get; }
         public decimal sum_receipt { set; get; }
         public decimal round { set; get; }
+        public decimal change { set; get; }
         public decimal sum_topay { set; get; }
         public IEnumerable<FiscalPay> pays { set; get; }
         public IEnumerable<ResponceTaxReceipt> taxes { set; get; }
@@ -937,5 +939,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
         /// Код авторизації
         /// </summary>
         public string auth_code { set; get; }
+        public decimal round { set; get; }
+        public decimal change { set; get; }
     }
 }

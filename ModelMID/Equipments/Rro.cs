@@ -159,8 +159,18 @@ namespace Front.Equipments
 
         public virtual decimal SumCashReceiptFiscal(Receipt pR)
         {
+            decimal R = 0;
             decimal sum = SumReceiptFiscal(pR);
-            return Math.Round(sum, 1);
+            sum = Math.Round(sum, 2);
+            int C = (int)sum;
+            decimal m=sum-C;
+            if (m >= 0 && m <= 0.24m) R = 0;
+            else
+                if (m > 0.24m && m <= 0.74m) R = 0.5m;
+            else
+                if (m > 0.74m && m < 1m) R = 1m;
+
+            return ((decimal)C)+R;
         }
         /// <summary>
         /// Зупиняє останню довготривалу операцію. Наприклад Отримання текста чеку на фізичних фіскалках. 

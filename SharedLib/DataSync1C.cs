@@ -50,7 +50,7 @@ namespace SharedLib
                         var body = SoapTo1C.GenBody("JSONCheck", new Parameters[] { new Parameters("JSONSting", r.GetBase64()) });
                         var res = Global.IsTest ? "0" : await SoapTo1C.RequestAsync(pServer, body, 60000, "application/json");
                         IsErrorSend |= !res.Equals("0");
-                        FileLogger.WriteLogMessage($"DataSync1C\\SendReceiptTo1CAsync ({pR.NumberReceipt1C},{pR.CodePeriod},{pR.IdWorkplace},{pR.CodeReceipt})=>{res}");
+                        FileLogger.WriteLogMessage($"DataSync1C\\SendReceiptTo1CAsync ({pR.NumberReceipt1C},{pR.CodePeriod},{pR.IdWorkplace},{pR.CodeReceipt})=>{res} Body=>{body}");
                         //if (!IsErrorSend)
                         //   Res += JsonConvert.SerializeObject(r)+Environment.NewLine;
                     }

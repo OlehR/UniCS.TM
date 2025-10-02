@@ -619,10 +619,10 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             }
             try
             {
-                HttpClient client = new HttpClient();
+                HttpClient client = new();
                 client.Timeout = TimeSpan.FromMilliseconds(20000);
 
-                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Global.Api + "Receipt");
+                HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "Receipt");
                 string data = pR.ToJson();
                 requestMessage.Content = new StringContent(data, Encoding.UTF8, "application/json");
                 var response = await client.SendAsync(requestMessage);
