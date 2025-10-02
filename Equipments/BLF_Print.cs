@@ -61,7 +61,8 @@ namespace Front.Equipments
             }
             MW.EquipmentInfo = string.Empty;
 
-            if (Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister && (MW.curReceipt.StateReceipt == eStateReceipt.Prepare || MW.curReceipt.StateReceipt == eStateReceipt.StartPay))
+            if ((Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister &&  
+                (MW.curReceipt.StateReceipt == eStateReceipt.Prepare || MW.curReceipt.StateReceipt == eStateReceipt.StartPay)) || EF?.CashMachine != null)
             {
                 SetStateView(eStateMainWindows.ChoicePaymentMethod);
             }

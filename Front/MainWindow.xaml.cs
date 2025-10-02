@@ -1027,6 +1027,7 @@ namespace Front
                     PhoneVerificationUC.Visibility = Visibility.Collapsed;
                     AdminControl.Visibility = (State == eStateMainWindows.AdminPanel ? Visibility.Visible : Visibility.Collapsed);
                     AddMissingPackage.Visibility = Visibility.Collapsed;
+                    ChangeTypePaymentInKSO.Visibility = Visibility.Collapsed;
 
                     switch (State)
                     {
@@ -1182,16 +1183,39 @@ namespace Front
                             break;
 
                         case eStateMainWindows.ChoicePaymentMethod:
-                            PaymentWindow.UpdatePaymentWindow();
-                            OnPropertyChanged(nameof(IsPresentSecondTerminal));
-                            OnPropertyChanged(nameof(IsPresentFirstTerminal));
-                            OnPropertyChanged(nameof(SecondTerminal));
-                            OnPropertyChanged(nameof(FirstTerminal));
+                            if (Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister)
+                            {
+                                PaymentWindow.UpdatePaymentWindow();
+                                OnPropertyChanged(nameof(IsPresentSecondTerminal));
+                                OnPropertyChanged(nameof(IsPresentFirstTerminal));
+                                OnPropertyChanged(nameof(SecondTerminal));
+                                OnPropertyChanged(nameof(FirstTerminal));
 
-                            PaymentWindow.TransferAmounts(MoneySum);
+                                PaymentWindow.TransferAmounts(MoneySum);
+                                PaymentWindow.Visibility = Visibility.Visible;
+                            }
+                            else
+                            {
+                                ChangeTypePaymentInKSO.Visibility = Visibility.Visible;
+                                ChangeTypePaymentInKSO.IsCashPayment = (bool isCashPayment) =>
+                                {
+                                    if (isCashPayment)
+                                    {
+                                        EquipmentInfo = string.Empty;
+                                       // GiveRest = (double)RestMoney;
+                                        var task = Task.Run(() => Blf.PrintAndCloseReceipt(null, eTypePay.Cash, MoneySum, 0, 0));
+                                    }
+                                    else
+                                    {
+                                        var task = Task.Run(() =>Blf.PrintAndCloseReceipt(null, eTypePay.Card, 0, 0));
+                                        GiveRest = 0;
+                                    }
+                                };
+
+                            }
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
-                            PaymentWindow.Visibility = Visibility.Visible;
+                            
                             break;
                         case eStateMainWindows.WaitCustomWindows:
                             Background.Visibility = Visibility.Visible;

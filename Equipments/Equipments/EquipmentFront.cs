@@ -35,6 +35,7 @@ namespace Front
         Scaner Scaner;
         Scale Scale;
         Printer Printer;
+        public CashMachine CashMachine;
         public Scale ControlScale;
         SignalFlag Signal;
         BankTerminal Terminal;
@@ -83,10 +84,10 @@ namespace Front
         public int CountTerminal { get { return GetBankTerminal.Count(); } }
         public BankTerminal BankTerminal1 { get { return GetBankTerminal?.FirstOrDefault() as BankTerminal; } }
         public BankTerminal BankTerminal2 { get { return GetBankTerminal?.Skip(1).FirstOrDefault() as BankTerminal; } }
-       
-        public void ControlWeight(double pWeight, bool pIsStable)=>OnControlWeight?.Invoke(pWeight, pIsStable);
+
+        public void ControlWeight(double pWeight, bool pIsStable) => OnControlWeight?.Invoke(pWeight, pIsStable);
         public void Weight(double pWeight, bool pIsStable) => OnWeight?.Invoke(pWeight, pIsStable);
-        void BarCode(string pBarCode,string pType)=>   OnBarCode?.Invoke(pBarCode, pType);        
+        void BarCode(string pBarCode, string pType) => OnBarCode?.Invoke(pBarCode, pType);
 
         public eStateEquipment StatCriticalEquipment
         {
@@ -103,11 +104,11 @@ namespace Front
             get
             {
                 return ListEquipment.Where(el => el.IsСritical == true).Max(el => el.State);
-            }            
+            }
         }
 
         public Action<StatusEquipment> SetStatus { get; set; }
- 
+
         static EquipmentFront sEquipmentFront;
 
         public static EquipmentFront GetEquipmentFront { get { return sEquipmentFront; } }
@@ -119,7 +120,7 @@ namespace Front
 
         static EquipmentFront sEF = null;
         public static EquipmentFront GetEF { get { return sEF ?? new EquipmentFront(); } }
-        public EquipmentFront( )
+        public EquipmentFront()
         {
             sEF = this;
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
@@ -170,7 +171,7 @@ namespace Front
                                 Sc = new ScanerCom(el, config, LF, BarCode);
                                 break;
                             case eModelEquipment.ScanerKeyBoard:
-                                Sc = KB = new ScanerKeyBoard(el, config, LF, BarCode);                                
+                                Sc = KB = new ScanerKeyBoard(el, config, LF, BarCode);
                                 break;
                             default:
                                 Sc = new Scaner(el, config);
@@ -211,7 +212,8 @@ namespace Front
                     //Scale.StartWeight();
                     NewListEquipment.Add(Scale);
                 }
-                catch { };
+                catch { }
+                ;
                 //ControlScale
                 IEnumerable<Equipment> Equipments;
                 try
@@ -274,7 +276,7 @@ namespace Front
                                 Terminal = new BT_Ingenico(el, config, LF, PosStatus);
                                 break;
                             case eModelEquipment.BT_Android:
-                                Terminal = new BT_Android (el, config, LF, PosStatus);
+                                Terminal = new BT_Android(el, config, LF, PosStatus);
                                 break;
                             case eModelEquipment.VirtualBankPOS:
                                 Terminal = new VirtualBankPOS(el, config, LF, PosStatus);
@@ -309,7 +311,28 @@ namespace Front
                 {
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name + "\\Принтер", e);
                 }
-
+                //Кеш-машина
+                try
+                {
+                    ElEquipment = ListEquipment.Where(e => e.Type == eTypeEquipment.CashMachine)?.FirstOrDefault();
+                    if (ElEquipment != null)
+                    {
+                        switch (ElEquipment.Model)
+                        {
+                            case eModelEquipment.GloryCash:
+                                CashMachine = new GloryCash(ElEquipment, config, LF);
+                                break;
+                            default:
+                                CashMachine = new GloryCash(ElEquipment, config);
+                                break;
+                        }
+                        NewListEquipment.Add(CashMachine);
+                    }
+                }
+                catch (Exception e)
+                {
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name + "\\Кеш-машина", e);
+                }
                 //RRO               
                 foreach (var el in ListEquipment.Where(e => e.Type == eTypeEquipment.RRO))
                 {
@@ -431,7 +454,7 @@ namespace Front
         /// </summary>
         public LogRRO PrintReceipt(Receipt pReceipt)
         {
-            var aa=pReceipt.Payment.ToList();
+            var aa = pReceipt.Payment.ToList();
             string NameMetod = System.Reflection.MethodBase.GetCurrentMethod().Name;
             if (pReceipt == null || pReceipt.Payment == null || !pReceipt.Payment.Any(el => el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Cash))
                 return new LogRRO(pReceipt) { CodeError = -1, Error = $"Відсутня оплата по Робочому місцю № ({pReceipt.IdWorkplacePay})" };
@@ -1045,7 +1068,7 @@ namespace Front
         /// </summary>
         /// <param name="pKeyCode"></param>
         /// <param name="pCh"></param>
-        public void SetKey(int pKeyCode,char pCh)
+        public void SetKey(int pKeyCode, char pCh)
         {
             KB?.SetKey(pKeyCode, pCh);
         }

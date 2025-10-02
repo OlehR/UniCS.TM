@@ -2309,7 +2309,7 @@ Mode=FindAncestor, AncestorType=Window}}"/>
                       x:Name="IssueCardUC" VerticalAlignment="Stretch" 
                       Grid.ZIndex="4" />
         <!-- Підтвердження номера телефону -->
-        <uc:PhoneVerification Grid.Row="0" Grid.RowSpan="5" Visibility="Visible"
+        <uc:PhoneVerification Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"
                Grid.Column="0" Grid.ColumnSpan="4" 
                x:Name="PhoneVerificationUC" VerticalAlignment="Stretch" 
                Grid.ZIndex="4" />
@@ -2346,6 +2346,11 @@ Mode=FindAncestor, AncestorType=Window}}"/>
                               x:Name="AddMissingPackage" VerticalAlignment="Stretch" 
                               Grid.ZIndex="2" />
 
+        <!-- Обрати тип оплати на КСО-->
+        <uc:TypePaymentInKSO Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"
+                           Grid.Column="0" Grid.ColumnSpan="4" 
+                           x:Name="ChangeTypePaymentInKSO" VerticalAlignment="Stretch" 
+                           Grid.ZIndex="2" />
         <!--Повідомлення-->
         <uc:ShowMessage Grid.Row="0" Grid.RowSpan="5" Visibility="Collapsed"
                               Grid.Column="0" Grid.ColumnSpan="4" 

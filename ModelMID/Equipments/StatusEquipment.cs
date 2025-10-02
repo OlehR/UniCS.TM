@@ -1,4 +1,5 @@
-﻿using Utils;
+﻿using ModelMID;
+using Utils;
 
 namespace Front.Equipments
 {
@@ -20,7 +21,11 @@ namespace Front.Equipments
         public PosStatus() : base() { }
         public eStatusPos Status { get; set; }
     }
-
+    public class CashMachineStatus : StatusEquipment
+    {
+        public CashMachineStatus() : base() { }
+        public eStatusChangeEvent Status { get; set; }
+    }
     public class RroStatus : StatusEquipment
     {
         public RroStatus() : base() { }
