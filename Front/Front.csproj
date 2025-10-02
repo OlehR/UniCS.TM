@@ -27,6 +27,7 @@
     <None Remove="icons\back.png" />
     <None Remove="icons\backArrow.png" />
     <None Remove="icons\BankTerminal.png" />
+    <None Remove="icons\Cash.png" />
     <None Remove="icons\check-mark.png" />
     <None Remove="icons\checkout.png" />
     <None Remove="icons\ClientBonus.png" />
@@ -65,6 +66,7 @@
     <None Remove="icons\shoppingBag.png" />
     <None Remove="icons\shoppingCart.png" />
     <None Remove="icons\Signal.png" />
+    <None Remove="icons\TypePayment.png" />
     <None Remove="icons\ua.png" />
     <None Remove="icons\uk.png" />
     <None Remove="icons\Up.png" />
@@ -86,6 +88,9 @@
     </Resource>
     <Resource Include="icons\backArrow.png" />
     <Resource Include="icons\BankTerminal.png" />
+    <Resource Include="icons\Cash.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="icons\check-mark.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
@@ -150,6 +155,9 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="icons\Signal.png" />
+    <Resource Include="icons\TypePayment.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="icons\ua.png" />
   </ItemGroup>
 

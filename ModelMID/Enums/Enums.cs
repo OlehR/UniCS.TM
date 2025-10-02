@@ -583,4 +583,148 @@ namespace ModelMID
         Spar = 2,       
         Lubo = 3
     }
+    public enum eNameSOAPAction
+    {
+        OpenOperation,
+        AdjustTimeOperation,
+        GetStatus,
+        OccupyOperation,
+        CashoutOperation,
+        CashinCancelOperation,
+        ChangeCancelOperation,
+        [Description("Видати решту або оплатити товар")]
+        ChangeOperation,
+        CloseExitCoverOperation,
+        ResetOperation,
+        StartCashinOperation,
+        EndCashinOperation,
+        RefreshSalesTotalOperation,
+        AutoRebootChangeOperation,
+        CollectOperation,
+        CounterClearOperation,
+        DisableDenomOperation,
+        EnableDenomOperation,
+        EndReplenishmentFromCassetteOperation,
+        EndReplenishmentFromEntranceOperation,
+        EventNotificationStatusOperation,
+        EventOfflineRecoveryOperation,
+        GetLastResponseOperation,
+        GetSettingFileOperation,
+        LanguageChangeOperation,
+        LockUnitOperation,
+        LoginUserOperation,
+        LogoutUserOperation,
+        OpenExitCoverOperation,
+        PowerControlOperation,
+        RegisterEventOperation,
+        ReplenishmentFromEntranceCancelOperation,
+        [Description("Return remaining coins in the hopper to the exit slot")]
+        ReturnCashOperation,
+
+        RollbackOperation,
+        RomVersionOperation,
+        SetExchangeRateOperation,
+        SetRestrictionOperation,
+        StartDownloadOperation,
+        StartLogreadOperation,
+        StartReplenishmentFromCassetteOperation,
+        StartReplenishmentFromEntranceOperation,
+        StartSealingOperation,
+        UnLockUnitOperation,
+        UnRegisterEventOperation,
+        UpdateCheckOperation,
+        UpdateDeviceCassetteSettingOperation,
+        UpdateManualDepositTotalOperation,
+        UpdateSettingFileOperation,
+        UserSettingOperation,
+
+
+
+        InventoryOperation,
+
+        ReleaseOperation,
+        CloseOperation,
+    }
+
+    public enum eResultCode
+    {
+        Success = 0,
+        Cancel = 1,
+        Reset = 2,
+        OccupiedByOther = 3,
+        OccupationNotAvailable = 4,
+        NotOccupied = 5,
+        DesignationDenominationShortage = 6,
+        CancelChangeShortage = 9,
+        ChangeShortage = 10,
+        ExclusiveError = 11,
+        DispensedChangeInconsistency = 12,
+        AutoRecoveryFailure = 13,
+        UserAuthenticationFailure = 15,
+        NumberOfSessionOver = 16,
+        OccupiedByItself = 17,
+        SessionNotAvailable = 20,
+        InvalidSession = 21,
+        SessionTimeout = 22,
+        ManualDepositDisagreement = 26,
+        VerifyCollect_ReplenishFailed = 32,
+        IFCassetteIllegalDenomination = 33,
+        ShortageOfCapacityOfStacker = 34,
+        CI_ServerCommunicationError = 35,
+        NumberOfRegistrationOver = 36,
+        InvalidCassetteNumber = 40,
+        ImproperCassette = 41,
+        ExchangeRateError = 43,
+        CountedCategory2 = 44,
+        DuplicateTransaction = 96,
+        ParameterError_TypeError = 98,
+        ProgramInnerError = 99,
+        DeviceError = 100,
+
+
+        UnknownError = 9999
+    }
+
+    public enum eStatusChangeEvent
+    {
+        Initializing = 0,
+        Idle = 1,
+        AtStartingChange = 2,
+        WaitingInsertionOfCash = 3,
+        Counting = 4,
+        Dispensing = 5,
+        WaitingRemovalOfCashInReject = 6,
+        WaitingRemovalOfCashOutReject = 7,
+        Resetting = 8,
+        CancelingOfChangeOperation = 9,
+        CalculatingChangeAmount = 10,
+        CancelingDeposit = 11,
+        Collecting = 12,
+        Error = 13,
+        UploadFirmware = 14,
+        ReadingLog = 15,
+        WaitingReplenishment = 16,
+        CountingReplenishment = 17,
+        Unlocking = 18,
+        WaitingInventory = 19,
+        FixedDepositAmount = 20,
+        FixedDispenseAmount = 21,
+        WaitingDispense = 22,
+        WaitingChangeCancel = 23,
+        CountedCategory2Note = 24,
+        WaitingDepositEnd = 25,
+        WaitingRemovalOfCOFT = 26,
+        Sealing = 27,
+        WaitingForErrorRecovery = 30,
+        ProgramBusy = 40,
+        WaitingForUpdate = 41,
+
+    }
+
+    public enum eTypeUnit
+    {
+        RBW_100 = 1,
+        RCW_100 = 2,
+        RBW_200 = 3 //не наш варіант але може бути в майбутньому 
+    }
 }

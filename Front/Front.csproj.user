@@ -39,6 +39,9 @@
     <Compile Update="Control\ShowMessage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Control\TypePaymentInKSO.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Control\WeightWares.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
