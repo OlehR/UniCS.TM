@@ -576,9 +576,17 @@ namespace Front.Equipments.Implementation.ModelVchasno
     class CardPay
     {
         public CardPay() { }
+        public bool IsCorectSum(decimal pSum)
+        {
+           pSum = Math.Round(pSum, 2);
+            int C = (int)pSum;
+            decimal m = pSum - C;
+            return m == 0 || m == 0.5m;
+        }
+        
         public CardPay(Payment pP)
         {
-            sum = (pP.TypePay== eTypePay.Cash&& pP.SumExt> pP.SumPay ?pP.SumExt  :pP.SumPay);
+            sum = (pP.TypePay== eTypePay.Cash&& pP.SumExt> pP.SumPay  && IsCorectSum(pP.SumExt) ? pP.SumExt  :pP.SumPay);
             paysys = pP.IssuerName;
             rrn = pP.CodeAuthorization;
             cardmask = pP.NumberCard;

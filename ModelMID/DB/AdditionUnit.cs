@@ -11,7 +11,7 @@ namespace ModelMID
         public decimal Coefficient { get; set; }
         public decimal Weight { get; set; }
         public string DefaultUnit { get; set; }
-        public bool IsDefaultUnit { get { return DefaultUnit.Equals("Y") || DefaultUnit.Equals("1"); } set { DefaultUnit = (value ?  "Y" :  "N"); } }
+        public bool IsDefaultUnit { get { return DefaultUnit.Equals("Y") || DefaultUnit.Equals("1"); } }
         public decimal WeightNet { get; set; }
 
     }
