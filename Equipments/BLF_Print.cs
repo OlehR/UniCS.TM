@@ -137,8 +137,8 @@ namespace Front.Equipments
                                     for (var i = 0; i < IdWorkplacePays.Length; i++)
                                     {
                                         R.IdWorkplacePay = IdWorkplacePays[i];
-                                        Bl.db.ReplacePayment(new Payment(R) { IdWorkplacePay = R.IdWorkplacePay, IsSuccess = true, TypePay = eTypePay.Cash, SumPay = Math.Round(R.WorkplacePay?.Sum ?? 0, 1), SumExt = Math.Round(R.WorkplacePay?.Sum ?? 0, 1) });
-                                    }
+                                        Bl.db.ReplacePayment(new Payment(R) { IdWorkplacePay = R.IdWorkplacePay, IsSuccess = true, TypePay = eTypePay.Cash, SumPay = Rro.GetSumRoundCash(R.WorkplacePay?.Sum ?? 0.5m), SumExt = Rro.GetSumRoundCash(R.WorkplacePay?.Sum ?? 0.5m) });
+                                }
                                     R.IdWorkplacePay = 0;
                                     R.StateReceipt = eStateReceipt.Pay;
                                     Bl.SetStateReceipt(R, R.StateReceipt);
@@ -161,7 +161,7 @@ namespace Front.Equipments
                             if (pTP == eTypePay.Cash)
                             {
                                 var SumCash = R.WorkplacePays[i].SumCash;
-                                pay = new Payment(R) { IsSuccess = true, TypePay = eTypePay.Cash, SumPay = SumCash, SumExt = (i == IdWorkplacePays.Length - 1 ? Math.Round(pSumCash, 1) : Math.Round(SumCash, 1)) };
+                                pay = new Payment(R) { IsSuccess = true, TypePay = eTypePay.Cash, SumPay = SumCash, SumExt = (i == IdWorkplacePays.Length - 1 ? Rro.GetSumRoundCash(pSumCash) : Rro.GetSumRoundCash(SumCash))};
                                 pSumCash -= SumCash;
                                 if (pSumCash < 0) pSumCash = 0;
                                 Bl.db.ReplacePayment(pay, true);
@@ -342,6 +342,5 @@ namespace Front.Equipments
             }
             pR.IdWorkplacePay = 0;
         }
-
     }
 }
