@@ -88,7 +88,7 @@ namespace Model
             return $"{InttoPref(Convert.ToInt32(l / size8))}{(l % size8):D8}";
 
         }
-        public static int Str11ToInt(string s) => (int)((s.Length == 9) ? PrefToInt(s.Substring(0, 3)) * size6 + Convert.ToInt64(s.Substring(3, 6)) : Convert.ToInt64(s));
+        public static int Str11ToInt(string s) => (int)((s.Length == 9) ? PrefToInt(s.Substring(0, 3)) * size6 + Convert.ToInt64(s.Substring(3, 6)) : s.ToInt());
         public static string IntToStr11(int i) => $"{InttoPref(Convert.ToInt32(i / size6))}{(i % size6):D6}";
 
         public static long CodeToLong(string s)

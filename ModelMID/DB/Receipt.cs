@@ -421,14 +421,14 @@ namespace ModelMID
                     foreach (var el in Wares)
                     {
                         el.SumBonus = 0;
-                        el.SumBonus = el.SumTotal - 0.01m;
+                        el.SumBonus = el.SumTotal - 0.01m; // Вартість кожнрї позиції = 0.01 грн.
                         SumTotal += el.SumTotal;
                         SumBonus += el.SumBonus;
                     }
-                    if (SumTotal < 0.06m)
+                    if (SumTotal < 0.26m) //Якщо сума чека менша за 0.26 грн. то перша позиція збільшується щоб сума чека стала рівна до 0.26 грн                   
                     {
                         var Wr = Wares.First();
-                        decimal delta = (0.06m - SumTotal);
+                        decimal delta = (0.26m - SumTotal);
                         Wr.SumBonus -= delta;
                         SumBonus -= delta;
                     }
