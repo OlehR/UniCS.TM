@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 
-
-
 namespace UtilNetwork
 {
     public class Result
@@ -68,5 +66,4 @@ namespace UtilNetwork
         
         public Result GetResult { get { return new Result { State=State, TextError = TextError }; } }
     }
-
 }

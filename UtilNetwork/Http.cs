@@ -328,7 +328,7 @@ namespace UtilNetwork
     }
     public class HttpResult
     {
-        public eStateHTTP HttpState = eStateHTTP.HTTP_Not_Define_Error;
+        public eStateHTTP HttpState = eStateHTTP.HTTP_OK;
         public string Result = null;
     }
 }
