@@ -95,6 +95,7 @@ namespace ModelMID
         public bool IsTobaccoLicense { get; set; }
         public IEnumerable<FlagColor> FlagColor { get; set; }
         public  DeltaWeight[] DeltaWeight { get; set; }
+        public long[] CodeWaresGiftCart { get; set; }
 
     }
 }

@@ -236,7 +236,10 @@ namespace SharedLib
                                     //if (
                                     _ = CheckOneTimeAsync(pReceipt, pBarCode.ToLong(), el.TypeCode); //)
                                      return new ReceiptWares(pReceipt);
-                                    //else return null;                                    
+                                //else return null;
+                                case eTypeCode.GiftCard:
+                                    return CheckGiftCardAsync(pReceipt,pBarCode);
+                                   
                                 default:
                                     break;
                             }
@@ -831,6 +834,18 @@ namespace SharedLib
                 if (cl != null)
                     Global.OnClientChanged?.Invoke(cl);
             });
+        }
+
+        ReceiptWares CheckGiftCardAsync(IdReceipt pReceipt,string pBarCode)
+        {
+            var Type = pBarCode[1..1];
+            var Ind = Type.ToInt(-1);
+            if (Ind >= 0 && Global.Settings.CodeWaresGiftCart.Length > Ind)
+            {
+                var w = db.FindWares(null, null, Global.Settings.CodeWaresGiftCart[Ind]);
+                return w.FirstOrDefault();
+            }
+            return new ReceiptWares(pReceipt);
         }
     }
 }

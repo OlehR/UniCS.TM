@@ -10,7 +10,8 @@
         OneTimeCoupon = 5,
         Client = 6,
         BarCode2Category = 7,
-        OneTimeCouponGift = 8
+        OneTimeCouponGift = 8,
+        GiftCard = 9
     }
 
 
