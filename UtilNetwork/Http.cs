@@ -11,7 +11,7 @@ namespace UtilNetwork
 {    
     public class Http
     {
-        public static async Task<HttpResult> HTTPRequestAsync(String pURL, String pData, String pContentType, String pLogin=null, String pPassWord=null, double pTimeOut = 15)
+        public static async Task<HttpResult> HTTPRequestAsync(String pURL, String pData, String pContentType, String pLogin = null, String pPassWord = null, double pTimeOut = 15)
         {
             try
             {
@@ -34,8 +34,15 @@ namespace UtilNetwork
                     //var credentials = new NetworkCredential(pLogin, pPassWord);
                     // handler.Credentials = credentials;
                     client = new HttpClient();
-                    string encoded = System.Convert.ToBase64String(Encoding.GetEncoding("ISO-8859-1").GetBytes(pLogin + ":" + pPassWord));
-                    client.DefaultRequestHeaders.Add("Authorization", "Basic " + encoded);
+                    if (string.IsNullOrEmpty(pPassWord))
+                    {
+                        string encoded = System.Convert.ToBase64String(Encoding.GetEncoding("ISO-8859-1").GetBytes(pLogin + ":" + pPassWord));
+                        client.DefaultRequestHeaders.Add("Authorization", "Basic " + encoded);
+                    }
+                    else
+                    {
+                        client.DefaultRequestHeaders.Add("UserGuid", pLogin);
+                    }
                 }
 
                 client.Timeout = TimeSpan.FromSeconds(pTimeOut);
