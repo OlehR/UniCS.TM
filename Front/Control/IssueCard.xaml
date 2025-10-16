@@ -97,7 +97,7 @@
                             </Style>
                         </Button.Style>
                     </Button>
-                    <Button Grid.Column="1"
+                    <Button Grid.Column="1" Visibility="Collapsed"
                  Width="250" Height="70"
                 Content="Видати без SMS"  Click="IssueNewCardButton" >
                         <Button.Style>
