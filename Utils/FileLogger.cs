@@ -20,10 +20,9 @@ namespace Utils
         private static string _PathLog = "Logs";
         public static string PathLog
         {
-            set { _PathLog = value; CreateDir(); }
+            set { _PathLog = value; CreateDirectoryLog(); }
             get { return _PathLog ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Logs"); } //AppDomain.CurrentDomain.BaseDirectory
         }
-
 
         private static int IdWorkplace=0;
         public static eTypeLog TypeLog = eTypeLog.None;
@@ -50,8 +49,7 @@ namespace Utils
         public static void Init(string pPathLog, int pIdWorkplace,eTypeLog? pTypeLog= null)
         {
             if (!string.IsNullOrEmpty(pPathLog))
-                PathLog = pPathLog;
-            CreateDirectoryLog();
+                PathLog = pPathLog;           
             IdWorkplace = pIdWorkplace;
             if (pTypeLog != null)
                 TypeLog = pTypeLog??eTypeLog.Memory;
@@ -165,10 +163,6 @@ namespace Utils
             // Console.ReadKey();
         }
 
-        public static void CreateDir()
-        {
-            if (!Directory.Exists(PathLog))
-                Directory.CreateDirectory(PathLog);
-        }
+       
     }
 }
