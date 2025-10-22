@@ -34,7 +34,7 @@ namespace UtilNetwork
                     //var credentials = new NetworkCredential(pLogin, pPassWord);
                     // handler.Credentials = credentials;
                     client = new HttpClient();
-                    if (string.IsNullOrEmpty(pPassWord))
+                    if (!string.IsNullOrEmpty(pPassWord))
                     {
                         string encoded = System.Convert.ToBase64String(Encoding.GetEncoding("ISO-8859-1").GetBytes(pLogin + ":" + pPassWord));
                         client.DefaultRequestHeaders.Add("Authorization", "Basic " + encoded);

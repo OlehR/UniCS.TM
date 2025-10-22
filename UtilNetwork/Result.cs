@@ -11,7 +11,7 @@ namespace UtilNetwork
         public bool Success { get { return State == 0; } }
         public string TextError { get; set; }
         public string Info { get; set; }
-        public eStateHTTP StateHTTP { get; set; }
+        public eStateHTTP StateHTTP { get; set; } = eStateHTTP.HTTP_OK;
 
         public Result():this(0) { }        
 
