@@ -269,7 +269,8 @@ namespace SharedLib
             if (W.Price == 0)//Якщо немає ціни на товар !!!!TMP Краще обробляти на GUI буде пізніше
                 return W;
             W.SetIdReceipt(pReceipt);
-            W.Quantity = (W.CodeUnit == Global.WeightCodeUnit ? pQuantity / 1000m : pQuantity);// Вага приходить в грамах
+            if(W.Quantity==0)
+             W.Quantity = (W.CodeUnit == Global.WeightCodeUnit ? pQuantity / 1000m : pQuantity);// Вага приходить в грамах
             return AddReceiptWares(W);
         }
 
@@ -838,8 +839,13 @@ namespace SharedLib
 
         ReceiptWares CheckGiftCardAsync(IdReceipt pReceipt,string pBarCode)
         {
+            var c = GetClientByBarCode(pReceipt, pBarCode.ToLower());
+            if (c != null) return null;
+            if (!StaticModel.CheckGiftCard(pBarCode))
+                return null;
             var Type = pBarCode[1..1];
             var Ind = Type.ToInt(-1);
+            
             if (Ind >= 0 && Global.Settings.CodeWaresGiftCart.Length > Ind)
             {
                 var w = db.FindWares(null, null, Global.Settings.CodeWaresGiftCart[Ind]);

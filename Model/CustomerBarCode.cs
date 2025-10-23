@@ -29,7 +29,10 @@
         /// <summary>
         /// Знижка , яка надається після сканування товару.
         /// </summary>
-        DiscountAfterWares = 3, 
+        DiscountAfterWares = 3,
+        /// <summary>
+        /// Купон на знижку
+        /// </summary>
         Coupon = 4,
         /// <summary>
         /// Цінник
@@ -39,7 +42,6 @@
         /// Ручний ввід(код чи артикул)
         /// </summary>
         ManualInput = 6
-
     }
 
     public enum eKindBarCode
@@ -60,7 +62,8 @@
         public int LenghtOperator { get; set; }
         public int LenghtQuantity { get; set; }
         public int LenghtPrice { get; set; }
-        public int TotalLenght { get { return KindBarCode == eKindBarCode.EAN13 ? 13 : (Prefix?.Length ?? 0) + LenghtCode + LenghtOperator + LenghtQuantity; } }
+        public int LenghtTotal { get; set; }
+        public int TotalLenght { get { return KindBarCode == eKindBarCode.EAN13 ? 13 : LenghtTotal>0? LenghtTotal : (Prefix?.Length ?? 0) + LenghtCode + LenghtOperator + LenghtQuantity; } }
         /// <summary>
         /// //Роздільник між кодом товару, ціною та кількістю
         /// </summary>

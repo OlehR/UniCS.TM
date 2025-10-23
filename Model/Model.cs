@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Text;
 using Utils;
 
@@ -123,6 +124,37 @@ namespace Model
                 var el = e.Message;
             }
             return 0;
+        }
+        public static string CreateGiftCard(int pNominal, int pCode, DateTime pDT = default)
+        {
+            if (pDT == default)
+                pDT = DateTime.Now;
+            string Code = $"9{pNominal:D1}{pDT:yyMMdd}{pCode:D4}";
+            var r = CalcHash(Code);
+            return $"{Code}{r:D2}";
+        }
+
+        public static bool CheckGiftCard(string pBarCode)
+        {
+            if(pBarCode.Length==14)
+            {
+                string Code = pBarCode[..12];
+                string Hash = pBarCode[12..14];
+                var r = CalcHash(Code);
+                return r.Equals(Hash);
+            }
+            return false;
+        }
+        public static string CalcHash(string pS)
+        {
+            byte[] dataToHash = Encoding.UTF8.GetBytes(pS);
+            using var sha256Hash = SHA1.Create();
+            byte[] bytes = sha256Hash.ComputeHash(dataToHash);
+            byte x = 0;
+            for (int i = 0; i < bytes.Length; i++)
+                x ^= bytes[i];
+            int r = x % 100;
+            return $"{r:D2}";
         }
     }
 }
