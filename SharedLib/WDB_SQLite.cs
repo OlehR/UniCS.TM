@@ -555,7 +555,7 @@ where w.CODE_UNIT=@CodeUnit and  substring(bar_code, 1,6) = @BC";
                         Wares = FindWares(null, null, el.CodeWares);
                         var Quantity = pBarCode[8..12].ToDecimal();
                         foreach (var e in Wares)
-                            e.Quantity = Quantity;
+                            e.Quantity = Quantity/1000m;
                         break;
                     }
                 }
