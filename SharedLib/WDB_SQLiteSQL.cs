@@ -683,7 +683,8 @@ update wares_receipt set BARCODE_2_CATEGORY = @BarCode2Category,
         readonly string SqlUpdateQuantityWares = @"
 update wares_receipt set quantity = @Quantity,
                             sort = case when @Sort = -1 then sort else  (select COALESCE(max(sort),0)+1 from wares_receipt  where id_workplace = @IdWorkplace and code_period = @CodePeriod and code_receipt = @CodeReceipt and code_wares<>@CodeWares) end,
-						   sum=@Quantity* price ---, Sum_Vat = @SumVat
+						   sum=@Quantity* price, ---, Sum_Vat = @SumVat
+                           ADDITION_C1 = case when ADDITION_C1 is null then @AdditionC1 else ADDITION_C1 ||','||@AdditionC1 end
                      where id_workplace = @IdWorkplace and code_period = @CodePeriod and code_receipt = @CodeReceipt
                      and code_wares = @CodeWares;-- and code_unit = @CodeUnit;
         insert into  WARES_RECEIPT_HISTORY(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT, CODE_WARES, CODE_UNIT, QUANTITY, QUANTITY_OLD, CODE_OPERATION,CodeOperator)

@@ -214,7 +214,7 @@ namespace SharedLib
                         if (el.KindBarCode == eKindBarCode.EAN13 && pBarCode.Length != 13)
                             continue;
 
-                        int Code = Convert.ToInt32(pBarCode.Substring(el.Prefix.Length, el.LenghtCode));
+                        int Code = pBarCode.Substring(el.Prefix.Length, el.LenghtCode).ToInt();
                         CodeOperator = el.LenghtOperator > 0 ? Convert.ToInt32(pBarCode.Substring(el.Prefix.Length+el.LenghtCode, el.LenghtOperator)) : 0;
                         int varValue = el.LenghtQuantity>0?Convert.ToInt32(pBarCode.Substring(el.Prefix.Length + el.LenghtCode + el.LenghtOperator, el.LenghtQuantity)):0;
                         if (!IsOnlyDiscount || el.TypeCode == eTypeCode.PercentDiscount)
@@ -238,7 +238,8 @@ namespace SharedLib
                                      return new ReceiptWares(pReceipt);
                                 //else return null;
                                 case eTypeCode.GiftCard:
-                                    return CheckGiftCardAsync(pReceipt,pBarCode);
+                                    w= CheckGiftCardAsync(pReceipt,pBarCode);
+                                    break;
                                    
                                 default:
                                     break;
@@ -263,7 +264,7 @@ namespace SharedLib
             W.RecalcTobacco();
             if (pBarCode.Length >= 8)
                 W.BarCode = pBarCode;
-            if (pQuantity == 0 || W.IsMultiplePrices) //Якщо сигарети не добававляємо товар.
+            if ((pQuantity == 0 && W.Quantity==0)|| W.IsMultiplePrices ) //Якщо сигарети не добававляємо товар.
                 return W;
 
             if (W.Price == 0)//Якщо немає ціни на товар !!!!TMP Краще обробляти на GUI буде пізніше
@@ -278,7 +279,7 @@ namespace SharedLib
         {
             var RC = new OneTime(pReceipt) { CodeData = pCodeData, TypeData = pTypeCode, CodePS = db.GetCodePS(pCodeData) };
             Status<OneTime> R = null;
-            if (pTypeCode == eTypeCode.OneTimeCoupon || pTypeCode == eTypeCode.OneTimeCouponGift)
+            if (pTypeCode == eTypeCode.OneTimeCoupon || pTypeCode == eTypeCode.OneTimeCouponGift || pTypeCode == eTypeCode.GiftCard )
             {
                 R = await ds.CheckOneTime(RC);
                 if (R == null || !R.status || R.Data == null || !pReceipt.Equals(R.Data))
@@ -837,21 +838,30 @@ namespace SharedLib
             });
         }
 
-        ReceiptWares CheckGiftCardAsync(IdReceipt pReceipt,string pBarCode)
+        IEnumerable<ReceiptWares> CheckGiftCardAsync(IdReceipt pReceipt,string pBarCode)
         {
             var c = GetClientByBarCode(pReceipt, pBarCode.ToLower());
             if (c != null) return null;
             if (!StaticModel.CheckGiftCard(pBarCode))
                 return null;
-            var Type = pBarCode[1..1];
+            bool r=AsyncHelper.RunSync(()=> CheckOneTimeAsync(pReceipt, pBarCode.ToLong(), eTypeCode.GiftCard));
+            if (!r) return null;
+            var Type = pBarCode[1..2];
             var Ind = Type.ToInt(-1);
             
             if (Ind >= 0 && Global.Settings.CodeWaresGiftCart.Length > Ind)
             {
                 var w = db.FindWares(null, null, Global.Settings.CodeWaresGiftCart[Ind]);
-                return w.FirstOrDefault();
+                if (w.Count() == 1)
+                {
+                    var W = w.FirstOrDefault();
+                    W.Quantity = 1;
+                    W.AdditionC1 = pBarCode;
+                }
+                
+                return w;
             }
-            return new ReceiptWares(pReceipt);
+            return null;
         }
     }
 }
