@@ -19,6 +19,8 @@ namespace ModelMID
                     res = PrefixWarehouse + Global.GetNumberCashDeskByIdWorkplace(IdWorkplace);
                 if (DateTime.Now.Year >= 2025 && res.Length == 3)
                     res += "0";
+                if (res.Length > 4)
+                    res = res.Substring(0, 4);
                 return res;
             }
         }

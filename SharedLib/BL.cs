@@ -239,8 +239,8 @@ namespace SharedLib
                                 //else return null;
                                 case eTypeCode.GiftCard:
                                     w= CheckGiftCardAsync(pReceipt,pBarCode);
-                                    break;
-                                   
+                                    if(w==null) return new ReceiptWares(pReceipt);
+                                    break;                                   
                                 default:
                                     break;
                             }
@@ -289,6 +289,10 @@ namespace SharedLib
                                     $"Купон=>{pCodeData} тимчасово недоступний. Оскільки була спроба використати в чеку => {R.Data.NumberReceipt1C} Повторно можна використати {R.Data.DateCreate.AddMinutes(5)}")                                    
                                     , eTypeMessage.Information);
                     return false;
+                }
+                else
+                {
+                    if (pTypeCode == eTypeCode.GiftCard) return true;
                 }
             }
             if (pTypeCode == eTypeCode.OneTimeCouponGift)
@@ -857,8 +861,7 @@ namespace SharedLib
                     var W = w.FirstOrDefault();
                     W.Quantity = 1;
                     W.AdditionC1 = pBarCode;
-                }
-                
+                }                
                 return w;
             }
             return null;

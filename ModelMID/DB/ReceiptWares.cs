@@ -314,7 +314,7 @@ namespace ModelMID
             get
             {
                 string Res = (IdWorkplacePay > 0 && IdWorkplacePay != IdWorkplace ? "@" : "") + (string.IsNullOrEmpty(History) || CodeUnit != Global.WeightCodeUnit ? "" : $"{History} кг{Environment.NewLine}");
-                
+                if (!string.IsNullOrEmpty(AdditionC1)) Res += ' '+AdditionC1+' ';
                 try
                 {
                     if (ReceiptWaresPromotions?.Any()==true)
