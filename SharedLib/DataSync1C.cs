@@ -3,16 +3,9 @@ using ModelMID.DB;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.IO.Pipes;
 using System.Linq;
-using System.Net.Http;
-using System.Security.Policy;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using Utils;
 
 namespace SharedLib
@@ -21,11 +14,7 @@ namespace SharedLib
     {
         public SoapTo1C soapTo1C = new SoapTo1C();
         
-        public DataSync1C() { //BL pBL
-            //bl = pBL;
-        }
-
-        public static async Task<bool> SendReceiptTo1CAsync(Receipt pR,  WDB_SQLite db=null) //string pServer = null, bool pIsChangeState = true,
+        public static async Task<bool> SendReceiptTo1CAsync(Receipt pR,  WDB_SQLite db=null) 
         {
            // if (!Global.Is1C) return null;
             //string Res = null;
