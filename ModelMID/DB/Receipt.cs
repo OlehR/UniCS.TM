@@ -450,6 +450,14 @@ namespace ModelMID
 
         public bool IsTobacco { get { return Wares?.Any(el => el.TypeWares == eTypeWares.Tobacco || el.TypeWares == eTypeWares.TobaccoNoExcise) == true; } }
         public bool IsAlcohol { get { return Wares?.Any(el => el.TypeWares == eTypeWares.Alcohol || el.TypeWares == eTypeWares.LowAlcohol || el.TypeWares == eTypeWares.Beer) == true; } }
+
+        public bool IsAddGiftCard(string pES)
+        {        
+            if(_Wares?.Any()==true)
+             foreach(var el in _Wares.Where(el=>!string.IsNullOrEmpty(el.AdditionC1)))              
+                    if( el.AdditionC1.Contains(pES, StringComparison.CurrentCulture)) return false;
+           return true;
+        }
     }
     public class WorkplacePay
     {

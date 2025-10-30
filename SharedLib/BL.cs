@@ -846,6 +846,12 @@ namespace SharedLib
         {
             var c = GetClientByBarCode(pReceipt, pBarCode.ToLower());
             if (c != null) return null;
+            Receipt R = pReceipt as Receipt;
+            if (R != null && !R.IsAddGiftCard(pBarCode))
+            {
+                Global.Message?.Invoke($"Даний сертифікат =>{pBarCode} вже використаний в текучому чеку!", eTypeMessage.Information);
+                return null;
+            }
             if (!StaticModel.CheckGiftCard(pBarCode))
                 return null;
             bool r=AsyncHelper.RunSync(()=> CheckOneTimeAsync(pReceipt, pBarCode.ToLong(), eTypeCode.GiftCard));
