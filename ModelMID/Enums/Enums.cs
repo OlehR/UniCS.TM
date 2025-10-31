@@ -46,7 +46,11 @@ namespace ModelMID
         /// <summary>
         /// Інформація з фіскального апарата.(Сума + Завкруглення)
         /// </summary>
-        FiscalInfo =7
+        FiscalInfo =7,
+        /// <summary>
+        /// Готівкова оплата через кеш-машину
+        /// </summary>
+        CashMachine = 8
     }
 
     public enum eTypeBonus

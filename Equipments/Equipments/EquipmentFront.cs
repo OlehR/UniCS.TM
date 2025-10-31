@@ -456,7 +456,7 @@ namespace Front
         {
             var aa = pReceipt.Payment.ToList();
             string NameMetod = System.Reflection.MethodBase.GetCurrentMethod().Name;
-            if (pReceipt == null || pReceipt.Payment == null || !pReceipt.Payment.Any(el => el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Cash))
+            if (pReceipt == null || pReceipt.Payment == null || !pReceipt.Payment.Any(el => el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Cash || el.TypePay==eTypePay.CashMachine))
                 return new LogRRO(pReceipt) { CodeError = -1, Error = $"Відсутня оплата по Робочому місцю № ({pReceipt.IdWorkplacePay})" };
             var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
             {
@@ -925,6 +925,21 @@ namespace Front
         public bool Print(Receipt pR)
         {
             return Printer?.PrintReceipt(pR) ?? true;
+        }
+
+
+        public Payment CashMachinePay(IdReceipt pIdR, decimal pSum, Payment pP = null)
+        {
+            Payment pay = null;
+            pay = CashMachine.Purchase(pSum, pSum, pIdR.IdWorkplacePay);
+            pay.SumExt = pSum;
+            pay.TypePay = eTypePay.CashMachine;
+
+            pay.SetIdReceipt(pIdR); 
+
+
+
+            return pay;
         }
 
         #region POS        

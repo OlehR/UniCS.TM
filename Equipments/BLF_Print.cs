@@ -24,7 +24,7 @@ namespace Front.Equipments
                 var WP = Global.GetWorkPlaceByIdWorkplace(el);
                 if (!WP.Settings?.IsAlcoholLicense == true && MW.curReceipt.IsAlcohol)
                 {
-                    SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, new CustomWindow(eWindows.Info,$"По даному місцю=>{el} відсутня алкогольна ліцензія"));
+                    SetStateView(eStateMainWindows.WaitCustomWindows, eTypeAccess.NoDefine, null, new CustomWindow(eWindows.Info, $"По даному місцю=>{el} відсутня алкогольна ліцензія"));
                     return;
                 }
                 if (!WP.Settings?.IsTobaccoLicense == true && MW.curReceipt.IsTobacco)
@@ -61,7 +61,7 @@ namespace Front.Equipments
             }
             MW.EquipmentInfo = string.Empty;
 
-            if ((Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister &&  
+            if ((Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister &&
                 (MW.curReceipt.StateReceipt == eStateReceipt.Prepare || MW.curReceipt.StateReceipt == eStateReceipt.StartPay)) || EF?.CashMachine != null)
             {
                 SetStateView(eStateMainWindows.ChoicePaymentMethod);
@@ -138,7 +138,7 @@ namespace Front.Equipments
                                     {
                                         R.IdWorkplacePay = IdWorkplacePays[i];
                                         Bl.db.ReplacePayment(new Payment(R) { IdWorkplacePay = R.IdWorkplacePay, IsSuccess = true, TypePay = eTypePay.Cash, SumPay = Rro.GetSumRoundCash(R.WorkplacePay?.Sum ?? 0.5m), SumExt = Rro.GetSumRoundCash(R.WorkplacePay?.Sum ?? 0.5m) });
-                                }
+                                    }
                                     R.IdWorkplacePay = 0;
                                     R.StateReceipt = eStateReceipt.Pay;
                                     Bl.SetStateReceipt(R, R.StateReceipt);
@@ -161,9 +161,14 @@ namespace Front.Equipments
                             if (pTP == eTypePay.Cash)
                             {
                                 var SumCash = R.WorkplacePays[i].SumCash;
-                                pay = new Payment(R) { IsSuccess = true, TypePay = eTypePay.Cash, SumPay = SumCash, SumExt = (i == IdWorkplacePays.Length - 1 ? Rro.GetSumRoundCash(pSumCash) : Rro.GetSumRoundCash(SumCash))};
+                                pay = new Payment(R) { IsSuccess = true, TypePay = eTypePay.Cash, SumPay = SumCash, SumExt = (i == IdWorkplacePays.Length - 1 ? Rro.GetSumRoundCash(pSumCash) : Rro.GetSumRoundCash(SumCash)) };
                                 pSumCash -= SumCash;
                                 if (pSumCash < 0) pSumCash = 0;
+                                Bl.db.ReplacePayment(pay, true);
+                            }
+                            else if (pTP == eTypePay.CashMachine)
+                            {
+                                pay = EF.CashMachinePay(R, Rro.GetSumRoundCash(pSumCash) * 100m, pay);
                                 Bl.db.ReplacePayment(pay, true);
                             }
                             else
@@ -202,7 +207,7 @@ namespace Front.Equipments
                         FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                     }
                     finally { R.IdWorkplacePay = 0; }
-                }                
+                }
 
                 R.StateReceipt = Bl.GetStateReceipt(R);
                 if (R.StateReceipt == eStateReceipt.Pay || R.StateReceipt == eStateReceipt.PartialPrint || R.StateReceipt == eStateReceipt.StartPrint)
@@ -297,7 +302,7 @@ namespace Front.Equipments
                         if (goods.ProductionLocation > 0) // Перевірка чи товар потрібно готувати на якісь із зон
                             wares.Add(new OrderWares(goods));
                     }
-                    var order = (new Order { IdWorkplace = R.IdWorkplace, Status = eStatus.Waiting, CodePeriod = R.CodePeriod, CodeReceipt = R.CodeReceipt, DateCreate = DateTime.Now,  Type = R.TranslationTypeReceipt, Wares = wares });
+                    var order = (new Order { IdWorkplace = R.IdWorkplace, Status = eStatus.Waiting, CodePeriod = R.CodePeriod, CodeReceipt = R.CodeReceipt, DateCreate = DateTime.Now, Type = R.TranslationTypeReceipt, Wares = wares });
 
                     CommandAPI<Order> Command = new() { Command = eCommand.GetOrderNumber, Data = order };
 

@@ -25,8 +25,9 @@ namespace Front.Equipments
         private string UserPassword = string.Empty;
         public bool IsListening = false;
 
-        public GloryCash(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) :
-                                base(pEquipment, pConfiguration, eModelEquipment.Ingenico, pLoggerFactory, pActionStatus)
+        public GloryCash(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null,
+            Action<StatusEquipment> pActionStatus = null) :
+            base(pEquipment, pConfiguration, eModelEquipment.Ingenico, pLoggerFactory, pActionStatus)
         {
             State = eStateEquipment.Init;
             Url = Configuration[$"{KeyPrefix}Url"];
@@ -74,7 +75,9 @@ namespace Front.Equipments
             string SOAPAction = eNameSOAPAction.ChangeOperation.ToString();
             string pData = GloryXMLData.XMLChangeOperation(SessionID, pAmount);
             FileLogger.WriteLogMessage($"Request OpenOperation: {SOAPAction} {Environment.NewLine} {pData}");
-            string XMLRespons = await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, pData, 200); // збільшений тайм-аут для оплати
+            string XMLRespons =
+                await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, pData,
+                    200); // збільшений тайм-аут для оплати
             FileLogger.WriteLogMessage($"Respons: {Environment.NewLine} {XMLRespons}");
             var msg = SoapParser.Parse(XMLRespons);
 
@@ -100,6 +103,7 @@ namespace Front.Equipments
                     SumPay = Math.Round(Convert.ToDecimal(resp.Amount) / 100M, 2, MidpointRounding.AwayFromZero)
                 };
             }
+
             return new Payment() { IsSuccess = false };
         }
 
@@ -108,18 +112,20 @@ namespace Front.Equipments
             base.Cancel();
         }
 
-        public override Payment Refund(decimal pAmount,  int IdWorkPlace = 0)
+        public override Payment Refund(decimal pAmount, int IdWorkPlace = 0)
         {
 
             return RefundAsync(pAmount, IdWorkPlace).Result;
         }
 
-        public async Task<Payment> RefundAsync(decimal pAmount,  int IdWorkPlace = 0)
+        public async Task<Payment> RefundAsync(decimal pAmount, int IdWorkPlace = 0)
         {
             string SOAPAction = eNameSOAPAction.CashoutOperation.ToString();
             string pData = GloryXMLData.XMLCashoutOperation(SessionID, Decimal.ToInt32(pAmount));
             FileLogger.WriteLogMessage($"Request OpenOperation: {SOAPAction} {Environment.NewLine} {pData}");
-            string XMLRespons = await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, pData, 200); // збільшений тайм-аут для оплати
+            string XMLRespons =
+                await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, pData,
+                    200); // збільшений тайм-аут для оплати
             FileLogger.WriteLogMessage($"Respons: {Environment.NewLine} {XMLRespons}");
             var msg = SoapParser.Parse(XMLRespons);
             if (msg is CashoutResponse resp)
@@ -132,6 +138,7 @@ namespace Front.Equipments
                     return new Payment() { IsSuccess = true };
                 }
             }
+
             return new Payment() { IsSuccess = false };
         }
 
@@ -139,12 +146,21 @@ namespace Front.Equipments
         {
 
         }
+
         public string GetErrorText(int? pCodeError = 9999)
         {
             return Enum.GetName(typeof(eResultCode), pCodeError) ?? $"Unknown({pCodeError})";
         }
 
+        override public StatusEquipment TestDevice()
+        {
+            return new StatusEquipment(eModelEquipment.GloryCash, State);
+        }
+
+        override public string GetDeviceInfo()
+        {
+            return $"SessionID: {SessionID}";
+        }
 
     }
-
 }

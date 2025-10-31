@@ -42,7 +42,7 @@ namespace Front.Equipments.Implementation
                 //IsOpenWorkDay = !string.IsNullOrEmpty(res.devices.Where(r=>r.dev_id== "EE7CA036-C88B-44DA-8C82-511C56EEBB72").First().shiftdt);
                 if (!IsOpenWorkDay)
                     OpenWorkDay();
-                if(IsOpenWorkDay)
+                if (IsOpenWorkDay)
                 {
                     SerialNumber = GetDeviceInfo2()?.info?.fisid.ToString();
                 }
@@ -72,7 +72,7 @@ namespace Front.Equipments.Implementation
             if (!IsOpenWorkDay) return new LogRRO(pR) { CodeError = -1, Error = "Не вдалось відкрити зміну" };
 
             //var c = pR.Payment?.Where(el => el.TypePay == eTypePay.IssueOfCash);
-            var RealPay = pR.Payment?.Where(el => el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Cash || el.TypePay == eTypePay.Wallet);
+            var RealPay = pR.Payment?.Where(el => el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Cash || el.TypePay == eTypePay.Wallet || el.TypePay == eTypePay.CashMachine);
             if (RealPay?.Any() == true)
             {
                 //pR.Payment = RealPay;
@@ -86,7 +86,7 @@ namespace Front.Equipments.Implementation
             if (Res?.info?.printinfo?.sum_receipt != 0 || Res?.info?.printinfo?.round != 0)
                 try
                 {
-                    var pay = new Payment(pR) { IsSuccess = true, TypePay = eTypePay.FiscalInfo, SumPay = Res.info.printinfo.sum_receipt, SumExt = Res.info.printinfo.round, PosAddAmount= Res.info.printinfo.pays?.FirstOrDefault()?.change??0 };
+                    var pay = new Payment(pR) { IsSuccess = true, TypePay = eTypePay.FiscalInfo, SumPay = Res.info.printinfo.sum_receipt, SumExt = Res.info.printinfo.round, PosAddAmount = Res.info.printinfo.pays?.FirstOrDefault()?.change ?? 0 };
                     pR.Payment = pR.Payment == null ? new List<Payment>() { pay } : pR.Payment.Append<Payment>(pay);
                     db.ReplacePayment(pay, true);
                 }
@@ -330,7 +330,8 @@ namespace Front.Equipments.Implementation
                         var ww = pR._Wares.Where(w => w.NameWares.Equals(el.name))?.First();
                         if (ww != null) ww.VatChar = el.taxlit;
                     }
-                    catch (Exception) { };
+                    catch (Exception) { }
+                    ;
                 }
                 var DT = Res.info.printinfo.dt.ToDateTime("d-M-yyyy HH:mm:ss");
                 pR.Fiscals.Add(pR.IdWorkplacePay, new Fiscal()
@@ -345,7 +346,8 @@ namespace Front.Equipments.Implementation
                     Taxes = Res.info.printinfo.taxes?.Select(el => new TaxResult() { Name = el.tax_fname, Sum = el.tax_sum, IdWorkplacePay = pR.IdWorkplacePay }),
                     DT = DT
                 });
-            };
+            }
+            ;
         }
 
         override public bool PutToDisplay(string ptext, int pLine) { return true; }
@@ -499,7 +501,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
                     comment_down = String.Join('\n', pR.Footer);
                 sum = pR.Wares?.Sum(el => Math.Round(el.Price * el.Quantity, 2, MidpointRounding.AwayFromZero) - el.SumTotalDiscount) ?? 0m; ;
                 not_check_safe = true;
-                if(pR.TypeReceipt==eTypeReceipt.Refund) //Можливо варто перевести на рівень вище.
+                if (pR.TypeReceipt == eTypeReceipt.Refund) //Можливо варто перевести на рівень вище.
                 {
                     BL Bl = BL.GetBL;
                     var e = Bl.GetReceiptHead(pR.RefundId);
@@ -508,15 +510,15 @@ namespace Front.Equipments.Implementation.ModelVchasno
                         purchase_receipt_fisn = e.NumberReceipt;
                         purchase_rro_fisn = pRro.SerialNumber;
                     }
-                   
+
                 }
             }
         }
         public decimal sum { get; set; }
         public bool autoround { get { return true; } }
         //public decimal round { get { return Math.Abs(-sum + (pays?.Sum(r => r.sum) ?? 0m)) < 0.1m ? -sum + pays?.Sum(r => r.sum) ?? 0m : 0m; } }
-        public string purchase_receipt_fisn {  get; set; }
-        public string purchase_rro_fisn { get; set; }        
+        public string purchase_receipt_fisn { get; set; }
+        public string purchase_rro_fisn { get; set; }
         public string comment_up { get; set; }
         public string comment_down { get; set; }
         public IEnumerable<WaresRRO> rows { get; set; }
@@ -541,7 +543,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
             code = pRW.CodeWares.ToString();
             code1 = pRW.BarCode;
             if (pRW.IsUseCodeUKTZED)
-            {                
+            {
                 code2 = pRW.CodeUKTZED;
             }
             code_aa = pRW.GetExciseStamp;
@@ -578,28 +580,30 @@ namespace Front.Equipments.Implementation.ModelVchasno
         public CardPay() { }
         public bool IsCorectSum(decimal pSum)
         {
-           pSum = Math.Round(pSum, 2);
+            pSum = Math.Round(pSum, 2);
             int C = (int)pSum;
             decimal m = pSum - C;
             return m == 0 || m == 0.5m;
         }
-        
+
         public CardPay(Payment pP)
         {
-            sum = (pP.TypePay== eTypePay.Cash&& pP.SumExt> pP.SumPay  && IsCorectSum(pP.SumExt) ? pP.SumExt  :pP.SumPay);
+            sum = (pP.TypePay == eTypePay.Cash && pP.SumExt > pP.SumPay && IsCorectSum(pP.SumExt) ? pP.SumExt : pP.SumPay);
             paysys = pP.IssuerName;
             rrn = pP.CodeAuthorization;
             cardmask = pP.NumberCard;
             term_id = pP.NumberTerminal;
             bank_name = pP.Bank;
-            bank_id= pP.MerchantID;
+            bank_id = pP.MerchantID;
             auth_code = pP.NumberSlip;
             switch (pP.TypePay)
             {
                 case eTypePay.Card:
                     type = eTypePayRRO.Card; break;
                 case eTypePay.Cash:
+                case eTypePay.CashMachine:
                     type = eTypePayRRO.Cash; break;
+                    
                 default:
                     break;
             }
@@ -620,8 +624,8 @@ namespace Front.Equipments.Implementation.ModelVchasno
         public PaysRRO() { }
         public PaysRRO(Payment pP) : base(pP)
         {
-           // if (pP.TypePay == eTypePay.Cash)
-           //    change = pP.SumExt > pP.SumPay ? pP.SumExt - pP.SumPay : 0m;
+            // if (pP.TypePay == eTypePay.Cash)
+            //    change = pP.SumExt > pP.SumPay ? pP.SumExt - pP.SumPay : 0m;
         }
 
         public string currency { get; set; }

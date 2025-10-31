@@ -1203,7 +1203,7 @@ namespace Front
                                     {
                                         EquipmentInfo = string.Empty;
                                        // GiveRest = (double)RestMoney;
-                                        var task = Task.Run(() => Blf.PrintAndCloseReceipt(null, eTypePay.Cash, MoneySum, 0, 0));
+                                        var task = Task.Run(() => Blf.PrintAndCloseReceipt(null, eTypePay.CashMachine, MoneySum, 0, 0));
                                     }
                                     else
                                     {
