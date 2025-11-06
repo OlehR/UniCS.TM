@@ -290,7 +290,7 @@ namespace Front.Equipments
         private void PrintOrderReceipt(Receipt R, bool IsTryAgain = true)
         {
             bool IsNeadOrderReceipt = R.Wares.Where(x => x.ProductionLocation != 0).Any();
-            if (Global.IsPrintOrderReceipt && IsNeadOrderReceipt)
+            if (Global.IsPrintOrderReceipt && IsNeadOrderReceipt && R.TypeReceipt == eTypeReceipt.Sale)
             {
 
 
