@@ -25,7 +25,7 @@ namespace SharedLib
             try
             {
                 bool IsErrorSend = false;
-                if (pR.IdWorkplace != 36)
+               // if (pR.IdWorkplace != 36)
                 {
                     List<int> IdWP = pR.IdWorkplacePays.Where(el => el == pR.IdWorkplace).ToList();
                     var l = pR.IdWorkplacePays.Where(el => el != pR.IdWorkplace);

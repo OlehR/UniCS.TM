@@ -550,7 +550,7 @@ namespace Front
 
             Global.OnClientChanged += (pClient) =>
             {
-                if (string.IsNullOrEmpty(pClient.MainPhone))
+                if (pClient.CodeClient>0 && string.IsNullOrEmpty(pClient.MainPhone))
                 {
                     CustomMessage.Show("Відсутній номер телефону! Додати номер телефону для отримання унікальних пропозицій?", "Відсутній номер телефону", eTypeMessage.Question);
                     CustomMessage.Result = (bool res) =>
