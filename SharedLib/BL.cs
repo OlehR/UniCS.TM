@@ -270,6 +270,11 @@ namespace SharedLib
             if (W.Price == 0)//Якщо немає ціни на товар !!!!TMP Краще обробляти на GUI буде пізніше
                 return W;
             W.SetIdReceipt(pReceipt);
+            if(W.CodeDefaultUnit!=W.CodeUnit && W.Coefficient!=1 && W.Coefficient!=0)
+            {
+                W.CodeUnit = W.CodeDefaultUnit;
+                W.Quantity = W.Coefficient;
+            }
             if(W.Quantity==0)
              W.Quantity = (W.CodeUnit == Global.WeightCodeUnit ? pQuantity / 1000m : pQuantity);// Вага приходить в грамах
             return AddReceiptWares(W);

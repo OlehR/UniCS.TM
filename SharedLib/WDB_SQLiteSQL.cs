@@ -463,7 +463,7 @@ select t.code_wares as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as
         COALESCE(au.code_unit,aud.code_unit,0) CodeUnit, 
         ifnull(ud.abr_unit,udd.abr_unit) abr_unit,
         COALESCE(au.coefficient,aud.coefficient,0) Coefficient,
-        ifnull(aud.code_unit,0) code_unit_default, 
+        ifnull(aud.code_unit,0) CodeDefaultUnit, 
         udd.abr_unit abr_unit_default,
       --  ifnull(aud.coefficient,0) as CoefficientDefault,
         CAST(ifnull(pd.price_dealer,0.0)  as decimal) as PriceDealer,
