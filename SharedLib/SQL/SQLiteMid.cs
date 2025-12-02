@@ -12,7 +12,7 @@ namespace SharedLib
 {
     public class SQLiteMid: SQLite
     {
-        public static readonly int VerMID = 18;
+        public static readonly int VerMID = 19;
         public static readonly string SqlUpdateMID = @"--Ver=>0;Reload;
 alter TABLE wares add Weight_Delta INTEGER  DEFAULT 0;--Ver=>0
 alter TABLE PROMOTION_SALE_DEALER add PRIORITY INTEGER NOT NULL DEFAULT 1;--Ver=>0
@@ -30,6 +30,7 @@ alter TABLE wares add ProductionLocation INTEGER  DEFAULT 0;--Ver=>15;
 alter TABLE PROMOTION_SALE  add IsOneTime INTEGER  NOT NULL default 0;--Ver=>16;
 alter TABLE PROMOTION_SALE_DATA add DATA_TEXT TEXT;--Ver=>17;
 alter TABLE TYPE_DISCOUNT add IsСertificate INTEGER NOT NULL DEFAULT(0);--Ver=>18;
+alter TABLE wares add Country INTEGER  DEFAULT 0;--Ver=>19;
 --Ver=>11;Reload;";
 
         public static readonly string SqlCreateMIDTable = @"
@@ -88,7 +89,8 @@ alter TABLE TYPE_DISCOUNT add IsСertificate INTEGER NOT NULL DEFAULT(0);--Ver=>
               PLU INTEGER,
               Code_Direction INTEGER,
               Code_TM INTEGER NOT NULL DEFAULT 0,
-              ProductionLocation INTEGER  DEFAULT 0
+              ProductionLocation INTEGER  DEFAULT 0,
+              Country INTEGER  DEFAULT 0
 );
 
         CREATE TABLE ADDITION_UNIT(
@@ -429,10 +431,10 @@ replace into PROMOTION_SALE_FILTER(CODE_PS, CODE_GROUP_FILTER, TYPE_GROUP_FILTER
         readonly string SqlReplaceWares = @"
 replace into Wares(CODE_WARES, CODE_GROUP, CodeGroupUp, NAME_WARES, Name_Wares_Upper, ARTICL, CODE_BRAND, CODE_UNIT,
                      Percent_Vat, Type_VAT, NAME_WARES_RECEIPT, DESCRIPTION, Type_Wares, Weight_brutto,
-                     Weight_Fact, Weight_Delta, CODE_UKTZED, Limit_Age, PLU, Code_Direction, Code_TM,ProductionLocation)
+                     Weight_Fact, Weight_Delta, CODE_UKTZED, Limit_Age, PLU, Code_Direction, Code_TM,ProductionLocation,Country)
              values(@CodeWares, @CodeGroup,@CodeGroupUp, @NameWares, @NameWaresUpper, @Articl, @CodeBrand, @CodeUnit,
                      @PercentVat, @TypeVat, @NameWaresReceipt, @Description, @TypeWares, @WeightBrutto,
-                     @WeightFact, @WeightDelta, @CodeUKTZED, @LimitAge, @PLU, @CodeDirection, @CodeTM,@ProductionLocation);";
+                     @WeightFact, @WeightDelta, @CodeUKTZED, @LimitAge, @PLU, @CodeDirection, @CodeTM,@ProductionLocation,@Country);";
         public bool ReplaceWares(IEnumerable<Wares> parData) => BulkExecuteNonQuery<Wares>(SqlReplaceWares, parData, true) > 0;
 
         public bool ReplaceAdditionUnit(IEnumerable<AdditionUnit> parData)

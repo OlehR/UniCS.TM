@@ -458,6 +458,8 @@ namespace ModelMID
                     if( el.AdditionC1.Contains(pES, StringComparison.CurrentCulture)) return false;
            return true;
         }
+
+        public decimal SumCashBack { get { return Wares?.Where(el=>el.Country==-2)?.Sum(el => el.SumTotal)??0; } }
     }
     public class WorkplacePay
     {

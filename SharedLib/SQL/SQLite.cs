@@ -19,17 +19,27 @@ namespace SharedLib
         private bool disposedValue;
         public SQLite(String varConectionString) : base(varConectionString)
         {
-            var connectionString = new SQLiteConnectionStringBuilder("Data Source=" + varConectionString + ";Version=3;")
+            string connectionString = null;
+            try
             {
-                DefaultIsolationLevel = IsolationLevel.Serializable
-            }.ToString();
+                connectionString = new SQLiteConnectionStringBuilder("Data Source=" + varConectionString + ";Version=3;")
+                {
+                    DefaultIsolationLevel = IsolationLevel.Serializable
+                }.ToString();
 
-            Connection = new SQLiteConnection(connectionString);
-            Connection.Open();
-            TypeCommit = eTypeCommit.Auto;
-            ExecuteNonQuery("PRAGMA synchronous = EXTRA;");
-            ExecuteNonQuery("PRAGMA journal_mode = DELETE;");
-            ExecuteNonQuery("PRAGMA wal_autocheckpoint = 5;");
+                Connection = new SQLiteConnection(connectionString);
+                Connection.Open();
+                TypeCommit = eTypeCommit.Auto;
+                ExecuteNonQuery("PRAGMA synchronous = EXTRA;");
+                ExecuteNonQuery("PRAGMA journal_mode = DELETE;");
+                ExecuteNonQuery("PRAGMA wal_autocheckpoint = 5;");
+            }
+            catch (Exception ex) 
+            {
+                FileLogger.WriteLogMessage(this, connectionString, ex);
+                throw;
+            }
+            FileLogger.WriteLogMessage(this, "SQLite", connectionString);
         }
 
         ~SQLite()

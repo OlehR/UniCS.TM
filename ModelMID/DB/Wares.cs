@@ -73,5 +73,9 @@ namespace ModelMID
         /// Код місця виготовлення (1 - Піцца, 2 - ХотДог)
         /// </summary>
         public int ProductionLocation { get; set; }
+        /// <summary>
+        /// -1 - національний кешбек; -2 - національний кешбек (Оплата); Країна походження;
+        /// </summary>
+        public int Country { get; set; }
     }
 }

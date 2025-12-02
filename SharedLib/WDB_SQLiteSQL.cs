@@ -553,6 +553,7 @@ Price as Price
 ,w.CodeGroupUp
 ,wr.Date_Create as DateCreate
 ,w.ProductionLocation
+,w.Country
                      from wares_receipt wr
                      join wares w on(wr.code_wares = w.code_wares)
                      join ADDITION_UNIT au on w.code_wares = au.code_wares and wr.code_unit=au.code_unit

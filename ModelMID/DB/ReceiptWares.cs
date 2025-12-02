@@ -632,5 +632,9 @@ namespace ModelMID
         /// </summary>
         public int ProductionLocation { get; set; }
         public IEnumerable< ReceiptWaresLink> ReceiptWaresLink { get; set; }
+        /// <summary>
+        /// -1 - національний кешбек; -2 - національний кешбек (Оплата); Країна походження;
+        /// </summary>
+        public int Country { get; set; }
     }
 }
