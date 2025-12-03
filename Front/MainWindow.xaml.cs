@@ -113,9 +113,11 @@ namespace Front
             {
                 return (MoneySum >= 0 && WaresQuantity != "0" && (IsAddNewWares || State == eStateMainWindows.FindClientByPhone))
                     || (curReceipt?.TypeReceipt == eTypeReceipt.Refund && MoneySum > 0)
-                    || curReceipt?.StateReceipt == eStateReceipt.Pay;
+                    || curReceipt?.StateReceipt == eStateReceipt.Pay
+                    || curReceipt?.StateReceipt == eStateReceipt.PartialPay;
             }
         }
+        public bool IsCashBackPay { get; set; } = false;
 
         /// <summary>
         /// чи активна кнопка пошуку
@@ -243,7 +245,7 @@ namespace Front
         public int HeightScreen { get { return (int)SystemParameters.PrimaryScreenHeight; } }
         public int HeightStartVideo { get { return SystemParameters.PrimaryScreenWidth < SystemParameters.PrimaryScreenHeight ? 1300 : 700; } }
         public string[] PathVideo { get; set; } = null;
-        public bool IsManyPayments { get { return curReceipt?.IdWorkplacePays?.Length > 1; } }
+        public bool IsManyPayments { get { return curReceipt?.IdWorkplacePays?.Length > 1 || IsCashBackPay; } }
         public string AmountManyPayments
         {
             get
@@ -254,6 +256,10 @@ namespace Front
                     foreach (var item in curReceipt.WorkplacePays)
                         res += $"{item.Sum} | ";
                     res = res.Substring(0, res.Length - 2);
+                }
+                if (IsCashBackPay)
+                {
+                    res = $"{curReceipt?.SumCashBack} | {curReceipt?.SumTotal - curReceipt?.SumCashBack}";
                 }
                 return res;
             }
@@ -1191,7 +1197,7 @@ namespace Front
                                 OnPropertyChanged(nameof(SecondTerminal));
                                 OnPropertyChanged(nameof(FirstTerminal));
 
-                                PaymentWindow.TransferAmounts(MoneySum);
+                                PaymentWindow.TransferAmounts(MoneySum, curReceipt.SumCashBack);
                                 PaymentWindow.Visibility = Visibility.Visible;
                             }
                             else

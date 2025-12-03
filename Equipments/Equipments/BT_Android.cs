@@ -80,14 +80,14 @@ namespace Front.Equipments.Implementation
             SerialDevice = portStreamWrapper;
         }
 
-        public override Payment Purchase(decimal pAmount, decimal pCash, int pIdWorkPlace = 0)
+        public override Payment Purchase(decimal pAmount, decimal pCash, int pIdWorkPlace = 0, bool pIsCashBack = false)
         {
             byte MerchantId = GetMechantIdByIdWorkPlace(pIdWorkPlace);
             SendCommand(pCash > 0 ? eCommand.Cashback : eCommand.Purchase, new PPurchase() { amount = pAmount.ToS(), discount = "0", merchantId = MerchantId.ToString() }.ToJSON(), 120 * 1000);
             return Res;
         }
 
-        public override Payment Refund(decimal pAmount, string pRRN, int pIdWorkPlace = 0)
+        public override Payment Refund(decimal pAmount, string pRRN, int pIdWorkPlace = 0, bool pIsCashBack = false)
         {
             byte MerchantId = GetMechantIdByIdWorkPlace(pIdWorkPlace);
             SendCommand(eCommand.Refund, new { amount = pAmount.ToS(), rrn = pRRN, merchantId= MerchantId.ToString() }.ToJSON(), 120 * 1000);

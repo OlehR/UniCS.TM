@@ -14,7 +14,7 @@ namespace ModelMID
 
     public class ReceiptWares : IdReceiptWares, ICloneable
     {
-        public int IdWorkplacePay { get { if (_IdWorkplacePay == 0) _IdWorkplacePay = Global.GetIdWorkPlacePay(CodeDirection, CodeTM, new Int64[]{ CodeGroup,CodeGroupUp,CodeDirection},CodeWares); return _IdWorkplacePay; } set { _IdWorkplacePay = value; } }
+        public int IdWorkplacePay { get { if (_IdWorkplacePay == 0) _IdWorkplacePay = Global.GetIdWorkPlacePay(CodeDirection, CodeTM, new Int64[] { CodeGroup, CodeGroupUp, CodeDirection }, CodeWares); return _IdWorkplacePay; } set { _IdWorkplacePay = value; } }
         int _IdWorkplacePay;
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace ModelMID
         /// <summary>
         /// Назва для чека.
         /// </summary>
-        public string NameWaresReceipt { get {return NameWares.Replace((char)9,' ').Replace((char)10,' ').Replace((char)13,' '); } }
+        public string NameWaresReceipt { get { return NameWares.Replace((char)9, ' ').Replace((char)10, ' ').Replace((char)13, ' '); } }
 
         public int Articl { get; set; }
         public int CodeBrand { get; set; }
@@ -76,21 +76,24 @@ namespace ModelMID
         /// </summary>
         public decimal PriceDealer { get; set; }
 
-  
+
         /// <summary>
         /// Ціна для Касового апарата
         /// </summary>
-        public decimal PriceEKKA { get { return Math.Round((long)eTypeDiscount.PercentDiscount != ParPrice2 && Price < PriceDealer ? Price :Math.Max(PriceDealer, Price),2, MidpointRounding.AwayFromZero); } }
+        public decimal PriceEKKA { get { return Math.Round((long)eTypeDiscount.PercentDiscount != ParPrice2 && Price < PriceDealer ? Price : Math.Max(PriceDealer, Price), 2, MidpointRounding.AwayFromZero); } }
 
 
-        public decimal SumEKKA { get { return Math.Round(Quantity* PriceEKKA , 2, MidpointRounding.AwayFromZero); } }
+        public decimal SumEKKA { get { return Math.Round(Quantity * PriceEKKA, 2, MidpointRounding.AwayFromZero); } }
 
 
         /// <summary>
         /// Знижка для Касового апарата та для Модерна
         /// </summary>
-        public decimal SumDiscountEKKA { get {
-                return SumTotalDiscount + SumEKKA - Sum ;
+        public decimal SumDiscountEKKA
+        {
+            get
+            {
+                return SumTotalDiscount + SumEKKA - Sum;
             }
         }
         //SumBonus + SumDiscount + SumWallet + 
@@ -99,7 +102,7 @@ namespace ModelMID
         /// <summary>
         /// Знижка для інтерфейсу
         /// </summary>
-        public decimal Discount { get { return SumBonus + SumDiscount + SumWallet +  (PriceDealer > Price ? (PriceDealer * Quantity - Sum) : 0); } }
+        public decimal Discount { get { return SumBonus + SumDiscount + SumWallet + (PriceDealer > Price ? (PriceDealer * Quantity - Sum) : 0); } }
 
         /// <summary>
         /// Приоритет спрацьованої акції
@@ -313,11 +316,11 @@ namespace ModelMID
         {
             get
             {
-                string Res = (IdWorkplacePay > 0 && IdWorkplacePay != IdWorkplace ? "@" : "") + (string.IsNullOrEmpty(History) || CodeUnit != Global.WeightCodeUnit ? "" : $"{History} кг{Environment.NewLine}");
-                if (!string.IsNullOrEmpty(AdditionC1)) Res += ' '+AdditionC1+' ';
+                string Res = ((IdWorkplacePay > 0 && IdWorkplacePay != IdWorkplace) ? "@" : "")+( Country == -2? "✔Нац. кешбек " : "") + (string.IsNullOrEmpty(History) || CodeUnit != Global.WeightCodeUnit ? "" : $"{History} кг{Environment.NewLine}");
+                if (!string.IsNullOrEmpty(AdditionC1)) Res += ' ' + AdditionC1 + ' ';
                 try
                 {
-                    if (ReceiptWaresPromotions?.Any()==true)
+                    if (ReceiptWaresPromotions?.Any() == true)
                     {
                         foreach (var el in ReceiptWaresPromotions)
                         {
@@ -328,7 +331,7 @@ namespace ModelMID
                             Res = Res?.Substring(0, Res.Length - 1);
                     }
                     else
-                     Res+= (string.IsNullOrEmpty(NameDiscount) ? "" : NameDiscount + Environment.NewLine);
+                        Res += (string.IsNullOrEmpty(NameDiscount) ? "" : NameDiscount + Environment.NewLine);
 
                     if (!string.IsNullOrEmpty(ExciseStamp))
                         Res += $"Акцизні марки:{ExciseStamp}";
@@ -404,7 +407,9 @@ namespace ModelMID
         /// 
         /// </summary>
         public string History { get; set; }
-        public List<decimal> HistoryQuantity { get
+        public List<decimal> HistoryQuantity
+        {
+            get
             {
                 List<decimal> Res = new List<decimal>();
                 if (!string.IsNullOrEmpty(History))
@@ -414,23 +419,28 @@ namespace ModelMID
                         Res.Add(item.ToDecimal());
                 }
                 return Res;
-            } }
+            }
+        }
 
         public string Currency { get; set; }
         public int CodeOperator { get; set; }
         public string Operator { get; set; }
-        public int[] Operators { get{               
-                if (!string.IsNullOrEmpty(Operator))                
-                    return Operator.Split(';').Select(el=>el.ToInt()).ToArray();
+        public int[] Operators
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(Operator))
+                    return Operator.Split(';').Select(el => el.ToInt()).ToArray();
                 return new int[0];
-            } }
+            }
+        }
         public string GetPrices { get { return Prices == null ? null : string.Join(";", Prices.Select(n => n.Price.ToString(CultureInfo.InvariantCulture)).ToArray()); } }
         public ReceiptWares()
         {
             Clear();
         }
 
-        
+
         public ReceiptWares(IdReceipt idReceipt) : base(idReceipt)
         {
         }
@@ -483,7 +493,7 @@ namespace ModelMID
 
         public bool IsNeedExciseStamp { get { return TypeWares == eTypeWares.Alcohol && GetExciseStamp.Length < Quantity && !(GetExciseStamp.LastOrDefault()?.Equals("None") == true); } }
 
-        public bool IsBag { get { return Global.Bags==null?false: Global.Bags.Any(el => el == CodeWares); } }
+        public bool IsBag { get { return Global.Bags == null ? false : Global.Bags.Any(el => el == CodeWares); } }
 
         public object Clone()
         {
@@ -618,8 +628,8 @@ namespace ModelMID
             }
             else
             {
-                if (IsWeight && CodeOperator == 0 && Operators?.Any()==true)
-                    CodeOperator = Operators?.FirstOrDefault()??0;
+                if (IsWeight && CodeOperator == 0 && Operators?.Any() == true)
+                    CodeOperator = Operators?.FirstOrDefault() ?? 0;
                 Res.Add(this);
             }
             return Res;
@@ -631,7 +641,7 @@ namespace ModelMID
         /// Місце виготовлення виробу.
         /// </summary>
         public int ProductionLocation { get; set; }
-        public IEnumerable< ReceiptWaresLink> ReceiptWaresLink { get; set; }
+        public IEnumerable<ReceiptWaresLink> ReceiptWaresLink { get; set; }
         /// <summary>
         /// -1 - національний кешбек; -2 - національний кешбек (Оплата); Країна походження;
         /// </summary>

@@ -63,6 +63,8 @@ namespace Front.Control
         }
 
         public decimal MoneySumToRound { get; set; }
+        public decimal CashBackMoneySum { get; set; }
+        public bool IsCashBackPay { get; set; } = false;
 
         MainWindow MW;
 
@@ -133,14 +135,19 @@ namespace Front.Control
         }
         public void Init(MainWindow pMW) { MW = pMW; }
 
-        public void TransferAmounts(decimal moneySum)
+        public void TransferAmounts(decimal pMoneySum, decimal pSumCashBack)
         {
-            MoneySumToRound = moneySum;
+            MW.IsCashBackPay = false;
+            MoneySumToRound = pMoneySum;
+            CashBackMoneySum = pSumCashBack;
             SumCashDisbursement = 0;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MoneySumToRound"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SumCashDisbursement"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCashPayment"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ChangeSumPaymant"));
+            IsCashBackPay = CashBackMoneySum > 0;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCashBackPay)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MoneySumToRound)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CashBackMoneySum)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SumCashDisbursement)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCashPayment)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ChangeSumPaymant)));
 
             EnteringPriceManually = false;
             CalculateReturn();
@@ -432,6 +439,15 @@ namespace Front.Control
         private void OpenMoneyBoxButton(object sender, RoutedEventArgs e)
         {
             MW.StartOpenMoneyBox();
+        }
+
+        private void _ButtonPaymentCashBack(object sender, RoutedEventArgs e)
+        {
+            Rounding();
+            MW.IsCashBackPay = true;
+            //MW?.EF.SetBankTerminal(bank);
+            var task = Task.Run(() => MW.Blf.PrintAndCloseReceipt(null, eTypePay.Card, 0, SumCashDisbursement,0,0,true));
+            MW.GiveRest = 0;
         }
     }
 }

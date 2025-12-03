@@ -474,7 +474,7 @@ namespace Front
                             pReceipt.Wares = rr;
                         }
                         Res = RRO?.PrintReceipt(pReceipt);
-                        var Log = pReceipt.LogRROs?.ToList() ?? new List<LogRRO>();
+                        var Log = pReceipt.LogRROs?.ToList() ?? [];
                         Log.Add(Res);
                         pReceipt.LogRROs = Log;
                         FileLogger.WriteLogMessage(this, NameMetod, "End Print Receipt");
@@ -950,7 +950,7 @@ namespace Front
         /// <param name="pSum"></param>
         /// <param name="pRNN"></param>
         /// <returns></returns>
-        public Payment PosPay(IdReceipt pIdR, decimal pSum, string pRNN, Payment pP = null, decimal pIssuingCash = 0)
+        public Payment PosPay(IdReceipt pIdR, decimal pSum, string pRNN, Payment pP = null, decimal pIssuingCash = 0, bool pIsCashBack = false)
         {
             Payment r = null;
             try
@@ -960,13 +960,14 @@ namespace Front
                 else
                 {
                     if (pSum < 0)
-                        r = Terminal?.Refund(-pSum, pRNN, pIdR.IdWorkplacePay);
+                        r = Terminal?.Refund(-pSum, pRNN, pIdR.IdWorkplacePay, pIsCashBack);
                     else
-                        r = Terminal?.Purchase(pSum, pIssuingCash, pIdR.IdWorkplacePay);
+                        r = Terminal?.Purchase(pSum, pIssuingCash, pIdR.IdWorkplacePay, pIsCashBack);
                     r.SetIdReceipt(pIdR);
                 }
                 if (r.IsSuccess)
                 {
+                    
                     var LP = new List<Payment>() { r };
                     if (pIssuingCash > 0)
                     {
@@ -974,7 +975,7 @@ namespace Front
                         Payment C = (Payment)r.Clone();
                         C.TypePay = eTypePay.IssueOfCash;
                         C.SumPay = pIssuingCash;
-                        C.SumExt = pIssuingCash;
+                        C.SumExt = pIssuingCash;                        
                         LP.Add(C);
                     }
 
