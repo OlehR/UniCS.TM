@@ -250,14 +250,14 @@ namespace Front.Equipments
                     OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.TransactionCanceledByUser });
                     return new Payment() { IsSuccess = false, IsCashBack = pIsCashBack };
                 }
-                //Global.Settings.CashBackCard = ["44838200"];//!!!!TMP
+                //Global.Settings.CashBackCard = [["44838200"]];//!!!!TMP
                 InvokeLastStatusMsg(BPOS.LastStatMsgCode);
                 if (!Is11 && BPOS.LastStatMsgCode == 11)
                 {
                     Is11 = true;
                     if (Global.Settings.CashBackCard?.Count() > 0)
                     {
-                        bool IsCashBackCard = Global.Settings.CashBackCard.Where(el => BPOS.PAN.StartsWith(el))?.Any() == true;
+                        bool IsCashBackCard = Global.Settings.CashBackCard.Where(el => BPOS.PAN.StartsWith(el[0]))?.Any() == true;
                         if (pIsCashBack != IsCashBackCard )
                         {
                             BPOS.Cancel();
