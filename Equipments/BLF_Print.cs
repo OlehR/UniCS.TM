@@ -76,7 +76,7 @@ namespace Front.Equipments
         /// Оплата і Друк чека.
         /// </summary>
         /// <returns></returns>
-        public bool PrintAndCloseReceipt(Receipt pR = null, eTypePay pTP = eTypePay.Card, decimal pSumCash = 0m, decimal pIssuingCash = 0, decimal pSumWallet = 0, decimal pSumBonus = 0)
+        public bool PrintAndCloseReceipt(Receipt pR = null, eTypePay pTP = eTypePay.Card, decimal pSumCash = 0m, decimal pIssuingCash = 0, decimal pSumWallet = 0, decimal pSumBonus = 0, bool pIsCashBack = false)
         {
             bool Res = false;
             string TextError = null;
@@ -149,7 +149,8 @@ namespace Front.Equipments
                         FillPays(R);
                         for (var i = 0; i < IdWorkplacePays.Length; i++)
                         {
-                            if (R.Payment != null && R.Payment.Any(el => el.IdWorkplacePay == IdWorkplacePays[i] && el.TypePay != eTypePay.Wallet))
+                            var SumPay= R.Payment.Where(el => el.IdWorkplacePay == IdWorkplacePays[i] && el.TypePay != eTypePay.Wallet).Sum(el=>el.SumPay);
+                            if (R.Payment != null && ((SumPay>0 && pTP == eTypePay.Cash) ||  (R.SumTotal<= SumPay && pTP == eTypePay.Card)))
                                 continue;
                             R.StateReceipt = eStateReceipt.StartPay;
                             R.IdWorkplacePay = IdWorkplacePays[i];
@@ -173,13 +174,32 @@ namespace Front.Equipments
                             }
                             else
                             {
-                                if (R.TypeReceipt == eTypeReceipt.Refund && PayRefaund != null)
+                                if (pIsCashBack) //2 оплати при використанні карточки нац кешбек
                                 {
-                                    var PayRef = PayRefaund?.Where(el => el.IdWorkplacePay == R.IdWorkplacePay);
-                                    if (PayRef != null && PayRef.Any())
-                                        rrn = PayRef.First().CodeAuthorization;
+                                    bool IsPay = true;
+                                    bool IsCashBackPay = R.Payment?.Any(el => el.IsCashBack) ?? false;
+                                    if (R.SumCashBack > 0 && !IsCashBackPay)
+                                    {
+                                        pay = EF.PosPay(R, R.TypeReceipt == eTypeReceipt.Sale ? R.SumCashBack : -R.SumCashBack, rrn, pay, Global.IdWorkPlaceIssuingCash == IdWorkplacePays[i] ? pIssuingCash : 0, true);
+                                        IsPay = pay.IsSuccess;
+                                    }
+                                    bool IsNormalPay = R.Payment?.Any(el => !el.IsCashBack) ?? false;
+                                    if (sum - R.SumCashBack>0 && IsPay && !IsNormalPay)
+                                    {
+                                        pay = EF.PosPay(R, R.TypeReceipt == eTypeReceipt.Sale ? sum - R.SumCashBack : R.SumCashBack - sum, rrn, null, Global.IdWorkPlaceIssuingCash == IdWorkplacePays[i] ? pIssuingCash : 0, false);
+                                    }
                                 }
-                                pay = EF.PosPay(R, R.TypeReceipt == eTypeReceipt.Sale ? sum : -sum, rrn, pay, Global.IdWorkPlaceIssuingCash == IdWorkplacePays[i] ? pIssuingCash : 0);
+                                else
+                                {
+                                    if (R.TypeReceipt == eTypeReceipt.Refund && PayRefaund != null)
+                                    {
+                                        var PayRef = PayRefaund?.Where(el => el.IdWorkplacePay == R.IdWorkplacePay);
+                                        if (PayRef != null && PayRef.Any())
+                                            rrn = PayRef.First().CodeAuthorization;
+                                    }
+                                    pay = EF.PosPay(R, R.TypeReceipt == eTypeReceipt.Sale ? sum : -sum, rrn, pay, Global.IdWorkPlaceIssuingCash == IdWorkplacePays[i] ? pIssuingCash : 0);
+                                }
+
                             }
                             if (pay != null && pay.IsSuccess)
                             {

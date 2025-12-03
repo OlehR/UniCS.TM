@@ -15,6 +15,10 @@ namespace Front.Equipments
 
     public enum eStatusPos
     {
+        [Description("Заборона використання картки національного кешбека")]
+        CashBackCardUseProhibited = -2,
+        [Description("Картка не національного кешбека")]
+        NoCashBackCard = -1,
         [Description("Код статусу: недоступний")]
         StatusCodeIsNotAvailable = 0,
         [Description("Считування картки")]
@@ -37,7 +41,7 @@ namespace Front.Equipments
         WaitingForCard = 9,
         [Description("В процесі")]
         InProgress = 10,
-        [Description("Правильна трансакція")]
+        [Description("Коригування оплати")]
         CorrectTransaction = 11,
         [Description("Очікування введення PIN-коду")]
         PinInputWaitKey = 12,

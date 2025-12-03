@@ -72,5 +72,7 @@ namespace ModelMID
         {
             return this.MemberwiseClone();
         }
+
+        public bool IsCashBack { get; set; }
     }
 }

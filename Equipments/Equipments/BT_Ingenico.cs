@@ -1,39 +1,41 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using System.Text;
-using ECRCommXLib;
-using Newtonsoft.Json;
-using ModelMID;
-using Utils;
+﻿using ECRCommXLib;
 using Front.Equipments.Utils;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using ModelMID;
+using ModelMID.DB;
+using Newtonsoft.Json;
+using System;
+using System.Text;
+using Utils;
 
 
 namespace Front.Equipments
 {
-    public class BT_Ingenico :BankTerminal, IDisposable
+    public class BT_Ingenico : BankTerminal, IDisposable
     {
         public Action<IPosResponse> OnResponse { get; set; }
         public Action<DeviceLog> OnDeviceWarning { get; set; }
 
         private static BPOS1LibClass BPOS;
-       
-        private byte Port;        
-        
+
+        private byte Port;
+
         private readonly ILogger<BT_Ingenico> Logger;
         private readonly Encoding Encoding1251 = Encoding.GetEncoding(1251);
         private readonly Encoding Encoding1252 = Encoding.GetEncoding(1252);
-        
 
-        public BT_Ingenico(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : 
-                                base(pEquipment, pConfiguration, eModelEquipment.Ingenico, pLoggerFactory,pActionStatus)
-        {            
+
+        public BT_Ingenico(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) :
+                                base(pEquipment, pConfiguration, eModelEquipment.Ingenico, pLoggerFactory, pActionStatus)
+        {
             try
             {
                 State = eStateEquipment.Init;
                 Logger = LoggerFactory?.CreateLogger<BT_Ingenico>();
 
-                byte.TryParse(SerialPort, out Port);   
-               
+                byte.TryParse(SerialPort, out Port);
+
                 SetCodeBank();
             }
             catch (Exception e)
@@ -54,14 +56,14 @@ namespace Front.Equipments
 
         public string GetTerminalID { get { return BPOS.TerminalID; } }
 
-        public override Payment Refund(decimal pAmount, string pRRN, int IdWorkPlace = 0)
+        public override Payment Refund(decimal pAmount, string pRRN, int IdWorkPlace = 0, bool pIsCashBack = false)
         {
-            return Refund(Convert.ToDouble(pAmount), pRRN, IdWorkPlace).Result;
+            return Refund(Convert.ToDouble(pAmount), pRRN, IdWorkPlace, pIsCashBack).Result;
         }
 
 
-        public async Task<Payment> Refund(double amount, string bsRRN,int pIdWorkPlace = 0)
-        {           
+        public async Task<Payment> Refund(double amount, string bsRRN, int pIdWorkPlace = 0, bool pIsCashBack = false)
+        {
             try
             {
                 if (!StartBPOS())
@@ -72,7 +74,7 @@ namespace Front.Equipments
                 CancelRequested = false;
                 BPOS.Refund(Convert.ToUInt32(amount * 100.0), 0U, GetMechantIdByIdWorkPlace(pIdWorkPlace), bsRRN);
                 OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.WaitingForCard });
-                Payment result = WaitPosRespone();
+                Payment result = WaitPosRespone(120, pIsCashBack , Convert.ToUInt32(amount * 100.0));
                 if (result.IsSuccess)
                 {
                     BPOS.Confirm();
@@ -97,7 +99,7 @@ namespace Front.Equipments
         {
             try
             {
-               OnDeviceWarning?.Invoke( new PosDeviceLog() { Category = TerminalLogCategory.All, Message = "[Ingenico] - Start Initialization" });                
+                OnDeviceWarning?.Invoke(new PosDeviceLog() { Category = TerminalLogCategory.All, Message = "[Ingenico] - Start Initialization" });
                 if (!this.StartBPOS())
                 {
                     OnDeviceWarning?.Invoke(new PosDeviceLog() { Category = TerminalLogCategory.Critical, Message = "Device not connected" });
@@ -117,7 +119,7 @@ namespace Front.Equipments
                 ILogger<BT_Ingenico> logger = this.Logger;
                 if (logger != null)
                     LoggerExtensions.LogError((ILogger)logger, ex, ex.Message, Array.Empty<object>());
-                OnDeviceWarning?.Invoke(new PosDeviceLog() { Category = TerminalLogCategory.Critical, Message = "Device not connected" });                
+                OnDeviceWarning?.Invoke(new PosDeviceLog() { Category = TerminalLogCategory.Critical, Message = "Device not connected" });
                 return eDeviceConnectionStatus.NotConnected;
             }
         }
@@ -130,7 +132,7 @@ namespace Front.Equipments
         {
             var r = TestDeviceSync();
             State = r == eDeviceConnectionStatus.Enabled ? eStateEquipment.On : eStateEquipment.Error;
-            if(State == eStateEquipment.On)
+            if (State == eStateEquipment.On)
                 SetCodeBank();
             return new StatusEquipment(eModelEquipment.Ingenico, State, r.ToString());
         }
@@ -143,8 +145,8 @@ namespace Front.Equipments
                 OnDeviceWarning?.Invoke(new PosDeviceLog() { Category = TerminalLogCategory.Critical, Message = "Device not connected" });
                 return connectionStatus;
             }
-            BPOS.Ping();           
-            
+            BPOS.Ping();
+
             if (BPOS.LastResult == (byte)2)
             {
                 int lastResult = (int)BPOS.LastResult;
@@ -178,15 +180,15 @@ namespace Front.Equipments
                 Thread.Sleep(1000);
                 string terminalInfo = BPOS.TerminalInfo;
                 StopBPOS();
-                if(string.IsNullOrEmpty(terminalInfo))
+                if (string.IsNullOrEmpty(terminalInfo))
                     return eBank.NotDefine;
                 var a = terminalInfo.Split('/');
 
                 if (a.Length > 3)
                     return eBank.PrivatBank;
                 else
-                    return terminalInfo.IndexOf("/MTB") > 0 ? eBank.MTB:eBank.OschadBank; //OSCHADBANK               
-            }            
+                    return terminalInfo.IndexOf("/MTB") > 0 ? eBank.MTB : eBank.OschadBank; //OSCHADBANK               
+            }
             return eBank.NotDefine;
         }
 
@@ -211,7 +213,7 @@ namespace Front.Equipments
                     if (a.Length > 2)
                         str += $"{Environment.NewLine}TerminalId: {a[1]}{Environment.NewLine}";
                     str += $"{Environment.NewLine}TerminalInfo: {terminalInfo}";
-                    str += $"{Environment.NewLine}MerchantId=>{MerchantId}"; 
+                    str += $"{Environment.NewLine}MerchantId=>{MerchantId}";
                 }
                 return str;
             }
@@ -224,10 +226,11 @@ namespace Front.Equipments
         }
 
         //public Task<string> GetInfoAsync() => Task.Run<string>((Func<string>)(() => this.GetInfoSync()));
-        public Payment WaitPosRespone(int pTime=120)
+        public Payment WaitPosRespone(int pTime = 120, bool pIsCashBack=false, uint pSum = 0)
         {
+            bool Is11=false;
             pTime *= 2;
-            while (BPOS.LastResult == (byte)2 &&  pTime>0)
+            while (BPOS.LastResult == (byte)2 && pTime > 0)
             {
                 LoggerExtensions.LogDebug((ILogger)Logger, "[Ingenico] WaitPosRespone *");
                 if (CancelRequested)
@@ -236,27 +239,45 @@ namespace Front.Equipments
                     BPOS.Cancel();
                     Thread.Sleep(1000);
                     OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.TransactionCanceledByUser });
-                    return new Payment() { IsSuccess = false };
+                    return new Payment() { IsSuccess = false, IsCashBack= pIsCashBack };
                 }
                 Thread.Sleep(500);
-                pTime--;               
+                pTime--;
                 if (Logger != null)
                     LoggerExtensions.LogDebug((ILogger)Logger, string.Format("[Ingenico] LastStatMsgCode = {0}\n", (object)BPOS.LastStatMsgCode) + "[Ingenico] Description = " + this.GetString(BPOS.LastStatMsgDescription) + "\n[Ingenico] LastErrorDescription = " + this.GetString(BPOS.LastErrorDescription) + "\n" + string.Format("[Ingenico] LastResult = {0}\n", (object)BPOS.LastResult) + string.Format("[Ingenico] LastErrorCode = {0}", (object)BPOS.LastErrorCode), Array.Empty<object>());
                 if (BPOS == null)
                 {
                     OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.TransactionCanceledByUser });
-                    return new Payment() { IsSuccess = false };
+                    return new Payment() { IsSuccess = false, IsCashBack = pIsCashBack };
                 }
+                //Global.Settings.CashBackCard = ["44838200"];//!!!!TMP
                 InvokeLastStatusMsg(BPOS.LastStatMsgCode);
+                if (!Is11 && BPOS.LastStatMsgCode == 11)
+                {
+                    Is11 = true;
+                    if (Global.Settings.CashBackCard?.Count() > 0)
+                    {
+                        bool IsCashBackCard = Global.Settings.CashBackCard.Where(el => BPOS.PAN.StartsWith(el))?.Any() == true;
+                        if (pIsCashBack != IsCashBackCard )
+                        {
+                            BPOS.Cancel();
+                            Thread.Sleep(1000);
+                            OnStatus?.Invoke(new PosStatus() { Status = pIsCashBack ? eStatusPos.NoCashBackCard:eStatusPos.CashBackCardUseProhibited });
+                            return new Payment() { IsSuccess = false, IsCashBack = pIsCashBack };
+                        }
+                    }
+                    BPOS.CorrectTransaction(pSum, 0);
+                    pTime = 240;
+                }
             }
 
             if (Logger != null)
-            {              
+            {
                 LoggerExtensions.LogDebug((ILogger)Logger, string.Format("[Ingenico] LastStatMsgCode = {0}\n", (object)BPOS.LastStatMsgCode) + "[Ingenico] Description = " + this.GetString(BPOS.LastStatMsgDescription) + "\n[Ingenico] LastErrorDescription = " + this.GetString(BPOS.LastErrorDescription) + "\n" + string.Format("[Ingenico] LastResult = {0}\n", (object)BPOS.LastResult) + string.Format("[Ingenico] LastErrorCode = {0}", (object)BPOS.LastErrorCode), Array.Empty<object>());
             }
             if (BPOS.LastResult == (byte)0 && BPOS.LastErrorCode == (byte)0)
-            {             
-                OnStatus?.Invoke(new PosStatus(){ Status = eStatusPos.SuccessfullyFulfilled});
+            {
+                OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.SuccessfullyFulfilled });
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"RRN=>{BPOS.RRN} TerminalID=>{BPOS.TerminalID} InvoiceNum={BPOS.InvoiceNum} Amount=>{BPOS.Amount} AddAmount=>{BPOS.AddAmount} ", eTypeLog.Full);
                 return new Payment()
                 {
@@ -275,18 +296,19 @@ namespace Front.Equipments
                     IssuerName = this.GetString(BPOS.IssuerName),
                     Bank = this.GetString(BPOS.ECRDataTM),
                     CodeBank = this.CodeBank,
-                    MerchantID=BPOS.MerchantID
+                    MerchantID = BPOS.MerchantID,                    
+                    IsCashBack = pIsCashBack
                     //Receipt= this.ParseReceipt(BPOS.Receipt)
                 };
             }
-            
+
             if (BPOS.LastResult == (byte)1)
-            {  
+            {
                 switch (BPOS.LastErrorCode)
-                {                    
+                {
                     case 1:
-                        OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.ErrorOpeningCOMPort});
-                        OnDeviceWarning?.Invoke( new PosDeviceLog() { Category = TerminalLogCategory.Warning, Message = "[Ingenico] Error open connection" });
+                        OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.ErrorOpeningCOMPort });
+                        OnDeviceWarning?.Invoke(new PosDeviceLog() { Category = TerminalLogCategory.Warning, Message = "[Ingenico] Error open connection" });
                         //State = eStateEquipment.Error;
                         break;
                     case 2:
@@ -304,17 +326,17 @@ namespace Front.Equipments
                         break;
                 }
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"LastResult=>{BPOS.LastResult} LastErrorCode={BPOS.LastErrorCode} ResponseCode=>{BPOS.ResponseCode}", eTypeLog.Error);
-                if(BPOS.LastErrorCode > 0 && BPOS.LastErrorCode<4)
+                if (BPOS.LastErrorCode > 0 && BPOS.LastErrorCode < 4)
                 {
                     //OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.ErrorCommunication });
                     StopBPOS();
                     Thread.Sleep(1000);
                     OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.TestDevice });
-                    var r=TestDeviceSync();
+                    var r = TestDeviceSync();
                     if (r != eDeviceConnectionStatus.Enabled)
-                     State = eStateEquipment.Error;
+                        State = eStateEquipment.Error;
                 }
-            }            
+            }
             return new Payment() { IsSuccess = false };
         }
 
@@ -342,7 +364,7 @@ namespace Front.Equipments
                     break;
                 case 6:
                     OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.CommonErrorNeedToRepeat });
-                    OnDeviceWarning?.Invoke( new PosDeviceLog() { Category = TerminalLogCategory.Warning, Message = "[Ingenico] Common error need repeat" });                   
+                    OnDeviceWarning?.Invoke(new PosDeviceLog() { Category = TerminalLogCategory.Warning, Message = "[Ingenico] Common error need repeat" });
                     break;
                 case 7:
                     OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.AuthorizationRejectedWithdrawTheCardAtTheBanksRequest });
@@ -373,7 +395,7 @@ namespace Front.Equipments
                 case 30:
                     OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.WrongFormatNeedToRepeat });
                     OnDeviceWarning?.Invoke(new PosDeviceLog() { Category = TerminalLogCategory.Warning, Message = "[Ingenico] Worng format need to repeat" });
-                              break;
+                    break;
                 case 31:
                     OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.TheIssuerIsNotFoundInThePaymentSystem });
                     break;
@@ -494,7 +516,7 @@ namespace Front.Equipments
                 case 92:
                     OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.UnsuccessfulRequestRoutingIsNotPossibleNetworkError });
                     OnDeviceWarning?.Invoke(new PosDeviceLog() { Category = TerminalLogCategory.Warning, Message = "[Ingenico] General network error" });
-                break;
+                    break;
                 case 93:
                     OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.TheTransactionCanNotBeCompletedTheIssuerDeclineAuthorizationDueToAViolationOfTheRules });
                     break;
@@ -513,7 +535,7 @@ namespace Front.Equipments
                     OnDeviceWarning?.Invoke(new PosDeviceLog() { Category = TerminalLogCategory.Warning, Message = "[Ingenico] General error" });
                     break;
                 case 1001:
-                    OnStatus?.Invoke( new PosStatus(){ Status = eStatusPos.TransactionCanceledByUser});
+                    OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.TransactionCanceledByUser });
                     break;
                 case 1002:
                     OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.EMVDecline });
@@ -530,10 +552,10 @@ namespace Front.Equipments
                     OnDeviceWarning?.Invoke(new PosDeviceLog() { Category = TerminalLogCategory.Warning, Message = "[Ingenico] Paper was ended" });
                     break;
                 case 1006:
-                    OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.ErrorCryptoKeys });                    
+                    OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.ErrorCryptoKeys });
                     break;
                 case 1007:
-                    OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.CardReaderIsNotConnected });                    
+                    OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.CardReaderIsNotConnected });
                     break;
                 case 1008:
                     OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.TransactionIsAlreadyComplete });
@@ -541,9 +563,9 @@ namespace Front.Equipments
             }
         }
 
-        
 
-        public void Settlement(byte pMerchantId=0)
+
+        public void Settlement(byte pMerchantId = 0)
         {
             if (!this.StartBPOS())
                 return;
@@ -564,16 +586,16 @@ namespace Front.Equipments
             return r.Result;
         }
 
-        public async Task<BatchTotals> GetXZ(bool IsX=true, int pIdWorkPlace = 0)
+        public async Task<BatchTotals> GetXZ(bool IsX = true, int pIdWorkPlace = 0)
         {
             byte MerchantId = GetMechantIdByIdWorkPlace(pIdWorkPlace);
             if (!this.StartBPOS())
                 return (BatchTotals)null;
-            if(IsX)
+            if (IsX)
                 BPOS.PrintBatchTotals(MerchantId);
             else
-            BPOS.Settlement(MerchantId);
-            this.WaitResponse();            
+                BPOS.Settlement(MerchantId);
+            this.WaitResponse();
             BatchTotals batchTotals = new BatchTotals()
             {
                 DebitCount = BPOS.TotalsDebitNum,
@@ -581,7 +603,7 @@ namespace Front.Equipments
                 CreditCount = BPOS.TotalsCreditNum,
                 CreditSum = BPOS.TotalsCreditAmt,
                 CencelledCount = BPOS.TotalsCancelledNum,
-                CencelledSum = BPOS.TotalsCancelledAmt,      
+                CencelledSum = BPOS.TotalsCancelledAmt,
             };
             batchTotals.Receipt = GetLastReceipt(false);
             StopBPOS();
@@ -597,7 +619,7 @@ namespace Front.Equipments
             StopBPOS();
         }
 
-        private bool WaitResponse(int pTime=90)
+        private bool WaitResponse(int pTime = 90)
         {
             if (BPOS == null)
                 return false;
@@ -606,13 +628,14 @@ namespace Front.Equipments
             return BPOS.LastResult == 0;
         }
 
-        public async Task<BatchTotals> GetBatchTotals(byte pMerchantId=0)
+        public async Task<BatchTotals> GetBatchTotals(byte pMerchantId = 0)
         {
             if (!this.StartBPOS())
                 return (BatchTotals)null;
             BPOS.GetBatchTotals(pMerchantId);
             this.WaitResponse();
-            BatchTotals batchTotals = new BatchTotals() {
+            BatchTotals batchTotals = new BatchTotals()
+            {
                 DebitCount = BPOS.TotalsDebitNum,
                 DebitSum = BPOS.TotalsDebitAmt,
                 CreditCount = BPOS.TotalsCreditNum,
@@ -624,8 +647,8 @@ namespace Front.Equipments
             StopBPOS();
             return batchTotals;
         }
-        
-        public void PrintBatchJournal(byte pMerchantId=0)
+
+        public void PrintBatchJournal(byte pMerchantId = 0)
         {
             if (!this.StartBPOS())
                 return;
@@ -633,7 +656,7 @@ namespace Front.Equipments
             StopBPOS();
         }
 
-        public void PrintLastSettleCopy(byte pMerchantId=0)
+        public void PrintLastSettleCopy(byte pMerchantId = 0)
         {
             if (!this.StartBPOS())
                 return;
@@ -641,12 +664,12 @@ namespace Front.Equipments
             StopBPOS();
         }
 
-        public override Payment Purchase(decimal pAmount, decimal pCash = 0, int IdWorkPlace = 0)
+        public override Payment Purchase(decimal pAmount, decimal pCash = 0, int IdWorkPlace = 0, bool pIsCashBack = false)
         {
-            return PurchaseAsync(pAmount, pCash, IdWorkPlace).Result;
+            return PurchaseAsync(pAmount, pCash, IdWorkPlace, pIsCashBack).Result;
         }
 
-        public Task<Payment> PurchaseAsync(decimal amount,decimal pCash, int pIdWorkPlace = 0)
+        public Task<Payment> PurchaseAsync(decimal amount, decimal pCash, int pIdWorkPlace = 0,bool pIsCashBack=false)
         {
             uint Sum = (uint)(amount * 100m), SumCash = (uint)(pCash * 100m);
             try
@@ -655,18 +678,18 @@ namespace Front.Equipments
                 if (!this.StartBPOS())
                     return Task.FromResult<Payment>(new Payment() { IsSuccess = false });
                 CancelRequested = false;
-                if(SumCash > 0)
+                if (SumCash > 0)
                 {
-                    string ScenarioData = CodeBank == eBank.PrivatBank?
+                    string ScenarioData = CodeBank == eBank.PrivatBank ?
                         $"<ActionScenarioRequest><Action>CashBack</Action><Amount>{Sum}</Amount><AddAmount>{SumCash}</AddAmount><MerchIdx>{MechantId}</MerchIdx></ActionScenarioRequest>" :
                         $"<ActionScenarioRequest><Action>CashBack</Action><Amount>{Sum}</Amount><CashAmount>{SumCash}</CashAmount><MerchantId>{MechantId}</MerchantId></ActionScenarioRequest>";
-                    BPOS.StartScenario( CodeBank==eBank.PrivatBank?2u:6u, ScenarioData);
+                    BPOS.StartScenario(CodeBank == eBank.PrivatBank ? 2u : 6u, ScenarioData);
                 }
                 else
-                 BPOS.Purchase(Sum, 0, MechantId);
+                    BPOS.Purchase(Sum, 0, MechantId);
 
-                OnStatus?.Invoke(new PosStatus() {  Status = eStatusPos.WaitingForCard });
-                Payment result = WaitPosRespone();                
+                OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.WaitingForCard });
+                Payment result = WaitPosRespone(120, pIsCashBack, Sum);
                 if (Logger != null)
                     LoggerExtensions.LogDebug(Logger, "[Ingenico] Purches " + JsonConvert.SerializeObject(result));
                 if (result.IsSuccess)
@@ -675,12 +698,12 @@ namespace Front.Equipments
                     Payment Res = WaitPosRespone(20);
                     if (!Res.IsSuccess)
                         result = Res;
-                }              
-                
+                }
+
                 if (OnResponse != null) OnResponse((IPosResponse)new PayPosResponse() { Response = result });
 
-               //if (result.IsSuccess)
-                 //   result.Receipt = GetLastReceipt(false);
+                //if (result.IsSuccess)
+                //   result.Receipt = GetLastReceipt(false);
 
                 StopBPOS();
                 return Task.FromResult<Payment>(result);
@@ -688,7 +711,7 @@ namespace Front.Equipments
             catch (Exception ex)
             {
                 LoggerExtensions.LogError((ILogger)this.Logger, ex, "[Ingenico] " + ex.Message);
-                return Task.FromResult<Payment>(new Payment(){ IsSuccess = false });
+                return Task.FromResult<Payment>(new Payment() { IsSuccess = false });
             }
             finally
             {
@@ -729,7 +752,7 @@ namespace Front.Equipments
         }
 
         private bool StartBPOS()
-        {           
+        {
             int num = 120;
             while (BPOS != null)
             {

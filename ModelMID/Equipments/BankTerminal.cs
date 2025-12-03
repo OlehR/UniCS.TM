@@ -32,8 +32,8 @@ namespace Front.Equipments
 
         virtual public BatchTotals PrintZ(int IdWorkPlace = 0) { throw new NotImplementedException(); }
         virtual public BatchTotals PrintX(int IdWorkPlace = 0) { throw new NotImplementedException(); }
-        public virtual Payment Purchase(decimal pAmount, decimal pCash = 0, int IdWorkPlace = 0) { throw new NotImplementedException(); }
-        public virtual Payment Refund(decimal pAmount, string pRRN, int IdWorkPlace = 0) { throw new NotImplementedException(); }
+        public virtual Payment Purchase(decimal pAmount, decimal pCash = 0, int IdWorkPlace = 0, bool pIsCashBack = false) { throw new NotImplementedException(); }
+        public virtual Payment Refund(decimal pAmount, string pRRN, int IdWorkPlace = 0, bool pIsCashBack = false) { throw new NotImplementedException(); }
 
         public virtual IEnumerable<string> GetLastReceipt() { throw new NotImplementedException(); }
 

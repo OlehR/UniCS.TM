@@ -54,7 +54,7 @@ namespace Front.Equipments.Implementation
             };
         }
 
-        public override Payment Purchase(decimal pAmount,decimal pCash, int IdWorkPlace = 0)
+        public override Payment Purchase(decimal pAmount,decimal pCash, int IdWorkPlace = 0, bool pIsCashBack = false)
         {
             int Interval = 500;
             SetStatus(eStatusPos.WaitingForCard);
@@ -66,7 +66,7 @@ namespace Front.Equipments.Implementation
             return GetPaymentResultModel(pAmount+ pCash);
         }
 
-        public override Payment Refund(decimal pAmount, string pRRN, int IdWorkPlace = 0)
+        public override Payment Refund(decimal pAmount, string pRRN, int IdWorkPlace = 0, bool pIsCashBack = false)
         {
             return GetPaymentResultModel(pAmount);
         }

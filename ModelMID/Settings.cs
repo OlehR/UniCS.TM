@@ -96,6 +96,7 @@ namespace ModelMID
         public IEnumerable<FlagColor> FlagColor { get; set; }
         public  DeltaWeight[] DeltaWeight { get; set; }
         public long[] CodeWaresGiftCart { get; set; }
+        public IEnumerable<string> CashBackCard { get; set; }
 
     }
 }
