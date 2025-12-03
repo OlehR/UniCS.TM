@@ -67,15 +67,18 @@ namespace Utils
         {
             try
             {
+                //if (!Directory.Exists(pPath))
+                //    Directory.CreateDirectory(pPath);
                 string zipFileName = pZipFileName ?? Path.Combine(Path.GetDirectoryName(pPath), Path.GetFileNameWithoutExtension(pPath)+".zip");
                 string fileName = Path.GetFileName(pPath);
                 using FileStream fs = new FileStream(zipFileName, FileMode.Create);
                 using ZipArchive arch = new ZipArchive(fs, ZipArchiveMode.Create);
-                arch.CreateEntryFromFile(pPath, fileName);             
+                arch.CreateEntryFromFile(pPath, fileName);
+                FileLogger.WriteLogMessage("FileAndDir", $"BildZIP", $"{zipFileName}");
             }
             catch (Exception e)
             {
-                FileLogger.WriteLogMessage($"BildZIP Error: {e.Message}{Environment.NewLine}{e.StackTrace}");
+                FileLogger.WriteLogMessage("FileAndDir", $"BildZIP", e);
                 return false;
             }
             return true;
