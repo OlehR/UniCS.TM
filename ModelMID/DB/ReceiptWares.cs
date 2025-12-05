@@ -335,6 +335,7 @@ namespace ModelMID
 
                     if (!string.IsNullOrEmpty(ExciseStamp))
                         Res += $"Акцизні марки:{ExciseStamp}";
+                    if (TypePrice == eTypePrice.PDDiscontMin) Res += $"Обмеження мін. ціни ({ParPrice1})";
                 }
                 catch (Exception e) { }
                 //

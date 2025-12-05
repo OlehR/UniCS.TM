@@ -391,7 +391,7 @@ namespace SharedLib
                             }
                             else
                             {
-                                RW.Price = MPI.GetPrice(Res.Price, Res.IsIgnoreMinPrice == 0, Res.CodePs > 0);
+                                RW.Price = MPI.GetPrice(Res.Price, Res.IsIgnoreMinPrice == 0, Res.CodePs > 0&& Res.TypeDiscount!= eTypeDiscount.PercentDiscount);
                                 RW.TypePrice = MPI.typePrice;
                                 RW.ParPrice1 = Res.CodePs;
                                 RW.ParPrice2 = (Res.IsOneTime?-1:1)* (long)Res.TypeDiscount;
