@@ -42,6 +42,7 @@
                         <TextBlock Text="Сума бонусів в гривнях:" FontSize="24" FontWeight="Bold" Margin="2"/>
                         <TextBlock Text="Номер телефону:" FontSize="24" FontWeight="Bold" Margin="2"/>
                         <TextBlock Text="Другий номер телефону:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                        <TextBlock Text="Тип картки:" FontSize="24" FontWeight="Bold" Margin="2"/>
                         <TextBlock Text="Відсоток знижки:" FontSize="24" FontWeight="Bold" Margin="2"/>
                         <TextBlock Text="Відсоток перерахування:" FontSize="24" FontWeight="Bold" Margin="2"/>
                         <TextBlock Text="Штрих-код картки:" FontSize="24" FontWeight="Bold" Margin="2"/>
@@ -63,6 +64,8 @@
 
                         <TextBlock Text="{Binding Client.PhoneAdd}" 
                            FontSize="24" FontWeight="Bold" Margin="2"/>
+                        <TextBlock Text="{Binding Client.NameDiscount}" 
+                            FontSize="24" FontWeight="Bold" Margin="2"/>
 
                         <TextBlock Text="{Binding Client.PersentDiscount, StringFormat={}{0}%}" 
                            FontSize="24" FontWeight="Bold" Margin="2"/>
