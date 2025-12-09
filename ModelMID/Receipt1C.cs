@@ -127,19 +127,21 @@ namespace ModelMID
     {
         public int Order { get; set; }
         public long CodeWares { get; set; }
-        public string CodeWares1С { get; set; }
+        public string CodeWares1C { get; set; }
         public decimal Quantity { get; set; }
         public string AbrUnit { get; set; }
         public decimal Price { get; set; }
+        public decimal PriceDealer { get; set; }        
         public decimal SumDiscount { get; set; }
         public decimal Sum { get; set; }
         public bool IsPromotion { get {return  (CodePS > 1000000); } }
-        private Int64 CodePS { get; set; }
-            
+        private Int64 CodePS { get; set; }            
         public decimal SumBonus { get; set; }        
         public string BarCode2Category { get; set; }
-        public int YearPS { get { return CodePS>20000000 ? Convert.ToInt32(CodePS.ToString().Substring((CodePS > 100000000 ? 1 : 0), 4)):0; } }
-        public int NumberPS { get { return CodePS > 20000000 ? Convert.ToInt32(CodePS.ToString().Substring((CodePS > 100000000 ? 1 : 0)+4)):0; } }
+        //public int YearPS { get { return CodePS>20000000 ? Convert.ToInt32(CodePS.ToString().Substring((CodePS > 100000000 ? 1 : 0), 4)):0; } }
+        public int YearPS { get { return CodePS == 0 ? 0 : Convert.ToInt32(CodePS.ToString().Substring(CodePS.ToString().StartsWith("20") ? 0 : 1, 4));}}
+        public int NumberPS //{ get { return CodePS > 0 ? 2 : 0; } } //TMP!!!!
+                            { get { return CodePS > 20000000 ? Convert.ToInt32(CodePS.ToString().Substring((CodePS > 100000000 ? 1 : 0)+4)):0; } }
         public string ManualPercentDiscount { get { return string.IsNullOrEmpty(BarCode2Category) || BarCode2Category.Length != 13 ? null : BarCode2Category.Substring(3, 2); } }
         public int TypeDiscount { get { return string.IsNullOrEmpty(BarCode2Category) || BarCode2Category.Length != 13 ? 0:1; } }
         /// <summary>
@@ -154,6 +156,7 @@ namespace ModelMID
             Quantity = pRW.Quantity;
             AbrUnit = pRW.AbrUnit;
             Price = pRW.Price;
+            PriceDealer = pRW.PriceDealer;
             SumDiscount = pRW.SumDiscount+pRW.SumWallet;
             Sum = pRW.Sum - SumDiscount- pRW.SumBonus + pRW.Delta; 
             CodePS = //pRW.ReceiptWaresPromotions?.Any()==true? pRW.ReceiptWaresPromotions.Where(el=> el.TypeDiscount ).FirstO Code_PS
