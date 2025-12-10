@@ -101,7 +101,7 @@ namespace Front.Control
             IsPaymentBonuses = MW.Client != null && MW.Client?.SumMoneyBonus >= MoneySum && MW.curReceipt.IsOnlyOrdinary; // оплата бонусами
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsRounding")); // вертає тру якщо є юзер і впливає на панель з можливою знижкою по гаманцю і на кнопки округлення
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SumMaxWallet"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsPaymentBonuses")); 
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsPaymentBonuses"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsUseСertificate)));
 
             Rounding();
@@ -141,7 +141,7 @@ namespace Front.Control
             MoneySumToRound = pMoneySum;
             CashBackMoneySum = pSumCashBack;
             SumCashDisbursement = 0;
-            IsCashBackPay = CashBackMoneySum > 0;
+            IsCashBackPay = CashBackMoneySum > 0 && Global.IdWorkPlaces.Count() == 1;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCashBackPay)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MoneySumToRound)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CashBackMoneySum)));
@@ -330,9 +330,9 @@ namespace Front.Control
         }
 
         private void CalculateReturn()
-    {
+        {
             if (ChangeSumPaymantDecimal > 0) // це поле це таж сама ціна просто з строки в decimal
-                    RestMoney = Math.Round((ChangeSumPaymantDecimal - Convert.ToDecimal(MoneySumToRound)), 2); //решта
+                RestMoney = Math.Round((ChangeSumPaymantDecimal - Convert.ToDecimal(MoneySumToRound)), 2); //решта
             else
                 RestMoney = 0;
         }
@@ -446,7 +446,7 @@ namespace Front.Control
             Rounding();
             MW.IsCashBackPay = true;
             //MW?.EF.SetBankTerminal(bank);
-            var task = Task.Run(() => MW.Blf.PrintAndCloseReceipt(null, eTypePay.Card, 0, SumCashDisbursement,0,0,true));
+            var task = Task.Run(() => MW.Blf.PrintAndCloseReceipt(null, eTypePay.Card, 0, SumCashDisbursement, 0, 0, true));
             MW.GiveRest = 0;
         }
     }
