@@ -502,7 +502,7 @@ sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_
  code_bonus as CodeBonus, sum_bonus as SumBonus, sum_cash as SumCash, sum_credit_card as SumCreditCard, code_outcome as CodeOutcome, 
  code_credit_card as CodeCreditCard, number_slip as NumberSlip,NUMBER_RECEIPT_POS as NumberReceiptPOS, number_tax_income as NumberTaxIncome,USER_CREATE as UseCreate, Date_Create as DateCreate,
  ADDITION_N1 as AdditionN1,ADDITION_N2 as AdditionN2, ADDITION_N3 as AdditionN3,
- ADDITION_C1 as AdditionC1,ADDITION_D1 as AdditionD1, 
+ ADDITION_C1 as AdditionC1, ADDITION_С2 as AdditionCashBack,ADDITION_D1 as AdditionD1, 
  Id_Workplace_Refund as IdWorkplaceRefund,
 Code_Period_Refund as CodePeriodRefund,
 Code_Receipt_Refund as CodeReceiptRefund,
@@ -575,7 +575,7 @@ sum_receipt, vat_receipt, code_pattern, state_receipt, code_client,
  code_bonus, sum_bonus, sum_cash, Sum_Wallet, sum_credit_card, code_outcome, 
  code_credit_card, number_slip,Number_Receipt_POS, number_tax_income,USER_CREATE,
  ADDITION_N1,ADDITION_N2,ADDITION_N3,
- ADDITION_C1,ADDITION_D1,Type_Receipt, 
+ ADDITION_C1, ADDITION_С2, ADDITION_D1,Type_Receipt, 
  Id_Workplace_Refund,Code_Period_Refund,Code_Receipt_Refund,Number_Order,Sum_Fiscal
  ) values 
  (@IdWorkplace, @CodePeriod, @CodeReceipt,  @DateReceipt, @TypeWorkplace,
@@ -584,7 +584,7 @@ sum_receipt, vat_receipt, code_pattern, state_receipt, code_client,
  0, @SumBonus, @SumCash, @SumWallet, @SumCreditCard, 0, 
  @CodeCreditCard, @NumberSlip,@NumberReceiptPOS, 0,@UserCreate,
  @AdditionN1,@AdditionN2,@AdditionN3,
- @AdditionC1,@AdditionD1,@TypeReceipt,
+ @AdditionC1, @AdditionCashBack,@AdditionD1,@TypeReceipt,
  @IdWorkplaceRefund,@CodePeriodRefund, @CodeReceiptRefund,@NumberOrder,@SumFiscal
  )";
 

@@ -130,6 +130,7 @@ namespace ModelMID
         public decimal AdditionN2 { get; set; }
         public decimal AdditionN3 { get; set; }
         public string AdditionC1 { get; set; }
+        public string AdditionCashBack { get; set; }
         public DateTime AdditionD1 { get; set; }
 
         public IdReceipt RefundId { get; set; }

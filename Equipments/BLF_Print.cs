@@ -102,6 +102,7 @@ namespace Front.Equipments
 
                         IEnumerable<Payment> PayRefaund = (R.TypeReceipt == eTypeReceipt.Refund ? Bl.GetPayment(R.RefundId) : null);
                         string rrn = R.AdditionC1;
+                        string rrnCashBack = R.AdditionCashBack;
                         if (pSumWallet != 0 || pSumBonus != 0)
                         {
 
@@ -180,12 +181,19 @@ namespace Front.Equipments
                                     bool IsCashBackPay = R.Payment?.Any(el => el.IsCashBack) ?? false;
                                     if (R.SumCashBack > 0 && !IsCashBackPay)
                                     {
+                                        var PayRef = PayRefaund?.Where(el => el.IdWorkplacePay == R.IdWorkplacePay && el.IsCashBack );
+                                        if (PayRef != null && PayRef.Any())
+                                            rrn = PayRef.First().CodeAuthorization;
                                         pay = EF.PosPay(R, R.TypeReceipt == eTypeReceipt.Sale ? R.SumCashBack : -R.SumCashBack, rrn, pay, Global.IdWorkPlaceIssuingCash == IdWorkplacePays[i] ? pIssuingCash : 0, true);
                                         IsPay = pay.IsSuccess;
                                     }
                                     bool IsNormalPay = R.Payment?.Any(el => !el.IsCashBack) ?? false;
                                     if (sum - R.SumCashBack>0 && IsPay && !IsNormalPay)
                                     {
+                                        var PayRef = PayRefaund?.Where(el => el.IdWorkplacePay == R.IdWorkplacePay && !el.IsCashBack);
+                                        if (PayRef != null && PayRef.Any())
+                                            rrn = PayRef.First().CodeAuthorization;
+                                        Thread.Sleep(2000);// таймаут для другої оплати оскільки термінал не відразу реагує на наступний запит
                                         pay = EF.PosPay(R, R.TypeReceipt == eTypeReceipt.Sale ? sum - R.SumCashBack : R.SumCashBack - sum, rrn, null, Global.IdWorkPlaceIssuingCash == IdWorkplacePays[i] ? pIssuingCash : 0, false);
                                     }
                                 }

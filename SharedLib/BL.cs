@@ -694,7 +694,8 @@ namespace SharedLib
             {
                 var NewR = GetNewIdReceipt(IdR.IdWorkplace);
                 var R = GetReceiptHead(IdR, true);
-                R.AdditionC1 = R.Payment?.First()?.CodeAuthorization;
+                R.AdditionC1 = R.Payment?.Where(x=>x.IsCashBack != true)?.First()?.CodeAuthorization;
+                R.AdditionCashBack = R.Payment?.Where(x => x.IsCashBack == true)?.First()?.CodeAuthorization;
                 R.Payment = null;
                 R.ReceiptEvent = null;
                 R.DateReceipt = DateTime.Now;
