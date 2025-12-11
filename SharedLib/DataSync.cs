@@ -35,14 +35,14 @@ namespace SharedLib
             }
         }
         public DataSync(BL pBL)
-        {            
+        {
             if (pBL != null)
             {
                 bl = pBL; ///!!!TMP Трохи костиль 
                 StartSyncData();
             }
         }
-        bool IsSync(int p) => true ;
+        bool IsSync(int p) => true;
 
         public async Task<bool> SyncDataAsync(bool parIsFull = false)
         {
@@ -62,7 +62,7 @@ namespace SharedLib
                     await SendAllReceipt().ConfigureAwait(false);
 
                 if (CurDate.Hour < 7)
-                {                    
+                {
                     await LoadWeightKasa2PeriodAsync();
                 }
                 if (parIsFull)
@@ -85,11 +85,11 @@ namespace SharedLib
                 var t = new System.Timers.Timer(Global.DataSyncTime);
                 t.AutoReset = true;
                 t.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-                t.Start();               
+                t.Start();
             }
         }
 
-        private async void OnTimedEvent(Object source, ElapsedEventArgs e) => await SyncDataAsync();        
+        private async void OnTimedEvent(Object source, ElapsedEventArgs e) => await SyncDataAsync();
 
         public bool SendReceiptTo1C(IdReceipt pIdR)
         {
@@ -171,7 +171,7 @@ namespace SharedLib
                     {
                         db.SetConfig<DateTime>("Load_Full", DateTime.Now.Date.AddDays(-1).Date);
                         db.SetConfig<DateTime>("Load_Update", DateTime.Now.Date.AddDays(-1).Date);
-                        
+
                         Exception Ex = null;
                         if (File.Exists(varMidFile))
                         {
@@ -216,17 +216,17 @@ namespace SharedLib
                     MidData r = null;
                     //if (Global.IsHttp){
                     bool IsReloadFull = pIsFull;
-                        r = AsyncHelper.RunSync(() => LoadDataAsync(Global.IdWorkPlace, IsFull, NameDB, MessageNoMin, IsReloadFull));
-                        pD = new(NameDB);
-                        if (!IsFull)
-                        { 
-                            /* (IsFull)
-                            {
-                                pD.ExecuteNonQuery(SQLiteMid.SqlCreateMIDTable);
-                                pD.SetVersion(SQLiteMid.VerMID);
-                            }*/
-                            LoadDataSQL(pD, r);
-                        }
+                    r = AsyncHelper.RunSync(() => LoadDataAsync(Global.IdWorkPlace, IsFull, NameDB, MessageNoMin, IsReloadFull));
+                    pD = new(NameDB);
+                    if (!IsFull)
+                    {
+                        /* (IsFull)
+                        {
+                            pD.ExecuteNonQuery(SQLiteMid.SqlCreateMIDTable);
+                            pD.SetVersion(SQLiteMid.VerMID);
+                        }*/
+                        LoadDataSQL(pD, r);
+                    }
                     /*}
                     else
                     {
@@ -240,7 +240,7 @@ namespace SharedLib
                     }*/
                     if (r == null)
                     {
-                        Global.OnSyncInfoCollected?.Invoke(new SyncInformation {  Status = (IsFull ? eSyncStatus.Error : eSyncStatus.NoFatalError), StatusDescription = $"LoadData return null value" });
+                        Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = (IsFull ? eSyncStatus.Error : eSyncStatus.NoFatalError), StatusDescription = $"LoadData return null value" });
                         return false;
                     }
                     if (r?.WorkPlace?.Any() == true)
@@ -250,7 +250,7 @@ namespace SharedLib
                         FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Write SqlGetDimWorkplace => {r?.WorkPlace?.Count()}");
                         Global.BildWorkplace(r.WorkPlace);
                     }
-                    int MessageNMax = r?.MessageNoMax ?? 0;                   
+                    int MessageNMax = r?.MessageNoMax ?? 0;
                     if (IsFull)
                     {
                         int CW = pD.ExecuteScalar<int>("select count(*) from wares");
@@ -263,7 +263,7 @@ namespace SharedLib
                             {
                                 db.Close(true);
                                 File.Move(NameDB, varMidFile);
-                                db.SetConfig<DateTime>("Load_Full", DateTime.Now);                               
+                                db.SetConfig<DateTime>("Load_Full", DateTime.Now);
                                 db.GetDB();
                                 FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Set config LastMidFile=> {db.LastMidFile}");
                             }
@@ -339,7 +339,7 @@ namespace SharedLib
                 bool isCalc = false;
                 while (pDT < DateTime.Now.Date)
                 {
-                    isCalc= await LoadWeightKasa2Async(pDT);
+                    isCalc = await LoadWeightKasa2Async(pDT);
                     pDT = pDT.AddDays(1);
                     isCalc = true;
                 }
@@ -355,7 +355,7 @@ namespace SharedLib
         }
 
         public async Task<bool> LoadWeightKasa2Async(DateTime parDT)
-        {  
+        {
             try
             {
                 using var ldb = new WDB_SQLite(parDT);
@@ -374,7 +374,7 @@ namespace SharedLib
                     if (!string.IsNullOrEmpty(res))
                     {
                         var Res = Newtonsoft.Json.JsonConvert.DeserializeObject<Status>(res);
-                        return Res?.status??false;
+                        return Res?.status ?? false;
                     }
                 }
             }
@@ -383,9 +383,9 @@ namespace SharedLib
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "LoadWeightKasa2=> " + ex.Message });
             }
             return false;
-        }      
+        }
 
-public async Task<string> GetQrCoffe(ReceiptWares pReceiptWares, int pOrder, int pWait = 5)
+        public async Task<string> GetQrCoffe(ReceiptWares pReceiptWares, int pOrder, int pWait = 5)
         {
             var Url = "https://dashboard.prostopay.net/api/v1/qreceipt/generate";
             string res = null;
@@ -463,8 +463,8 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             }
         }
 
-        public async Task<eReturnClient> SendClientAsync(ClientNew pC)=> await DataSync1C.Send1CClientAsync(pC);
-        
+        public async Task<eReturnClient> SendClientAsync(ClientNew pC) => await DataSync1C.Send1CClientAsync(pC);
+
         public async Task Send1CClientAsync()
         {
             DateTime Ldc, Today = DateTime.Now.Date;
@@ -564,7 +564,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                    {
                        res = await response.Content.ReadAsStringAsync();
                        Res = Newtonsoft.Json.JsonConvert.DeserializeObject<Status<string>>(res);
-                       return ;
+                       return;
                    }
                }
                catch (Exception e) { new Status<string>(e); return; }
@@ -606,7 +606,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             return null;
         }
 
-        public ExciseStamp CheckExciseStamp(ExciseStamp pES, int pWait = 1000) => AsyncHelper.RunSync (() => CheckExciseStampAsync(pES, pWait));        
+        public ExciseStamp CheckExciseStamp(ExciseStamp pES, int pWait = 1000) => AsyncHelper.RunSync(() => CheckExciseStampAsync(pES, pWait));
 
         public async Task<Status> SendReceipt(Receipt pR)
         {
@@ -619,7 +619,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             }
             try
             {
-                HttpClient client = new(){ Timeout = TimeSpan.FromMilliseconds(20000)};
+                HttpClient client = new() { Timeout = TimeSpan.FromMilliseconds(20000) };
 
                 HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "Receipt");
                 string data = pR.ToJson();
@@ -898,15 +898,15 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             return null;
         }
 
-        public async Task<MidData> LoadDataAsync(int pIdWorkPlace, bool pIsFull, string pPathDB, int pMessageNoMin,bool pIsReloadFull)
+        public async Task<MidData> LoadDataAsync(int pIdWorkPlace, bool pIsFull, string pPathDB, int pMessageNoMin, bool pIsReloadFull)
         {
-            var res = await LoadDataAsync(new InLoadData() { IdWorkPlace = pIdWorkPlace, IsFull = pIsFull, MessageNoMin = pMessageNoMin,IsReloadFull= pIsReloadFull });
+            var res = await LoadDataAsync(new InLoadData() { IdWorkPlace = pIdWorkPlace, IsFull = pIsFull, MessageNoMin = pMessageNoMin, IsReloadFull = pIsReloadFull });
             var Res = res?.Info;
             if (!string.IsNullOrEmpty(Res?.PathMid))
             {
                 string Zip = Path.Combine(Path.GetDirectoryName(pPathDB), Path.GetFileName(Res.PathMid));
-                if(Res.PathMid.StartsWith("http"))
-                    Http.LoadFile(Res.PathMid,Zip);
+                if (Res.PathMid.StartsWith("http"))
+                    Http.LoadFile(Res.PathMid, Zip);
                 else
                     File.Copy(Res.PathMid, Zip, true);
                 if (File.Exists(Zip))
@@ -931,8 +931,8 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                 {
                     Timeout = TimeSpan.FromMilliseconds(90000)
                 };
-                HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "CashRegister/LoadData");              
-       
+                HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "CashRegister/LoadData");
+
                 requestMessage.Content = new StringContent(pData.ToJson(), Encoding.UTF8, "application/json");
                 var response = await client.SendAsync(requestMessage);
                 if (response.IsSuccessStatusCode)
@@ -940,14 +940,16 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     var res = await response.Content.ReadAsStringAsync();
                     if (!string.IsNullOrEmpty(res))
                     {
-                        var r =Newtonsoft.Json.JsonConvert.DeserializeObject
-                         //JsonSerializer.Deserialize
+                        var r = Newtonsoft.Json.JsonConvert.DeserializeObject
+                            //JsonSerializer.Deserialize
                             <Result<MidData>>(res);
                         return r;
                     }
                 }
             }
-            catch (Exception e) { FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e); 
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e);
                 return new Result<MidData>(e);
             }
             return null;
@@ -955,7 +957,9 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
 
         public bool LoadDataSQL(SQLiteMid pD, MidData pMD)
         {
-            string MethodName = MethodBase.GetCurrentMethod().Name?? "DataSync.LoadDataSQL";
+            if (pMD == null)
+                return false;
+            string MethodName = MethodBase.GetCurrentMethod().Name ?? "DataSync.LoadDataSQL";
             try
             {
                 pD.ReplaceWaresLink(pMD.WaresLink);

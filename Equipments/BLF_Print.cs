@@ -150,8 +150,8 @@ namespace Front.Equipments
                         FillPays(R);
                         for (var i = 0; i < IdWorkplacePays.Length; i++)
                         {
-                            var SumPay= R.Payment.Where(el => el.IdWorkplacePay == IdWorkplacePays[i] && el.TypePay != eTypePay.Wallet).Sum(el=>el.SumPay);
-                            if (R.Payment != null && ((SumPay>0 && pTP == eTypePay.Cash) ||  (R.SumTotal<= SumPay && pTP == eTypePay.Card)))
+                            var SumPay = R.Payment.Where(el => el.IdWorkplacePay == IdWorkplacePays[i] && el.TypePay != eTypePay.Wallet).Sum(el => el.SumPay);
+                            if (R.Payment != null && ((SumPay > 0 && pTP == eTypePay.Cash) || (R.SumTotal <= SumPay && pTP == eTypePay.Card) || pTP == eTypePay.Bonus))
                                 continue;
                             R.StateReceipt = eStateReceipt.StartPay;
                             R.IdWorkplacePay = IdWorkplacePays[i];
@@ -173,42 +173,40 @@ namespace Front.Equipments
                                 pay = EF.CashMachinePay(R, Rro.GetSumRoundCash(pSumCash) * 100m, pay);
                                 Bl.db.ReplacePayment(pay, true);
                             }
-                            else
+                            else if (pIsCashBack) //2 оплати при використанні карточки нац кешбек
                             {
-                                if (pIsCashBack) //2 оплати при використанні карточки нац кешбек
+                                bool IsPay = true;
+                                bool IsCashBackPay = R.Payment?.Any(el => el.IsCashBack) ?? false;
+                                if (R.SumCashBack > 0 && !IsCashBackPay)
                                 {
-                                    bool IsPay = true;
-                                    bool IsCashBackPay = R.Payment?.Any(el => el.IsCashBack) ?? false;
-                                    if (R.SumCashBack > 0 && !IsCashBackPay)
-                                    {
-                                        var PayRef = PayRefaund?.Where(el => el.IdWorkplacePay == R.IdWorkplacePay && el.IsCashBack );
-                                        if (PayRef != null && PayRef.Any())
-                                            rrn = PayRef.First().CodeAuthorization;
-                                        pay = EF.PosPay(R, R.TypeReceipt == eTypeReceipt.Sale ? R.SumCashBack : -R.SumCashBack, rrn, pay, Global.IdWorkPlaceIssuingCash == IdWorkplacePays[i] ? pIssuingCash : 0, true);
-                                        IsPay = pay.IsSuccess;
-                                    }
-                                    bool IsNormalPay = R.Payment?.Any(el => !el.IsCashBack) ?? false;
-                                    if (sum - R.SumCashBack>0 && IsPay && !IsNormalPay)
-                                    {
-                                        var PayRef = PayRefaund?.Where(el => el.IdWorkplacePay == R.IdWorkplacePay && !el.IsCashBack);
-                                        if (PayRef != null && PayRef.Any())
-                                            rrn = PayRef.First().CodeAuthorization;
-                                        Thread.Sleep(2000);// таймаут для другої оплати оскільки термінал не відразу реагує на наступний запит
-                                        pay = EF.PosPay(R, R.TypeReceipt == eTypeReceipt.Sale ? sum - R.SumCashBack : R.SumCashBack - sum, rrn, null, Global.IdWorkPlaceIssuingCash == IdWorkplacePays[i] ? pIssuingCash : 0, false);
-                                    }
+                                    var PayRef = PayRefaund?.Where(el => el.IdWorkplacePay == R.IdWorkplacePay && el.IsCashBack);
+                                    if (PayRef != null && PayRef.Any())
+                                        rrn = PayRef.First().CodeAuthorization;
+                                    pay = EF.PosPay(R, R.TypeReceipt == eTypeReceipt.Sale ? R.SumCashBack : -R.SumCashBack, rrn, pay, Global.IdWorkPlaceIssuingCash == IdWorkplacePays[i] ? pIssuingCash : 0, true);
+                                    IsPay = pay.IsSuccess;
                                 }
-                                else
+                                bool IsNormalPay = R.Payment?.Any(el => !el.IsCashBack) ?? false;
+                                if (sum - R.SumCashBack > 0 && IsPay && !IsNormalPay)
                                 {
-                                    if (R.TypeReceipt == eTypeReceipt.Refund && PayRefaund != null)
-                                    {
-                                        var PayRef = PayRefaund?.Where(el => el.IdWorkplacePay == R.IdWorkplacePay);
-                                        if (PayRef != null && PayRef.Any())
-                                            rrn = PayRef.First().CodeAuthorization;
-                                    }
-                                    pay = EF.PosPay(R, R.TypeReceipt == eTypeReceipt.Sale ? sum : -sum, rrn, pay, Global.IdWorkPlaceIssuingCash == IdWorkplacePays[i] ? pIssuingCash : 0);
+                                    var PayRef = PayRefaund?.Where(el => el.IdWorkplacePay == R.IdWorkplacePay && !el.IsCashBack);
+                                    if (PayRef != null && PayRef.Any())
+                                        rrn = PayRef.First().CodeAuthorization;
+                                    Thread.Sleep(2000);// таймаут для другої оплати оскільки термінал не відразу реагує на наступний запит
+                                    pay = EF.PosPay(R, R.TypeReceipt == eTypeReceipt.Sale ? sum - R.SumCashBack : R.SumCashBack - sum, rrn, null, Global.IdWorkPlaceIssuingCash == IdWorkplacePays[i] ? pIssuingCash : 0, false);
                                 }
-
                             }
+                            else if(pTP==eTypePay.Card)
+                            {
+                                if (R.TypeReceipt == eTypeReceipt.Refund && PayRefaund != null)
+                                {
+                                    var PayRef = PayRefaund?.Where(el => el.IdWorkplacePay == R.IdWorkplacePay);
+                                    if (PayRef != null && PayRef.Any())
+                                        rrn = PayRef.First().CodeAuthorization;
+                                }
+                                pay = EF.PosPay(R, R.TypeReceipt == eTypeReceipt.Sale ? sum : -sum, rrn, pay, Global.IdWorkPlaceIssuingCash == IdWorkplacePays[i] ? pIssuingCash : 0);
+                            }
+
+
                             if (pay != null && pay.IsSuccess)
                             {
                                 R.StateReceipt = (i == IdWorkplacePays.Length - 1 ? eStateReceipt.Pay : eStateReceipt.PartialPay);

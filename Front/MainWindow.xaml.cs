@@ -761,7 +761,7 @@ namespace Front
                             WaresList.SelectedIndex = WaresList.Items.Count - 1;
                         ScrolDown();
                     }));
-                    if (OldClient?.CodeClient != 0 && curReceipt.CodeClient != 0 && curReceipt.Client == null && OldClient.CodeClient == curReceipt.CodeClient)
+                    if (OldClient?.CodeClient != 0 && curReceipt.CodeClient != 0 && curReceipt.Client == null && OldClient?.CodeClient == curReceipt.CodeClient)
                     {
                         curReceipt.Client = OldClient;
                     }
