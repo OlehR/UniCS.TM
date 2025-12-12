@@ -151,10 +151,12 @@ namespace Front.Equipments
                         for (var i = 0; i < IdWorkplacePays.Length; i++)
                         {
                             var SumPay = R.Payment.Where(el => el.IdWorkplacePay == IdWorkplacePays[i] && el.TypePay != eTypePay.Wallet).Sum(el => el.SumPay);
-                            if (R.Payment != null && ((SumPay > 0 && pTP == eTypePay.Cash) || (R.SumTotal <= SumPay && pTP == eTypePay.Card) || pTP == eTypePay.Bonus))
-                                continue;
                             R.StateReceipt = eStateReceipt.StartPay;
                             R.IdWorkplacePay = IdWorkplacePays[i];
+                            if (R.WorkplacePays[i].Sum == 0 || (R.Payment != null && ((SumPay > 0 && pTP == eTypePay.Cash) || (R.SumTotal <= SumPay && pTP == eTypePay.Card && pIsCashBack) || pTP == eTypePay.Bonus) ||
+                                (R.Payment.Any(el => el.IdWorkplacePay == IdWorkplacePays[i] && el.TypePay == eTypePay.Card) && pTP == eTypePay.Card && !pIsCashBack)))
+                                continue;
+
                             Bl.SetStateReceipt(MW.curReceipt, eStateReceipt.StartPay);
                             decimal sum = R.WorkplacePays[i].Sum;
                             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Sum={sum}", eTypeLog.Expanded);
@@ -195,7 +197,7 @@ namespace Front.Equipments
                                     pay = EF.PosPay(R, R.TypeReceipt == eTypeReceipt.Sale ? sum - R.SumCashBack : R.SumCashBack - sum, rrn, null, Global.IdWorkPlaceIssuingCash == IdWorkplacePays[i] ? pIssuingCash : 0, false);
                                 }
                             }
-                            else if(pTP==eTypePay.Card)
+                            else if (pTP == eTypePay.Card)
                             {
                                 if (R.TypeReceipt == eTypeReceipt.Refund && PayRefaund != null)
                                 {
