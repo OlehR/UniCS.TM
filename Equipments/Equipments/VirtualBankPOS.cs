@@ -28,7 +28,7 @@ namespace Front.Equipments.Implementation
             TransactionCode += rnd.Next(1, 1000000);
             ActionStatus = pActionStatus;
         }
-        Payment GetPaymentResultModel(decimal pAmount)
+        Payment GetPaymentResultModel(decimal pAmount, bool pIsCashBack = false)
         {
             LastSum = pAmount;
             Sum += pAmount;
@@ -49,6 +49,7 @@ namespace Front.Equipments.Implementation
                 NumberTerminal = "SML_Local",
                 NumberSlip = $"{TransactionCode++}",
                 IsSuccess = true,
+                IsCashBack = pIsCashBack,
                 Receipt = GetLastReceipt()
             //new List<string>() { "Тестовий Чек", $"Сума: {pAmount}",$"CodeAuthorization{AuthCode}","Тестова Оплата" }                
             };
@@ -63,12 +64,12 @@ namespace Front.Equipments.Implementation
             Thread.Sleep(Interval);
             SetStatus(eStatusPos.TransactionIsAlreadyComplete);
             Thread.Sleep(Interval);
-            return GetPaymentResultModel(pAmount+ pCash);
+            return GetPaymentResultModel(pAmount+ pCash, pIsCashBack);
         }
 
         public override Payment Refund(decimal pAmount, string pRRN, int IdWorkPlace = 0, bool pIsCashBack = false)
         {
-            return GetPaymentResultModel(pAmount);
+            return GetPaymentResultModel(pAmount, pIsCashBack);
         }
 
         BatchTotals GetBatchTotals()

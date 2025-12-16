@@ -119,6 +119,22 @@
                     <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
                         <Setter Property="Visibility" Value="Collapsed"/>
                         <Style.Triggers>
+                            <DataTrigger Binding="{Binding TypeReturn, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" Value="FirstTerminal">
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TypeReturn, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" Value="SecondTerminal">
+                                <Setter Property="IsEnabled" Value="True" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TypeReturn, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" Value="AllPayments">
+                                <Setter Property="IsEnabled" Value="True" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TypeReturn, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" Value="CashBackPay">
+                                <Setter Property="IsEnabled" Value="True" />
+                            </DataTrigger>
                             <DataTrigger Binding="{Binding IsCashBackPay, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=UserControl}}" Value="True">
                                 <Setter Property="Visibility" Value="Visible" />
@@ -165,6 +181,10 @@
                                    Mode=FindAncestor, AncestorType=UserControl}}" Value="AllPayments">
                                 <Setter Property="IsEnabled" Value="True" />
                             </DataTrigger>
+                            <DataTrigger Binding="{Binding TypeReturn, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" Value="CashBackPay">
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
                             <DataTrigger Binding="{Binding IsUseСertificate, RelativeSource={RelativeSource 
                                Mode=FindAncestor, AncestorType=UserControl}}" Value="True">
                                 <Setter Property="IsEnabled" Value="False" />
@@ -207,6 +227,10 @@
                                    Mode=FindAncestor, AncestorType=UserControl}}" Value="AllPayments">
                                 <Setter Property="IsEnabled" Value="True" />
                             </DataTrigger>
+                            <DataTrigger Binding="{Binding TypeReturn, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" Value="CashBackPay">
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
                             <DataTrigger Binding="{Binding IsUseСertificate, RelativeSource={RelativeSource 
                                  Mode=FindAncestor, AncestorType=UserControl}}" Value="True">
                                 <Setter Property="IsEnabled" Value="False" />
@@ -246,6 +270,10 @@
                             <DataTrigger Binding="{Binding TypeReturn, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=UserControl}}" Value="AllPayments">
                                 <Setter Property="IsEnabled" Value="True" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TypeReturn, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" Value="CashBackPay">
+                                <Setter Property="IsEnabled" Value="False" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding IsUseСertificate, RelativeSource={RelativeSource 
                                 Mode=FindAncestor, AncestorType=UserControl}}" Value="True">
