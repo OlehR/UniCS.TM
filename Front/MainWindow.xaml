@@ -162,7 +162,7 @@
                                             </Style>
                                         </TextBlock.Style>
                                     </TextBlock>
-                                    <TextBlock  FontSize="22" Text="Сума бонусів: ">
+                                    <TextBlock  FontSize="22" Text="Сума балів: ">
                                         <TextBlock.Style>
                                             <Style TargetType="TextBlock">
                                                 <Setter Property="Foreground" Value="Gray"/>

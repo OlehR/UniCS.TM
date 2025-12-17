@@ -330,11 +330,11 @@ namespace ModelMID
                     if (!string.IsNullOrEmpty(Client.NameClient))
                         Res.Add(Client.NameClient);
                     if (Client.SumBonus > 0)
-                        Res.Add($"Бонуси:{Client.SumBonus}");
+                        Res.Add($"Бали:{Client.SumBonus}");
                     if (Client.Wallet > 0)
                         Res.Add($"Скарбничка:{Client.Wallet}");
                     if (SumBonus > 0)
-                        Res.Add($"Списані бонусні грн:{SumBonus}");
+                        Res.Add($"Списані бали грн:{SumBonus}");
                 }
                 return Res;
             }

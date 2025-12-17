@@ -38,8 +38,8 @@
                     <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="30,0,0,0">
                         <TextBlock Text="Ім'я:" FontSize="24" FontWeight="Bold" Margin="2"/>
                         <TextBlock Text="Сума на скарбничці:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                        <TextBlock Text="Сума бонусів:" FontSize="24" FontWeight="Bold" Margin="2"/>
-                        <TextBlock Text="Сума бонусів в гривнях:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                        <TextBlock Text="Сума балів:" FontSize="24" FontWeight="Bold" Margin="2"/>
+                        <TextBlock Text="Сума балів в гривнях:" FontSize="24" FontWeight="Bold" Margin="2"/>
                         <TextBlock Text="Номер телефону:" FontSize="24" FontWeight="Bold" Margin="2"/>
                         <TextBlock Text="Другий номер телефону:" FontSize="24" FontWeight="Bold" Margin="2"/>
                         <TextBlock Text="Тип картки:" FontSize="24" FontWeight="Bold" Margin="2"/>

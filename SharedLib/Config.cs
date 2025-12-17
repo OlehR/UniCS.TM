@@ -172,8 +172,8 @@ namespace SharedLib
             catch
             { Global.IsHttp = true; }*/
 
-            var IdWorkPlaces = new List<IdWorkPlaces>();
-            var _IdWorkPlaces = new List<int>() { Global.IdWorkPlace };
+            List<IdWorkPlaces> IdWorkPlaces = new();
+            List<int> _IdWorkPlaces = new() { Global.IdWorkPlace };
             if (Global.Settings?.IdWorkPlaceLink > 0)
                 _IdWorkPlaces.Add(Global.Settings.IdWorkPlaceLink);
 
@@ -191,6 +191,7 @@ namespace SharedLib
                         Global.IdWorkPlacePayTM.Add(TM, el.IdWorkPlace);
             }
             Global.IdWorkPlaces = _IdWorkPlaces.Distinct();
+
             try
             {
                 Global.IsTest = Convert.ToBoolean(AppConfiguration["MID:IsTest"]);
