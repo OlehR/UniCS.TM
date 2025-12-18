@@ -263,6 +263,13 @@ namespace Front.Equipments
                     if (Global.Settings.CashBackCard?.Count() > 0)
                     {
                         bool IsCashBackCard = Global.Settings.CashBackCard.Where(el => BPOS.PAN.StartsWith(el[0]))?.Any() == true;
+                        if(pIsCashBack && !string.IsNullOrEmpty(BPOS.PAN) && BPOS.PAN.Length==16 && BPOS.PAN[8]>='0'&& BPOS.PAN[8] <= '9')
+                        {
+                            BPOS.Cancel();
+                            Thread.Sleep(1000);
+                            OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.TerminalNotReadyCashBack });
+                            return new Payment() { IsSuccess = false, IsCashBack = pIsCashBack };
+                        }
                         if (pIsCashBack != IsCashBackCard )
                         {
                             BPOS.Cancel();

@@ -15,6 +15,8 @@ namespace Front.Equipments
 
     public enum eStatusPos
     {
+        [Description("Термінал не готовий для розрахунку національним кешбеком")]
+        TerminalNotReadyCashBack = -3,
         [Description("Заборона використання картки національного кешбека")]
         CashBackCardUseProhibited = -2,
         [Description("Картка не національного кешбека")]

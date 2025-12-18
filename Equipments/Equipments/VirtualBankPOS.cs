@@ -44,7 +44,7 @@ namespace Front.Equipments.Implementation
                 PosPaid = pAmount,
                 SumPay = pAmount,
                 SumExt = 0,
-                NumberCard = "******0123",
+                NumberCard = "XXXXXXXXXXXX0123",
                 CodeAuthorization = $"{AuthCode++}",
                 NumberTerminal = "SML_Local",
                 NumberSlip = $"{TransactionCode++}",
