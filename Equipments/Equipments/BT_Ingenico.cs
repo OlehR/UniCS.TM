@@ -72,7 +72,7 @@ namespace Front.Equipments
                         IsSuccess = false
                     };
                 CancelRequested = false;
-                BPOS.Refund(Convert.ToUInt32(amount * 100.0), 0U, GetMechantIdByIdWorkPlace(pIdWorkPlace), bsRRN);
+                BPOS.Refund(Convert.ToUInt32(amount * 100.0), 0U, GetMechantIdByIdWorkPlace(pIdWorkPlace, pIsCashBack), bsRRN);
                 OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.WaitingForCard });
                 Payment result = WaitPosRespone(120, pIsCashBack , Convert.ToUInt32(amount * 100.0));
                 if (result.IsSuccess)
@@ -688,7 +688,7 @@ namespace Front.Equipments
             uint Sum = (uint)(amount * 100m), SumCash = (uint)(pCash * 100m);
             try
             {
-                byte MechantId = GetMechantIdByIdWorkPlace(pIdWorkPlace);
+                byte MechantId = GetMechantIdByIdWorkPlace(pIdWorkPlace, pIsCashBack);
                 if (!this.StartBPOS())
                     return Task.FromResult<Payment>(new Payment() { IsSuccess = false });
                 CancelRequested = false;

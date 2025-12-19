@@ -44,10 +44,16 @@ namespace Front.Equipments
             ActionStatus?.Invoke(new PosStatus() { Status = pStatus, ModelEquipment = Model, State = (int)pStatus, TextState = pStatus.ToString() });
         }
 
-        public byte GetMechantIdByIdWorkPlace(int pIdWorkPlace)
+        public byte GetMechantIdByIdWorkPlace(int pIdWorkPlace, bool pIsCashBack = false)
         {
             if(Merchants!=null)
             {
+                if(pIsCashBack)
+                {
+                    var r = Merchants.Where(el => el.IdWorkplace == -pIdWorkPlace).FirstOrDefault();
+                    if (r != null)
+                        return r.MerchantId;
+                }
                 var res=Merchants.Where(el=> el.IdWorkplace== pIdWorkPlace).FirstOrDefault();
                 if (res != null)
                     return res.MerchantId;
