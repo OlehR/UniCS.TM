@@ -268,6 +268,7 @@ namespace Front.Equipments
                             BPOS.Cancel();
                             Thread.Sleep(1000);
                             OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.TerminalNotReadyCashBack });
+                            FileLogger.WriteLogMessage("BT_Ingenico", "WaitPosRespone", $"pIsCashBack=>{pIsCashBack} IsCashBackCard=>{IsCashBackCard} {BPOS.PAN}");
                             return new Payment() { IsSuccess = false, IsCashBack = pIsCashBack };
                         }
                         if (pIsCashBack != IsCashBackCard )
@@ -275,6 +276,7 @@ namespace Front.Equipments
                             BPOS.Cancel();
                             Thread.Sleep(1000);
                             OnStatus?.Invoke(new PosStatus() { Status = pIsCashBack ? eStatusPos.NoCashBackCard:eStatusPos.CashBackCardUseProhibited });
+                            FileLogger.WriteLogMessage("BT_Ingenico", "WaitPosRespone", $"pIsCashBack=>{pIsCashBack} IsCashBackCard=>{IsCashBackCard} {BPOS.PAN}");
                             return new Payment() { IsSuccess = false, IsCashBack = pIsCashBack };
                         }
                     }
