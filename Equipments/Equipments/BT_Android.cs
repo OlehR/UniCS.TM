@@ -2,12 +2,8 @@
 using Microsoft.Extensions.Configuration;
 using ModelMID;
 using RJCP.IO.Ports;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
 using Utils;
 
 namespace Front.Equipments.Implementation
