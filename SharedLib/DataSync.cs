@@ -448,7 +448,20 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                 {
                     using var ldb = new WDB_SQLite(Ldc);
                     var t = ldb.GetReceiptWaresDeleted();
-                    var res = await DataSync1C.Send1CReceiptWaresDeletedAsync(t);
+                    //var res = await DataSync1C.Send1CReceiptWaresDeletedAsync(t);
+                    HttpClient client = new();
+                    client.Timeout = TimeSpan.FromMilliseconds(3000);
+
+                    HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Global.Api + "Send1CReceiptWaresDeleted");
+                    string data = t.ToJson();
+                    requestMessage.Content = new StringContent(data, Encoding.UTF8, "application/json");
+                    var response = await client.SendAsync(requestMessage);
+                    bool res = false;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var Res = await response.Content.ReadAsStringAsync();
+                        res = "true".Equals(Res);                        
+                    }
 
                     if (res)
                         db.SetConfig<DateTime>("LastDaySendDeleted", Ldc);
@@ -463,7 +476,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             }
         }
 
-        public async Task<eReturnClient> SendClientAsync(ClientNew pC) => await DataSync1C.Send1CClientAsync(pC);
+        public async Task<eReturnClient> SendClientAsync(ClientNew pC) => await Send1CClientAsync(pC);//DataSync1C.Send1CClientAsync(pC);
 
         public async Task Send1CClientAsync()
         {
@@ -690,9 +703,10 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     try
                     {
                         ///!!!TMP треба буде перейти на цей механізм
-                        _ = CheckOneTime(new OneTime(pIdReceipt) { CodePS = Cat2First.CodePS, TypeData = Model.eTypeCode.BarCode2Category, CodeData = pBarCode.ToLong() });
+                        var R = await CheckOneTime(new OneTime(pIdReceipt) { CodePS = Cat2First.CodePS, TypeData = Model.eTypeCode.BarCode2Category, CodeData = pBarCode.ToLong() });
+                        isGood = !(R == null || !R.status || R.Data == null || !pIdReceipt.Equals(R.Data));
 
-                        isGood = await DataSync1C.IsUseDiscountBarCode(pBarCode);
+                            //isGood = await DataSync1C.IsUseDiscountBarCode(pBarCode);
                         Global.ErrorDiscountOnLine = 0;
                     }
                     catch (Exception ex)

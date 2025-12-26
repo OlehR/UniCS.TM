@@ -132,9 +132,10 @@ namespace SharedLib
             eReturnClient Res = eReturnClient.ErrorConnect;
             if (pC == null)
                 return eReturnClient.Error;
+            string body=null;
             try
             {
-                var body = SoapTo1C.GenBody("IssuanceOfCards", new Parameters[]
+                body = SoapTo1C.GenBody("IssuanceOfCards", new Parameters[]
                 {
                     new Parameters("CardId", pC.BarcodeClient),
                     new Parameters("User",pC.BarcodeCashier),
@@ -161,7 +162,7 @@ namespace SharedLib
             }
             catch (Exception ex)
             {
-                FileLogger.WriteLogMessage("DataSync1C\\Send1CClientAsync", System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
+                FileLogger.WriteLogMessage("DataSync1C\\Send1CClientAsync", body, ex);
             }
             return Res;
         }
