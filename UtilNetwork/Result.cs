@@ -3,31 +3,41 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 
+
 namespace UtilNetwork
 {
     public class Result
     {
         public int State { get; set; } = 0;
         public bool Success { get { return State == 0; } }
+        [Obsolete("Proporty is deprecated, please use Success")]
+        public bool status { get { return State == 0; } }
         public string TextError { get; set; }
-        public string Info { get; set; }
+        [Obsolete("Proporty is deprecated, please use TextError")]
+        public string TextState { get { return TextError; } set { TextError = value; } }
+        [Obsolete("Proporty is deprecated, please use Data")]
+        [System.Text.Json.Serialization.JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        public string Info { get { return Data; } set { Data = value; } }
+        //public eStateHTTP StateHTTP { get; set; }
+        public string Data { get; set; }
         public eStateHTTP StateHTTP { get; set; } = eStateHTTP.HTTP_OK;
 
         public Result():this(0) { }        
 
-        public Result(int pState = 0, string pTextError = "Ok", string pInfo = "")
+        public Result(int pState = 0, string pTextError = "Ok", string pData = "")
         {
             State = pState;
             TextError = pTextError;
-            Info = pInfo;
+            Data = pData;
         }
         public Result(HttpStatusCode p)
         {
             State =  ((int)p >= 200) && ((int)p <= 299) ? 0: (int)p;
             TextError = p.ToString();
-            Info = "";
+            Data = "";
         }
-        public Result(HttpResult httpResult, string pInfo = null)
+        public Result(HttpResult httpResult, string pData = null)
         {
             StateHTTP = httpResult.HttpState;
             if (httpResult.HttpState != eStateHTTP.HTTP_OK)                
@@ -36,7 +46,7 @@ namespace UtilNetwork
                 TextError = httpResult.HttpState.ToString();
             }
             
-            Info = pInfo?? httpResult.Result;
+            Data = pData?? httpResult.Result;
         }
         public Result(Exception e)
         {
@@ -49,18 +59,21 @@ namespace UtilNetwork
     {
         //public int State { get; set; } = 0;
         //public string TextError { get; set; }
-        public new T Info { get; set; }
+        [Obsolete("Proporty is deprecated, please use Data")]
+        [System.Text.Json.Serialization.JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        public new T Info { get { return Data; } set { Data = value; } }
         //public eStateHTTP StateHTTP { get; set; }
-
+        public new T Data { get; set; }
         public Result() : base() { }
 
         public Result(Result pR):base(pR.State, pR.TextError){ }
 
         public Result(int pState = 0, string pTextError = "Ok"):base(pState, pTextError) { }        
 
-        public Result(HttpResult httpResult, T pInfo =default ):base(httpResult)
+        public Result(HttpResult httpResult, T pData =default ):base(httpResult)
         {            
-            Info = pInfo;
+            Data = pData;
         }
         public Result(Exception e) : base(e) { }
         

@@ -102,7 +102,7 @@ namespace SharedLib
             var R = ldb.ViewReceipt(pIdR, true);
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            _ = DataSync1C.SendReceiptTo1CAsync(R, ldb);
+            //_ = DataSync1C.SendReceiptTo1CAsync(R, ldb);
             _ = SendReceipt(R); // В сховище чеків
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             return true;
@@ -115,7 +115,7 @@ namespace SharedLib
             foreach (var el in varReceipts)
             {
                 var R = varDB.ViewReceipt(el, true);
-                await DataSync1C.SendReceiptTo1CAsync(R, varDB);
+               // await DataSync1C.SendReceiptTo1CAsync(R, varDB);
                 _ = SendReceipt(R); // В сховище чеків
             }
             if (parDB == null)
@@ -644,7 +644,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     if (!string.IsNullOrEmpty(res))
                     {
                         var Res = Newtonsoft.Json.JsonConvert.DeserializeObject<Status>(res);
-                        if (Res.State == 0 && !Global.Settings.IsSend1C)
+                        if (Res.State == 0 ) //&& !Global.Settings.IsSend1C)
                         {
                             pR.StateReceipt = eStateReceipt.Send;
                             db.SetStateReceipt(pR);

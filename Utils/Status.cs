@@ -6,6 +6,7 @@ namespace Utils
     /// <summary>
     /// Клас з статусом виконання
     /// </summary>
+    [Obsolete("Class is deprecated, please use Result")]
     public class Status
     {
         /// <summary>
@@ -49,6 +50,7 @@ namespace Utils
             TextState = "Ok";
         }
     }
+    [Obsolete("Class is deprecated, please use Result")]
     public class Status<D> : Status
     {
         public D Data { get; set; }
