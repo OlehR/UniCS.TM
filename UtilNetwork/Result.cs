@@ -60,8 +60,8 @@ namespace UtilNetwork
         //public int State { get; set; } = 0;
         //public string TextError { get; set; }
         [Obsolete("Proporty is deprecated, please use Data")]
-        [System.Text.Json.Serialization.JsonIgnore]
-        [Newtonsoft.Json.JsonIgnore]
+        //[System.Text.Json.Serialization.JsonIgnore]
+        //[Newtonsoft.Json.JsonIgnore]
         public new T Info { get { return Data; } set { Data = value; } }
         //public eStateHTTP StateHTTP { get; set; }
         public new T Data { get; set; }
