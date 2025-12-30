@@ -915,7 +915,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
         public async Task<MidData> LoadDataAsync(int pIdWorkPlace, bool pIsFull, string pPathDB, int pMessageNoMin, bool pIsReloadFull)
         {
             var res = await LoadDataAsync(new InLoadData() { IdWorkPlace = pIdWorkPlace, IsFull = pIsFull, MessageNoMin = pMessageNoMin, IsReloadFull = pIsReloadFull });
-            var Res = res?.Info;
+            var Res = res?.Data;
             if (!string.IsNullOrEmpty(Res?.PathMid))
             {
                 string Zip = Path.Combine(Path.GetDirectoryName(pPathDB), Path.GetFileName(Res.PathMid));
