@@ -14,6 +14,7 @@ using System.Timers;
 using UtilNetwork;
 using Utils;
 using System.IO.Compression;
+
 //using Model;
 
 namespace SharedLib
@@ -559,7 +560,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                try
                {
                    string parUrl = Global.Settings.Api + "SMS";
-                   var a = new { Phone = pPhone, Company = Global.Settings.CodeTM == eShopTM.Spar ? "1" : "2" };
+                   var a = new { Phone = pPhone, Company = Global.Settings.CodeTM == Model.eShopTM.Spar ? "1" : "2" };
                    string pBody = a.ToJSON();
                    int parWait = 2000;
                    string parContex = "application/json";

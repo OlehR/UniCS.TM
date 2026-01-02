@@ -581,12 +581,6 @@ namespace ModelMID
         Question
     }
 
-    public enum eShopTM
-    {
-        Vopak = 1,
-        Spar = 2,       
-        Lubo = 3
-    }
     public enum eNameSOAPAction
     {
         OpenOperation,

@@ -15,11 +15,13 @@ namespace UtilNetwork
         public string TextError { get; set; }
         [Obsolete("Proporty is deprecated, please use TextError")]
         public string TextState { get { return TextError; } set { TextError = value; } }
-        [Obsolete("Proporty is deprecated, please use Data")]
-        [System.Text.Json.Serialization.JsonIgnore]
-        [Newtonsoft.Json.JsonIgnore]
+        [Obsolete("Proporty is deprecated, please use Data")]        
         public string Info { get { return Data; } set { Data = value; } }
         //public eStateHTTP StateHTTP { get; set; }
+#if WEB
+        [System.Text.Json.Serialization.JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+#endif
         public string Data { get; set; }
         public eStateHTTP StateHTTP { get; set; } = eStateHTTP.HTTP_OK;
 
@@ -59,11 +61,13 @@ namespace UtilNetwork
     {
         //public int State { get; set; } = 0;
         //public string TextError { get; set; }
-        [Obsolete("Proporty is deprecated, please use Data")]
-        //[System.Text.Json.Serialization.JsonIgnore]
-        //[Newtonsoft.Json.JsonIgnore]
+        [Obsolete("Proporty is deprecated, please use Data")]        
         public new T Info { get { return Data; } set { Data = value; } }
         //public eStateHTTP StateHTTP { get; set; }
+#if WEB
+        [System.Text.Json.Serialization.JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+#endif
         public new T Data { get; set; }
         public Result() : base() { }
 
