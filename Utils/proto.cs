@@ -1,15 +1,16 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
-using System.Threading;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Text.Encodings.Web;
 using System.Text.Unicode;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Utils
 {
@@ -137,6 +138,15 @@ namespace Utils
             {
                 return DateTime.MinValue;
             }            
+        }
+
+        public static bool In(this int me, params int[] set)
+        {
+            return set.Contains(me);
+        }
+        public static bool In<T>(this T obj, IEnumerable<T> values)
+        {
+            return values.Contains(obj);
         }
 
     }
