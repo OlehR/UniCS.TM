@@ -79,9 +79,11 @@ namespace Front.Equipments.Implementation
                 ApiRRO d = new(pR, this) { token = Token, device = Device, tag = pR.NumberReceiptRRO };
                 string dd = d.ToJSON();
                 var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"{dd} =>{r}");
                 Res = JsonConvert.DeserializeObject<Responce<ResponceReceipt>>(r);
                 GetFiscalInfo(pR, Res);
             }
+           
 
             if (Res?.info?.printinfo?.sum_receipt != 0 || Res?.info?.printinfo?.round != 0)
                 try
