@@ -27,6 +27,7 @@ namespace Front.Control
         public decimal SumCashDisbursement { get; set; } = 0;
         public decimal SumMaxWallet { get; set; } = 0;
         public bool IsPaymentBonuses { get; set; } = false;
+        public bool IsManagement { get; set; } = false;
         public bool IsUseСertificate { get => MW?.Client?.IsСertificate == true; }
         public bool EnteringPriceManually { get; set; } = false;
         decimal _SumUseWallet = 0;
@@ -102,6 +103,7 @@ namespace Front.Control
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsRounding")); // вертає тру якщо є юзер і впливає на панель з можливою знижкою по гаманцю і на кнопки округлення
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SumMaxWallet"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsPaymentBonuses"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsManagement"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsUseСertificate)));
 
             Rounding();
@@ -452,6 +454,19 @@ namespace Front.Control
             //MW?.EF.SetBankTerminal(bank);
             var task = Task.Run(() => MW.Blf.PrintAndCloseReceipt(null, eTypePay.Card, 0, SumCashDisbursement, 0, 0, true));
             MW.GiveRest = 0;
+        }
+
+        private void ButtonManagement(object sender, RoutedEventArgs e)
+        {
+            // щось робить...
+            // для того щоб кнопка з'явилась IsPaymentBonuses = false і IsManagement = true
+
+
+
+
+            // подія зміни, щоб кнопки перемалювало 
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsPaymentBonuses"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsManagement"));
         }
     }
 }
