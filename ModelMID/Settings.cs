@@ -97,6 +97,10 @@ namespace ModelMID
         public  DeltaWeight[] DeltaWeight { get; set; }
         public long[] CodeWaresGiftCart { get; set; }
         public IEnumerable<string[]> CashBackCard { get; set; }
+        /// <summary>
+        /// Заміна підприємця по черзі в залежності від номера чека. Олівє
+        /// </summary>
+        public int[] IdWorkPlaceChange { get; set; }       
 
     }
 }
