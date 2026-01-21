@@ -26,8 +26,8 @@ namespace Front.Control
         decimal MoneySum;
         public decimal SumCashDisbursement { get; set; } = 0;
         public decimal SumMaxWallet { get; set; } = 0;
-        public bool IsPaymentBonuses { get; set; } = false;
-        public bool IsManagement { get; set; } = false;
+        public bool IsPaymentBonuses { get; set; } = true;
+        public bool IsManagement { get; set; } = true;
         public bool IsUseСertificate { get => MW?.Client?.IsСertificate == true; }
         public bool EnteringPriceManually { get; set; } = false;
         decimal _SumUseWallet = 0;
