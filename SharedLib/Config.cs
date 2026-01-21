@@ -127,6 +127,15 @@ namespace SharedLib
             catch
             { Global.TypeWorkplace = eTypeWorkplace.SelfServicCheckout; }
 
+          
+
+            try
+            {
+                Global.TypePeriod = (ePeriod)Enum.Parse(typeof(ePeriod), AppConfiguration["MID:TypePeriod"], true);
+            }
+            catch
+            { Global.TypePeriod=ePeriod.Day; }
+
             if (Global.TypeWorkplaceCurrent == eTypeWorkplace.Both)
                 Global.TypeWorkplaceCurrent = eTypeWorkplace.SelfServicCheckout;
             else
@@ -216,8 +225,8 @@ namespace SharedLib
     class IdWorkPlaces
     {
         public int IdWorkPlace { get; set; }
-        public int[] CodeDirections { get; set; }
-        public int[] CodeTM { get; set; }
+        public long[] CodeDirections { get; set; }
+        public long[] CodeTM { get; set; }
     }
 }
 

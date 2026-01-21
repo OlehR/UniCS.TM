@@ -20,9 +20,9 @@ namespace ModelMID
 
     public enum ePeriod
     {
-        Year,
-        Month,
-        Day
+        Year=1,
+        Month=2,
+        Day=3
     }    
 
     public enum eTypePay

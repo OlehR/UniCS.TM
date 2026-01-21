@@ -26,10 +26,10 @@ namespace ModelMID
 
         public static SortedList<int, WorkPlace> WorkPlaceByWorkplaceId;
 
-        public static SortedList<Int64, int> IdWorkPlacePayDirection = new SortedList<Int64, int>();
-        public static SortedList<Int64, int> IdWorkPlacePayTM = new SortedList<Int64, int>();
-        public static SortedList<Int64, int> IdWorkPlacePayGroup = new SortedList<Int64, int>();
-        public static SortedList<Int64, int> IdWorkPlacePayWares = new SortedList<Int64, int>();
+        public static SortedList<Int64, int> IdWorkPlacePayDirection = [];
+        public static SortedList<Int64, int> IdWorkPlacePayTM = [];
+        public static SortedList<Int64, int> IdWorkPlacePayGroup = [];
+        public static SortedList<Int64, int> IdWorkPlacePayWares = [];
 
         public static Settings Settings { get; set; }
 
