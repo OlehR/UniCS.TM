@@ -143,6 +143,7 @@ namespace Front.Control
 
         public void TransferAmounts(decimal pMoneySum, decimal pSumCashBack)
         {
+            IsManagement = false;
             MW.IsCashBackPay = false;
             MoneySumToRound = pMoneySum;
             CashBackMoneySum = pSumCashBack;
@@ -445,6 +446,10 @@ namespace Front.Control
         private void OpenMoneyBoxButton(object sender, RoutedEventArgs e)
         {
             MW.StartOpenMoneyBox();
+            //test
+            IsManagement=true;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsManagement)));
+
         }
 
         private void _ButtonPaymentCashBack(object sender, RoutedEventArgs e)
@@ -456,17 +461,28 @@ namespace Front.Control
             MW.GiveRest = 0;
         }
 
-        private void ButtonManagement(object sender, RoutedEventArgs e)
+        private void ButtonManagementCash(object sender, RoutedEventArgs e)
         {
             // щось робить...
-            // для того щоб кнопка з'явилась IsPaymentBonuses = false і IsManagement = true
+            // для того щоб кнопка з'явилась IsManagement = true
 
 
 
 
             // подія зміни, щоб кнопки перемалювало 
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsPaymentBonuses"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsManagement"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsManagement)));
+        }
+
+        private void ButtonManagementCard(object sender, RoutedEventArgs e)
+        {
+            // щось робить...
+            // для того щоб кнопка з'явилась IsManagement = true
+
+
+
+
+            // подія зміни, щоб кнопки перемалювало 
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsManagement)));
         }
     }
 }
