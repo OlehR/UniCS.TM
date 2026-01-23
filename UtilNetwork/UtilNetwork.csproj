@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -6,7 +6,7 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
   <PropertyGroup>
-    <DefineConstants>$(DefineConstants);WEB_</DefineConstants>
+    <DefineConstants>$(DefineConstants);WEB</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Utils\Utils.csproj" />
