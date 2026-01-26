@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.Net;
 
 namespace Utils
@@ -70,4 +70,4 @@ namespace Utils
             is_bonus = Data?.IndexOf("нараховано бонусів ") > 0;            
         }
     }
-}
+}*/
