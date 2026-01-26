@@ -30,7 +30,7 @@ namespace Front.Control
     {
 
         BLF Blf;
-        Action<eCommand, WorkPlace, Status> OnSocket;
+        Action<eCommand, WorkPlace, UtilNetwork.Result> OnSocket;
         Access Access = Access.GetAccess();
         public event PropertyChangedEventHandler PropertyChanged;
         EquipmentFront EF;
@@ -1252,7 +1252,7 @@ from RECEIPT r
                         catch (Exception ex)
                         {
                             FileLogger.WriteLogMessage(this, $"OpenShiftButton DNSName=>{el.DNSName} {Command} ", ex);
-                            OnSocket?.Invoke(eCommand.OpenShift, el, new Status(ex));
+                            OnSocket?.Invoke(eCommand.OpenShift, el, new UtilNetwork.Result(ex));
                         }
                     });
             }

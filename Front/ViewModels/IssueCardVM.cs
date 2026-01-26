@@ -10,7 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using Utils;
+using UtilNetwork;
 
 namespace Front.ViewModels
 {
@@ -20,7 +20,7 @@ namespace Front.ViewModels
         public string BarcodeIssueCard { get; set; } = string.Empty;
         public string PhoneIssueCard { get; set; } = string.Empty;
         public string VerifyCode { get; set; } = string.Empty;
-        public Status<string> LastVerifyCode = new();
+        public Result<string> LastVerifyCode = new();
         public bool IsBarcodeIssueCard { get { return !string.IsNullOrEmpty(BarcodeIssueCard); } }
         public bool IsGetCard { get; set; } = false;
 

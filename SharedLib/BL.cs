@@ -11,6 +11,7 @@ using Utils;
 using System.Timers;
 using System.IO;
 using Model;
+using UtilNetwork;
 
 namespace SharedLib
 {
@@ -283,7 +284,7 @@ namespace SharedLib
         public async Task<bool> CheckOneTimeAsync(IdReceipt pReceipt, long pCodeData, eTypeCode pTypeCode)
         {
             var RC = new OneTime(pReceipt) { CodeData = pCodeData, TypeData = pTypeCode, CodePS = db.GetCodePS(pCodeData) };
-            Status<OneTime> R = null;
+            Result<OneTime> R = null;
             if (pTypeCode == eTypeCode.OneTimeCoupon || pTypeCode == eTypeCode.OneTimeCouponGift || pTypeCode == eTypeCode.GiftCard )
             {
                 R = await ds.CheckOneTime(RC);
@@ -415,8 +416,9 @@ namespace SharedLib
             return res;
         }
 
-        public Receipt GetReceiptHead(IdReceipt pIdR, bool parWithDetail = false) => db.GetReceiptHead(pIdR, parWithDetail);        
+        public Receipt GetReceiptHead(IdReceipt pIdR, bool parWithDetail = false) => db.GetReceiptHead(pIdR, parWithDetail);
 
+        public bool ReplaceWorkplaceId(IdReceipt pIdR) => db.ReplaceWorkplaceId(pIdR);
         public ModelMID.Client GetClientByCode(IdReceipt pIdReceipt, long pCode) => SetClient(pIdReceipt, db.FindClient(null, null, null, pCode));
 
         public ModelMID.Client GetClientByBarCode(IdReceipt pIdReceipt, string pBarCode) => SetClient(pIdReceipt, db.FindClient(pBarCode));

@@ -413,9 +413,9 @@ namespace Front.Equipments
             }
 
         }
-        public Status CallBackApi(string pDataApi)
+        public global::UtilNetwork.Result CallBackApi(string pDataApi)
         {
-            Status Res = null;
+            global::UtilNetwork.Result Res = null;
             try
             {
                 CommandAPI<dynamic> pC = JsonSerializer.Deserialize<CommandAPI<dynamic>>(pDataApi);
@@ -425,15 +425,15 @@ namespace Front.Equipments
                 switch (pC.Command)
                 {
                     case eCommand.GetCurrentReceipt:
-                        Res = new Status(0, MW.curReceipt?.ToJson());
+                        Res = new global::UtilNetwork.Result(0, MW.curReceipt?.ToJson());
                         break;
                     case eCommand.GetReceipt:
                         var Command = JsonSerializer.Deserialize<CommandAPI<IdReceipt>>(pDataApi);
-                        Res = new Status(0, Bl.GetReceiptHead(Command.Data, true)?.ToJSON());
+                        Res = new global::UtilNetwork.Result(0, Bl.GetReceiptHead(Command.Data, true)?.ToJSON());
                         break;
                     case eCommand.XReport:
                         CommandInt = JsonSerializer.Deserialize<CommandAPI<int>>(pDataApi);
-                        Res = new Status(0, EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = CommandInt.Data })?.ToJSON());
+                        Res = new global::UtilNetwork.Result(0, EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = CommandInt.Data })?.ToJSON());
                         break;
                     case eCommand.OpenShift:
                         CommandString = JsonSerializer.Deserialize<CommandAPI<string>>(pDataApi);
@@ -441,7 +441,7 @@ namespace Front.Equipments
                         if (u != null)
                         {
                             OpenShift(u);
-                            Res = new Status(0, $"Зміна відкрита:{u.NameUser}");
+                            Res = new global::UtilNetwork.Result(0, $"Зміна відкрита:{u.NameUser}");
                         }
                         break;
                     case eCommand.GeneralCondition:
@@ -449,7 +449,7 @@ namespace Front.Equipments
                         var r = Bl.GetUserByBarCode(CommandRemoteInfo.Data.UserBarcode);
                         MW.RemoteCheckout = CommandRemoteInfo.Data;
 
-                        Res = new Status(0, $"Загальний стан каси: {MW.RemoteWorkplace.Name}");
+                        Res = new global::UtilNetwork.Result(0, $"Загальний стан каси: {MW.RemoteWorkplace.Name}");
                         break;
                     case eCommand.Confirm:
                         CommandRemoteInfo = JsonSerializer.Deserialize<CommandAPI<InfoRemoteCheckout>>(pDataApi);
@@ -468,7 +468,7 @@ namespace Front.Equipments
                             MW.QuantityCigarettes = 1;
                             SetStateView(eStateMainWindows.WaitInput);
                         }
-                        Res = new Status(0, $"{CommandRemoteInfo.Data.StateMainWindows} {CommandRemoteInfo.Data.TypeAccess}");
+                        Res = new global::UtilNetwork.Result(0, $"{CommandRemoteInfo.Data.StateMainWindows} {CommandRemoteInfo.Data.TypeAccess}");
                         break;
                     case eCommand.DeleteReceipt:
                         if (MW.curReceipt != null && MW.curReceipt.StateReceipt == eStateReceipt.Prepare)
@@ -476,11 +476,11 @@ namespace Front.Equipments
 
                         SetCurReceipt(null);
                         SetStateView(eStateMainWindows.StartWindow);
-                        Res = new Status(0, $"Чек видалено!");
+                        Res = new global::UtilNetwork.Result(0, $"Чек видалено!");
                         break;
                 }
             }
-            catch (Exception ex) { Res = new Status(ex); }
+            catch (Exception ex) { Res = new global::UtilNetwork.Result(ex); }
             return Res;
         }
 
@@ -500,7 +500,7 @@ namespace Front.Equipments
                     catch (Exception ex)
                     {
                         FileLogger.WriteLogMessage(this, $"{LogText} DNSName=>{MW.RemoteWorkplace.DNSName} {Command} ", ex);
-                        MW.SocketAnsver?.Invoke(comand, MW.MainWorkplace, new Status(ex));
+                        MW.SocketAnsver?.Invoke(comand, MW.MainWorkplace, new global::UtilNetwork.Result(ex));
                     }
                 });
         }

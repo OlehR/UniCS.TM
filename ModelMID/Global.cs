@@ -31,6 +31,8 @@ namespace ModelMID
         public static SortedList<Int64, int> IdWorkPlacePayGroup = [];
         public static SortedList<Int64, int> IdWorkPlacePayWares = [];
 
+
+        public static SortedList<Int64, int> Management = [];
         public static Settings Settings { get; set; }
 
         //public static List<WorkPlace> AllWorkPlaces = new List<WorkPlace>();

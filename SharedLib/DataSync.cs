@@ -374,7 +374,7 @@ namespace SharedLib
                     var res = await response.Content.ReadAsStringAsync();
                     if (!string.IsNullOrEmpty(res))
                     {
-                        var Res = Newtonsoft.Json.JsonConvert.DeserializeObject<Status>(res);
+                        var Res = Newtonsoft.Json.JsonConvert.DeserializeObject<UtilNetwork.Result>(res);
                         return Res?.status ?? false;
                     }
                 }
@@ -552,9 +552,9 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             return true;
         }
 
-        public Status<string> GetVerifySMS(string pPhone)
+        public UtilNetwork.Result<string> GetVerifySMS(string pPhone)
         {
-            Status<string> Res = new();
+            UtilNetwork.Result<string> Res = new();
             Task.Run(async () =>
            {
                try
@@ -577,13 +577,13 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                    if (response.IsSuccessStatusCode)
                    {
                        res = await response.Content.ReadAsStringAsync();
-                       Res = Newtonsoft.Json.JsonConvert.DeserializeObject<Status<string>>(res);
+                       Res = Newtonsoft.Json.JsonConvert.DeserializeObject<UtilNetwork.Result<string>>(res);
                        return;
                    }
                }
-               catch (Exception e) { new Status<string>(e); return; }
+               catch (Exception e) { new UtilNetwork.Result<string>(e); return; }
 
-               Res = new Status<string>(-1, "Не отримано код");
+               Res = new UtilNetwork.Result<string>(-1, "Не отримано код");
            }).Wait();
             return Res;
         }
@@ -606,7 +606,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     if (!string.IsNullOrEmpty(res))
                     {
                         var Res = //JsonConvert.DeserializeObject
-                            Newtonsoft.Json.JsonConvert.DeserializeObject<Status<ExciseStamp>>(res);
+                            Newtonsoft.Json.JsonConvert.DeserializeObject<UtilNetwork.Result<ExciseStamp>>(res);
                         return Res.Data;
                     }
                 }
@@ -622,7 +622,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
 
         public ExciseStamp CheckExciseStamp(ExciseStamp pES, int pWait = 1000) => AsyncHelper.RunSync(() => CheckExciseStampAsync(pES, pWait));
 
-        public async Task<Status> SendReceipt(Receipt pR)
+        public async Task<UtilNetwork.Result> SendReceipt(Receipt pR)
         {
             string JSON = pR.ToJson();
             if (Global.IsTest)
@@ -644,7 +644,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     var res = await response.Content.ReadAsStringAsync();
                     if (!string.IsNullOrEmpty(res))
                     {
-                        var Res = Newtonsoft.Json.JsonConvert.DeserializeObject<Status>(res);
+                        var Res = Newtonsoft.Json.JsonConvert.DeserializeObject<UtilNetwork.Result>(res);
                         if (Res.State == 0 ) //&& !Global.Settings.IsSend1C)
                         {
                             pR.StateReceipt = eStateReceipt.Send;
@@ -757,7 +757,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"res=>{res}");
                     if (!string.IsNullOrEmpty(res))
                     {
-                        var Res = Newtonsoft.Json.JsonConvert.DeserializeObject<Status<Client>>(res);
+                        var Res = Newtonsoft.Json.JsonConvert.DeserializeObject<UtilNetwork.Result<Client>>(res);
                         if (Res?.State == 0)
                         {
                             Result = Res.Data;
@@ -776,14 +776,14 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             return Result;
         }
 
-        public async Task<Status<OneTime>> CheckOneTime(OneTime pRC)
+        public async Task<UtilNetwork.Result<OneTime>> CheckOneTime(OneTime pRC)
         {
             try
             {
                 HttpClient client = new();
                 client.Timeout = TimeSpan.FromMilliseconds(3000);
 
-                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Global.Api + "CheckOneTime");
+                HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "CheckOneTime");
                 string data = pRC.ToJson();
                 requestMessage.Content = new StringContent(data, Encoding.UTF8, "application/json");
                 var response = await client.SendAsync(requestMessage);
@@ -792,16 +792,16 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     var res = await response.Content.ReadAsStringAsync();
                     if (!string.IsNullOrEmpty(res))
                     {
-                        var Res = Newtonsoft.Json.JsonConvert.DeserializeObject<Status<OneTime>>(res);
+                        var Res = Newtonsoft.Json.JsonConvert.DeserializeObject<UtilNetwork.Result<OneTime>>(res);
                         return Res;
                     }
                 }
-                else return new Status<OneTime>(response.StatusCode);
+                else return new UtilNetwork.Result<OneTime>(response.StatusCode);
             }
             catch (Exception e)
             {
                 FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e);
-                return new Status<OneTime>(e);
+                return new UtilNetwork.Result<OneTime>(e);
             }
             return null;
         }
@@ -883,7 +883,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             return null;
         }
 
-        public async Task<Result> SetPhoneNumber(SetPhone pSP)
+        public async Task<UtilNetwork.Result> SetPhoneNumber(SetPhone pSP)
         {
             try
             {
@@ -899,16 +899,16 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     var res = await response.Content.ReadAsStringAsync();
                     if (!string.IsNullOrEmpty(res))
                     {
-                        var Res = Newtonsoft.Json.JsonConvert.DeserializeObject<Result>(res);
+                        var Res = Newtonsoft.Json.JsonConvert.DeserializeObject<UtilNetwork.Result>(res);
                         return Res;
                     }
                 }
-                else return new Result(response.StatusCode);
+                else return new UtilNetwork.Result(response.StatusCode);
             }
             catch (Exception e)
             {
                 FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e);
-                return new Result(e);
+                return new UtilNetwork.Result(e);
             }
             return null;
         }
@@ -938,7 +938,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             }
             return Res;
         }
-        public async Task<Result<MidData>> LoadDataAsync(InLoadData pData)
+        public async Task<UtilNetwork.Result<MidData>> LoadDataAsync(InLoadData pData)
         {
             try
             {
@@ -957,7 +957,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     {
                         var r = Newtonsoft.Json.JsonConvert.DeserializeObject
                             //JsonSerializer.Deserialize
-                            <Result<MidData>>(res);
+                            <UtilNetwork.Result<MidData>>(res);
                         return r;
                     }
                 }
@@ -965,7 +965,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             catch (Exception e)
             {
                 FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e);
-                return new Result<MidData>(e);
+                return new UtilNetwork.Result<MidData>(e);
             }
             return null;
         }

@@ -96,11 +96,14 @@ namespace ModelMID
         public IEnumerable<FlagColor> FlagColor { get; set; }
         public  DeltaWeight[] DeltaWeight { get; set; }
         public long[] CodeWaresGiftCart { get; set; }
-        public IEnumerable<string[]> CashBackCard { get; set; }
+        public IEnumerable<string[]> CashBackCard { get; set; }        
         /// <summary>
-        /// Заміна підприємця по черзі в залежності від номера чека. Олівє
+        /// Чи є "Управлінські" чеки
         /// </summary>
-        public int[] IdWorkPlaceChange { get; set; }       
-
+        public bool IsManagement { get; set; }
+        /// <summary>
+        /// В який IdWorkPlace конвертуємо "Управлінські" чеки.
+        /// </summary>
+        public int IdWorkPlaceManagement { get; set; }
     }
 }

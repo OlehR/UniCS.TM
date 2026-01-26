@@ -14,6 +14,7 @@ using System.Windows.Controls;
 using ModernExpo.SelfCheckout.Utils;
 using Front.Models;
 using ModernExpo.SelfCheckout.Entities.Models.Terminal;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Front.Control
 {
@@ -27,7 +28,7 @@ namespace Front.Control
         public decimal SumCashDisbursement { get; set; } = 0;
         public decimal SumMaxWallet { get; set; } = 0;
         public bool IsPaymentBonuses { get; set; } = true;
-        public bool IsManagement { get; set; } = true;
+        public bool IsManagement { get { return Global.Settings.IsManagement;}}
         public bool IsUseСertificate { get => MW?.Client?.IsСertificate == true; }
         public bool EnteringPriceManually { get; set; } = false;
         decimal _SumUseWallet = 0;
@@ -143,7 +144,7 @@ namespace Front.Control
 
         public void TransferAmounts(decimal pMoneySum, decimal pSumCashBack)
         {
-            IsManagement = false;
+            //IsManagement = true;
             MW.IsCashBackPay = false;
             MoneySumToRound = pMoneySum;
             CashBackMoneySum = pSumCashBack;
@@ -447,8 +448,8 @@ namespace Front.Control
         {
             MW.StartOpenMoneyBox();
             //test
-            IsManagement=true;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsManagement)));
+            //IsManagement=!IsManagement;
+            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsManagement)));
 
         }
 
@@ -463,26 +464,14 @@ namespace Front.Control
 
         private void ButtonManagementCash(object sender, RoutedEventArgs e)
         {
-            // щось робить...
-            // для того щоб кнопка з'явилась IsManagement = true
-
-
-
-
-            // подія зміни, щоб кнопки перемалювало 
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsManagement)));
+            MW.Bl.ReplaceWorkplaceId(MW.curReceipt);
+            _ButtonPaymentCash(null, null);
         }
 
         private void ButtonManagementCard(object sender, RoutedEventArgs e)
         {
-            // щось робить...
-            // для того щоб кнопка з'явилась IsManagement = true
-
-
-
-
-            // подія зміни, щоб кнопки перемалювало 
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsManagement)));
+            MW.Bl.ReplaceWorkplaceId(MW.curReceipt);
+            _ButtonPaymentBank(null, null);
         }
     }
 }

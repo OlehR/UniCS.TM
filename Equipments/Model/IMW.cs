@@ -7,7 +7,7 @@ using Front.Equipments;
 using ModelMID;
 using ModelMID.DB;
 using SharedLib;
-using Utils;
+using UtilNetwork;
 using Pr = Equipments.Model.Price;
 
 namespace Front.Equipments
@@ -40,7 +40,7 @@ namespace Front.Equipments
         /// <summary>
         /// код який прийшов з SMS (Не найкраще рішення)
         /// </summary>
-        public Status<string> LastVerifyCode { get; set; }
+        public Result<string> LastVerifyCode { get; set; }
         /// <summary>
         /// Чи показувати В адмінпанелі текст "Будь ласка очікуйте охорону!";
         /// </summary>
@@ -58,7 +58,7 @@ namespace Front.Equipments
         public WorkPlace MainWorkplace { get; set; }
         public WorkPlace RemoteWorkplace { get; set; }
         public InfoRemoteCheckout RemoteCheckout { get; set; }
-        Action<eCommand, WorkPlace, Status> SocketAnsver { get; set; }
+        Action<eCommand, WorkPlace, Result> SocketAnsver { get; set; }
         public bool IsFullReturn { get; set; }
         public void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine, eTypeAccess pTypeAccess = eTypeAccess.NoDefine, ReceiptWares pRW = null, CustomWindow pCW = null, eSender pS = eSender.NotDefine);
     }

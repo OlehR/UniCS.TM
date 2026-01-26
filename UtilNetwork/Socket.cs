@@ -13,12 +13,12 @@ namespace UtilNetwork
 {
     public class SocketServer
     {
-        Func<string, Status> Action;
+        Func<string, Result> Action;
         bool IsStart = false;
         Socket listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         IPEndPoint ipPoint = new IPEndPoint(IPAddress.Any, 3443);//(IPAddress.Parse(IP), IpPort);
         int SizeBuffer;
-        public SocketServer(int pPort, Func<string, Status> pS, int pSizeBuffer = 1024)
+        public SocketServer(int pPort, Func<string, Result> pS, int pSizeBuffer = 1024)
         {
             Action = pS;
             ipPoint = new IPEndPoint(IPAddress.Any, pPort);
@@ -136,7 +136,7 @@ namespace UtilNetwork
                         {
                             try
                             {
-                                Status res = new Status(ex);
+                                Result res = new Result(ex);
                                 var data = Encoding.UTF8.GetBytes(res.ToJSON());
                                 await handler.SendAsync(data, SocketFlags.None);
                             }
@@ -178,9 +178,9 @@ namespace UtilNetwork
             ipEndPoint = new IPEndPoint(pIP, pPort);
         }
 
-        public async Task<Status> StartAsync(string pData)
+        public async Task<Result> StartAsync(string pData)
         {
-            Status res = null;
+            Result res = null;
             try
             {
                 await client.ConnectAsync(ipEndPoint);
@@ -195,7 +195,7 @@ namespace UtilNetwork
                 if (received.IsCompleted)
                 {
                     var r = Encoding.UTF8.GetString(buffer, 0, received.Result);
-                    res = JsonConvert.DeserializeObject<Status>(r);
+                    res = JsonConvert.DeserializeObject<Result>(r);
                 }
                 else
                 { res = new(-1, "TimeOut"); }
@@ -211,9 +211,9 @@ namespace UtilNetwork
             return res;
         }
 
-        public async Task<Status<D>> StartAsync<D>(string pData, bool IsResultStatus = true)
+        public async Task<Result<D>> StartAsync<D>(string pData, bool IsResultStatus = true)
         {
-            Status<D> res = null;
+            Result<D> res = null;
             try
             {
                 await client.ConnectAsync(ipEndPoint);
@@ -229,7 +229,7 @@ namespace UtilNetwork
                 {
                     var r = Encoding.UTF8.GetString(buffer, 0, received.Result);
                     if (IsResultStatus)
-                        res = JsonConvert.DeserializeObject<Status<D>>(r);
+                        res = JsonConvert.DeserializeObject<Result<D>>(r);
                     else
                         res = new() { Data = JsonConvert.DeserializeObject<D>(r) };
                 }
@@ -247,9 +247,9 @@ namespace UtilNetwork
             return res;
         }
 
-        public async Task<(Status, byte[])> StartAsyn(byte[] pData)
+        public async Task<(Result, byte[])> StartAsyn(byte[] pData)
         {
-            Status res = null;
+            Result res = null;
             // Receive ack.
             var buffer = new byte[10000];
             try
@@ -263,7 +263,7 @@ namespace UtilNetwork
                 if (received.IsCompleted)
                 {
                     var r = Encoding.UTF8.GetString(buffer, 0, received.Result);
-                    res = JsonConvert.DeserializeObject<Status>(r);
+                    res = JsonConvert.DeserializeObject<Result>(r);
                 }
                 else
                 { res = new(-1, "TimeOut"); }

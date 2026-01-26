@@ -42,7 +42,7 @@ namespace Front
         public BLF Blf { get; set; } = null;
         public EquipmentFront EF { get; set; } = null;
         public ControlScale CS { get; set; }
-        public Action<eCommand, WorkPlace, Status> SocketAnsver { get; set; } = null;
+        public Action<eCommand, WorkPlace, UtilNetwork.Result> SocketAnsver { get; set; } = null;
         public WorkPlace MainWorkplace { get; set; } = new();
 
         //WorkPlace _RemoteWorkplace = new();
@@ -169,7 +169,7 @@ namespace Front
         public string GetBackgroundColor { get { return curReceipt?.TypeReceipt == eTypeReceipt.Refund ? "#ff9999" : "#FFFFFF"; } }
         public double GiveRest { get; set; } = 0;
         public string VerifyCode { get; set; } = string.Empty;
-        public Status<string> LastVerifyCode { get; set; } = new();
+        public UtilNetwork.Result<string> LastVerifyCode { get; set; } = new();
         public eSyncStatus DatabaseUpdateStatus { get; set; } = eSyncStatus.SyncFinishedSuccess;
         public eTypeMonitor TypeMonitor
         {
@@ -404,8 +404,7 @@ namespace Front
             MainWorkplace = Bl.db.GetWorkPlace().FirstOrDefault(el => el.CodeWarehouse == Global.CodeWarehouse && el.IdWorkplace == Global.Settings.IdWorkPlaceMain);
             AC = AdminControl;
             //поточний час
-            DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(1);
+            DispatcherTimer timer = new(){Interval = TimeSpan.FromSeconds(1)};
             timer.Tick += timer_Tick;
             timer.Start();
 
@@ -988,7 +987,7 @@ namespace Front
                             catch (Exception ex)
                             {
                                 FileLogger.WriteLogMessage(this, $"GeneralCondition DNSName=>{MainWorkplace.DNSName} {Command} ", ex);
-                                SocketAnsver?.Invoke(eCommand.GeneralCondition, MainWorkplace, new Status(ex));
+                                SocketAnsver?.Invoke(eCommand.GeneralCondition, MainWorkplace, new UtilNetwork.Result(ex));
                             }
                         });
 

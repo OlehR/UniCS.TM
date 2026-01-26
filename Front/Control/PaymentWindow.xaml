@@ -91,6 +91,9 @@
                     </Style>
                 </Button.Style>
             </Button>
+                
+                
+                
             </StackPanel>
 
             <StackPanel Grid.Column="1">
@@ -105,11 +108,11 @@
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsPaymentBonuses, RelativeSource={RelativeSource 
                         Mode=FindAncestor, AncestorType=UserControl}}" Value="False">
-                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Setter Property="IsEnabled" Value="False"  />
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding IsPaymentBonuses, RelativeSource={RelativeSource 
                         Mode=FindAncestor, AncestorType=UserControl}}" Value="True">
-                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Setter Property="IsEnabled" Value="True" />
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding IsCashPayment, RelativeSource={RelativeSource 
                         Mode=FindAncestor, AncestorType=UserControl}}" Value="False">

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using Utils;
+
 using UtilNetwork;
 
 namespace Front.ViewModels
@@ -16,7 +16,7 @@ namespace Front.ViewModels
     {
         public Visibility NumPadVisibility { get; set; } = Visibility.Collapsed;
         public bool IsConfirmed { get; set; } = false;
-        public Status<string> LastVerifyCode = new();
+        public Result<string> LastVerifyCode = new();
         private string _barcode = string.Empty;
         public string Barcode
         {
@@ -98,12 +98,12 @@ namespace Front.ViewModels
         {
             LastVerifyCode = Bl.ds.GetVerifySMS(Phone);
         }
-        public Result ConfirmPhone()
+        public UtilNetwork.Result ConfirmPhone()
         {
             SetPhone setPhone = new SetPhone() { CodeClient = CodeClient , Phone = Phone,
                 UserBarCode = UserBarCode, CodeWarehouse= Global.CodeWarehouse,  IdWorkPlace = Global.IdWorkPlace };
-        
-            Result r = new(); 
+
+            UtilNetwork.Result r = new(); 
             Task.Run(async () =>
             {
                 r = await Bl.ds.SetPhoneNumber(setPhone);

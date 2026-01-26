@@ -1282,7 +1282,7 @@ from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWare
             using var dbT = new WDB_SQLite(pIdR.DTPeriod);
             return dbT.ViewReceipt(pIdR, parWithDetail);
         }
-
+        
        public IEnumerable<ReceiptWaresLink> GetReceiptWaresLink(IdReceiptWares pIdRW)
         {
             string Sql = @"select wrl.*,w.NAME_WARES as NameWares from WaresReceiptLink wrl 
@@ -1314,6 +1314,27 @@ from RECEIPT_EVENT RE
 join WARES_RECEIPT wr on re.ID_WORKPLACE=wr.ID_WORKPLACE and wr.CODE_RECEIPT=re.CODE_RECEIPT and re.code_wares=wr.code_wares
 where RE.EVENT_TYPE=1";
             return dbRC.Execute<WeightReceipt>(SQL);
+        }
+        class cReplaceWorkplaceId:IdReceipt
+        {
+            public cReplaceWorkplaceId(IdReceipt Id) : base(Id){ }
+            public int From { get; set; }
+            public int To { get; set; }
+        }
+        public bool ReplaceWorkplaceId(IdReceipt pIdR)
+        {
+            string Sql = @"update WARES_RECEIPT set id_workplace_pay = @To
+                     where id_workplace = @IdWorkplace and code_period = @CodePeriod and code_receipt = @CodeReceipt and id_workplace_pay =@From);";
+            foreach (var el in Global.IdWorkPlaces)
+            {
+                var xx=Global.GetWorkPlaceByIdWorkplace(el);
+                if(xx?.Settings?.IdWorkPlaceManagement>0)
+                {
+                    var par = new cReplaceWorkplaceId(pIdR) { To = xx.Settings.IdWorkPlaceManagement, From = xx.IdWorkplace };
+                    db.ExecuteNonQuery<cReplaceWorkplaceId>(Sql, par);
+                }                
+            }
+            return true;
         }
     }
 }

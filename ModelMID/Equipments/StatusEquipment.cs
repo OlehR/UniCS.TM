@@ -1,9 +1,9 @@
 ﻿using ModelMID;
-using Utils;
+using UtilNetwork;
 
 namespace Front.Equipments
 {
-    public class StatusEquipment : Status
+    public class StatusEquipment : Result
     {
         public eStateEquipment StateEquipment { get; set; }
         public eModelEquipment ModelEquipment { get; set; }
