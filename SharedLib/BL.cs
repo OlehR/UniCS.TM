@@ -284,7 +284,7 @@ namespace SharedLib
         public async Task<bool> CheckOneTimeAsync(IdReceipt pReceipt, long pCodeData, eTypeCode pTypeCode)
         {
             var RC = new OneTime(pReceipt) { CodeData = pCodeData, TypeData = pTypeCode, CodePS = db.GetCodePS(pCodeData) };
-            Result<OneTime> R = null;
+            UtilNetwork.Result<OneTime> R = null;
             if (pTypeCode == eTypeCode.OneTimeCoupon || pTypeCode == eTypeCode.OneTimeCouponGift || pTypeCode == eTypeCode.GiftCard )
             {
                 R = await ds.CheckOneTime(RC);

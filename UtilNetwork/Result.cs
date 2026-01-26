@@ -54,7 +54,15 @@ namespace UtilNetwork
         {
             State = -1;
             TextError = e.Message + "\n" + e.StackTrace;
-        }        
+        }
+        public Result(bool pState)
+        {
+            if (!pState)
+            {
+                State = -1;
+                TextError = "Error";
+            }
+        }
     }
 
     public class Result<T>:Result
@@ -81,6 +89,7 @@ namespace UtilNetwork
         {            
             Data = pData;
         }
+        public Result(T pD) : base() { Data = pD; }
         public Result(Exception e) : base(e) { }
         
         public Result GetResult { get { return new Result { State=State, TextError = TextError }; } }
