@@ -744,8 +744,10 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             Client Result = null;
             try
             {
-                HttpClient client = new HttpClient();
-                client.Timeout = TimeSpan.FromSeconds(10);
+                HttpClient client = new HttpClient
+                {
+                    Timeout = TimeSpan.FromSeconds(10)
+                };
 
                 HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Global.Api + "api/GetDiscount");
                 string data = pFC.ToJson();
@@ -810,7 +812,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
         {
             try
             {
-                HttpClient client = new HttpClient
+                HttpClient client = new()
                 {
                     Timeout = TimeSpan.FromMilliseconds(2000)
                 };
@@ -887,8 +889,10 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
         {
             try
             {
-                HttpClient client = new();
-                client.Timeout = TimeSpan.FromMilliseconds(3000);
+                HttpClient client = new()
+                {
+                    Timeout = TimeSpan.FromMilliseconds(3000)
+                };
 
                 HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Global.Api + "CashRegister/SetPhoneNumber");
                 string data = pSP.ToJson();
@@ -938,14 +942,11 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             }
             return Res;
         }
-        public async Task<UtilNetwork.Result<MidData>> LoadDataAsync(InLoadData pData)
+        public async Task<Result<MidData>> LoadDataAsync(InLoadData pData)
         {
             try
             {
-                HttpClient client = new()
-                {
-                    Timeout = TimeSpan.FromMilliseconds(90000)
-                };
+                HttpClient client = new() {  Timeout = TimeSpan.FromMilliseconds(90000)};
                 HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "CashRegister/LoadData");
 
                 requestMessage.Content = new StringContent(pData.ToJson(), Encoding.UTF8, "application/json");
@@ -957,7 +958,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     {
                         var r = Newtonsoft.Json.JsonConvert.DeserializeObject
                             //JsonSerializer.Deserialize
-                            <UtilNetwork.Result<MidData>>(res);
+                            <Result<MidData>>(res);
                         return r;
                     }
                 }
@@ -965,7 +966,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             catch (Exception e)
             {
                 FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e);
-                return new UtilNetwork.Result<MidData>(e);
+                return new Result<MidData>(e);
             }
             return null;
         }

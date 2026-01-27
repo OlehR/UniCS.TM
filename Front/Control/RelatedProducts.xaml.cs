@@ -62,7 +62,7 @@ namespace Front.Control
         /// Кількість колонок в пошуку (залежить від розміру екрану)
         /// </summary>
         int CountColumWares;
-        public string TextRelatedProducts { get => LastWares.IsNotNull() ? $"Додаткові товари до: {LastWares.NameWares}" : "Помилка"; }
+        public string TextRelatedProducts { get => LastWares.IsNotNull() ? $"Бажаєш додати до: {LastWares.NameWares}" : "Помилка"; }
         public bool IsShowLinkWares { get; set; } = true;
         ReceiptWares LastWares = new();
         MainWindow MW;
