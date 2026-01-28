@@ -1324,7 +1324,7 @@ where RE.EVENT_TYPE=1";
         public bool ReplaceWorkplaceId(IdReceipt pIdR)
         {
             string Sql = @"update WARES_RECEIPT set id_workplace_pay = @To
-                     where id_workplace = @IdWorkplace and code_period = @CodePeriod and code_receipt = @CodeReceipt and id_workplace_pay =@From);";
+                     where id_workplace = @IdWorkplace and code_period = @CodePeriod and code_receipt = @CodeReceipt and id_workplace_pay =@From;";
             foreach (var el in Global.IdWorkPlaces)
             {
                 var xx=Global.GetWorkPlaceByIdWorkplace(el);

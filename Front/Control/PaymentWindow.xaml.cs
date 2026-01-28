@@ -248,8 +248,11 @@ namespace Front.Control
         {
             Rounding();
             var btn = sender as Button;
-            var bank = btn.CommandParameter as BankTerminal;
-            MW?.EF.SetBankTerminal(bank);
+            if (btn != null)
+            {
+                var bank = btn.CommandParameter as BankTerminal;
+                MW?.EF.SetBankTerminal(bank);
+            }
             var task = Task.Run(() => MW.Blf.PrintAndCloseReceipt(null, eTypePay.Card, 0, SumCashDisbursement));
             MW.GiveRest = 0;
         }
