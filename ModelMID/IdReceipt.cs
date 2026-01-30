@@ -102,5 +102,7 @@ namespace ModelMID
         {
             get { return (DTPeriod.Year >= 2025? DTPeriod.Year.ToString() : "")+"_"+NumberReceipt1C + (IdWorkplacePay>0?$"_{IdWorkplacePay}":"");}
         }
+        public string NumberReceipt1CNew { get { return $"{Prefix}-{CodeReceipt:D6}"; } }
     }
-}
+    
+    }
