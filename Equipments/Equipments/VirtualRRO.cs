@@ -131,7 +131,7 @@ namespace Front.Equipments.Implementation
             else
                 EF.PrintNoFiscalReceipt(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = Global.IdWorkPlace }, TextReport);
 
-
+     
             return new LogRRO(pIdR) { TypeOperation = eTypeOperation.XReport, FiscalNumber = $"{FiscalNumber}_{typeOperation}", JSON = pIdR.ToJSON(), TextReceipt = string.Join(Environment.NewLine, TextReport), TypeRRO = "VirtualRRO", TypePay = TypePay };
         }
         private string PrintCenter(string text)
@@ -419,8 +419,8 @@ namespace Front.Equipments.Implementation
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
                 }
             }
-
-            return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, SUM = pR.SumCash, CodeError = 0, TypeRRO = "VirtualRRO", JSON = pR.ToJSON(), FiscalNumber = pR.Fiscal.Number, TextReceipt = string.Join(Environment.NewLine, TextReport), TypePay = TypePay };
+            eTypePay TP = (TypePay != eTypePay.None ? TypePay : pR?.Payment?.Any(el => el.TypePay == eTypePay.Card) == true ? eTypePay.Card : eTypePay.Cash);
+            return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, SUM = pR.SumCash, CodeError = 0, TypeRRO = "VirtualRRO", JSON = pR.ToJSON(), FiscalNumber = pR.Fiscal.Number, TextReceipt = string.Join(Environment.NewLine, TextReport), TypePay = TP };
         }
         public override void GetFiscalInfo(Receipt pR, object pRes)
         {
