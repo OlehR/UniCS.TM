@@ -810,6 +810,17 @@ and EPS.code_ps  is null
  and PSD.TYPE_DISCOUNT= 14
  and abs(PSD.TYPE_DISCOUNT) = PSD.TYPE_DISCOUNT * case when @IsPricePromotion=0 then -1 else 1 end
  and EPS.CODE_PS is null
+union all --Заміна ДК для виду карточок
+ select PSf.CODE_PS,0 as priority, PSD.TYPE_DISCOUNT as TypeDiscount, p.PRICE_DEALER as DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice,0 as MaxQuantity, ps.IsOneTime,psd.DATA_TEXT as DataText
+ from PROMOTION_SALE_FILTER PSF
+ join PROMOTION_SALE ps on ps.CODE_PS=PSF.CODE_PS
+ left join ExeptionPS EPS on  (PSF.CODE_PS=EPS.CODE_PS) 
+ join PROMOTION_SALE_DATA PSD on(PSD.CODE_PS= PSF.CODE_PS)
+ Join price p on  p.CODE_DEALER=PSD.DATA and p.code_wares=@CodeWares
+ where PSF.TYPE_GROUP_FILTER=32  
+ and PSD.TYPE_DISCOUNT= 14
+ and abs(PSD.TYPE_DISCOUNT) = PSD.TYPE_DISCOUNT * case when @IsPricePromotion=0 then -1 else 1 end
+ and EPS.CODE_PS is null
 "; } }
 /*@"select psd.CODE_PS as CodePs,psd.PRIORITY as Priority ,11 as TypeDiscont  ,p.PRICE_DEALER as Data,1 as IsIgnoreMinPrice, MaxQuantity as MaxQuantity
 from  PROMOTION_SALE_DEALER psd
