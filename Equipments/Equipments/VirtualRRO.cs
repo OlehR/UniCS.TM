@@ -73,58 +73,21 @@ namespace Front.Equipments.Implementation
         private LogRRO PrintReport(IdReceipt pIdR, eTypeOperation typeOperation, IEnumerable<LogRRO> logRRO, DateTime pBegin = new DateTime(), DateTime pEnd = new DateTime())
         {
             TextReport.Clear();
-
-
-            //кількість продажних чеків
-            int CountSaleReceipt = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.Sale && x.TypePay == eTypePay.Cash).Count();
-            //Загальна сума продажів
-            decimal TotalSaleSum = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.Sale && x.TypePay == eTypePay.Cash).Select(x => x.SUM).Sum();
-            //Кількість чеків на повернення
-            int CountRefunddReceipt = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.Refund && x.TypePay == eTypePay.Cash).Count();
-            //Сума чеків на повернення
-            decimal TotalRefundSum = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.Refund && x.TypePay == eTypePay.Cash).Select(x => x.SUM).Sum();
-            //кількість чеків внесення
-            int CountMoneyInReceipt = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.MoneyIn && x.TypePay == eTypePay.Cash).Count();
-            //Сума внесень
-            decimal TotalMoneyInSum = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.MoneyIn && x.TypePay == eTypePay.Cash).Select(x => x.SUM).Sum();
-            //Кількість чеків вилучення
-            int CountMoneyOutReceipt = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.MoneyOut && x.TypePay == eTypePay.Cash).Count();
-            //сума вилучень
-            decimal TotalMoneyOutSum = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.MoneyOut && x.TypePay == eTypePay.Cash).Select(x => x.SUM).Sum();
-            //Готівки в касі
-            decimal TotalSum = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation != eTypeOperation.Refund && x.TypePay == eTypePay.Cash).Select(x => x.SUM).Sum() - TotalRefundSum;
-
-
             TextReport.Add(PrintCenter(HeadReceipt));
             TextReport.Add(PrintCenter(typeOperation.GetDescription()));
             if (typeOperation == eTypeOperation.PeriodZReport)
                 TextReport.Add(PrintCenter($"{pBegin.ToString("dd/MM/yyyy")}-{pEnd.ToString("dd/MM/yyyy")}"));
-            TextReport.Add(PrintCenter("Продажі"));
-            TextReport.Add(PrintTwoColums("Чеків", CountSaleReceipt.ToString()));
-            TextReport.Add(PrintTwoColums("Загальна сума:", TotalSaleSum.ToString("0.00")));
+
+            BildReport(pIdR, typeOperation, logRRO, eTypePay.Cash);
+            TextReport.Add(PrintCenter("   ГОТІВКА"));
             TextReport.Add(PrintCenter("----------------------"));
-            TextReport.Add(PrintCenter("Повернення"));
-            TextReport.Add(PrintTwoColums("Чеків", CountRefunddReceipt.ToString()));
-            TextReport.Add(PrintTwoColums("Загальна сума:", TotalRefundSum.ToString("0.00")));
-            TextReport.Add(PrintCenter("----------------------"));
-            TextReport.Add(PrintCenter("Службові внесення/вилучення"));
-            if (CountMoneyInReceipt > 0)
-            {
-                TextReport.Add(PrintTwoColums("Кількість внесень:", CountMoneyInReceipt.ToString()));
-                TextReport.Add(PrintTwoColums("Сума внесень:", TotalMoneyInSum.ToString("0.00")));
-            }
-            if (CountMoneyOutReceipt > 0)
-            {
-                TextReport.Add(PrintTwoColums("Кількість вилучень:", CountMoneyOutReceipt.ToString()));
-                TextReport.Add(PrintTwoColums("Сума вилучень:", TotalMoneyOutSum.ToString("0.00")));
-            }
-            if (typeOperation != eTypeOperation.PeriodZReport)
-                TextReport.Add(PrintTwoColums("Готівки в касі:", TotalSum.ToString("0.00")));
+            BildReport(pIdR, typeOperation, logRRO, eTypePay.Card);
+            TextReport.Add(PrintCenter("   ТЕРМІНАЛ"));
             TextReport.Add(PrintCenter("----------------------"));
             TextReport.Add(DateTime.Now.ToString());
             TextReport.Add($"ФН РРО {FiscalNumber}");
             if (Global.GetCodePeriod() != pIdR.CodePeriod)
-                TextReport.Add(PrintCenter($"Копія звіту за {pIdR.CodePeriod}")); ;
+                TextReport.Add(PrintCenter($"Копія звіту за {pIdR.CodePeriod}"));
 
             if (Printer != null)
                 Printer.Print(TextReport);
@@ -133,6 +96,57 @@ namespace Front.Equipments.Implementation
 
      
             return new LogRRO(pIdR) { TypeOperation = eTypeOperation.XReport, FiscalNumber = $"{FiscalNumber}_{typeOperation}", JSON = pIdR.ToJSON(), TextReceipt = string.Join(Environment.NewLine, TextReport), TypeRRO = "VirtualRRO", TypePay = TypePay };
+        }
+
+        void BildReport(IdReceipt pIdR, eTypeOperation typeOperation,IEnumerable<LogRRO> logRRO,eTypePay pTypePay)
+        {
+            //кількість продажних чеків
+            int CountSaleReceipt = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.Sale && x.TypePay == pTypePay).Count();
+            //Загальна сума продажів
+            decimal TotalSaleSum = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.Sale && x.TypePay == pTypePay).Select(x => x.SUM).Sum();
+            //Кількість чеків на повернення
+            int CountRefunddReceipt = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.Refund && x.TypePay == pTypePay).Count();
+            //Сума чеків на повернення
+            decimal TotalRefundSum = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.Refund && x.TypePay == pTypePay).Select(x => x.SUM).Sum();
+            //кількість чеків внесення
+            int CountMoneyInReceipt = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.MoneyIn && x.TypePay == pTypePay).Count();
+            //Сума внесень
+            decimal TotalMoneyInSum = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.MoneyIn && x.TypePay == pTypePay).Select(x => x.SUM).Sum();
+            //Кількість чеків вилучення
+            int CountMoneyOutReceipt = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.MoneyOut && x.TypePay == pTypePay).Count();
+            //сума вилучень
+            decimal TotalMoneyOutSum = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.MoneyOut && x.TypePay == pTypePay).Select(x => x.SUM).Sum();
+            //Готівки в касі
+            decimal TotalSum = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation != eTypeOperation.Refund && x.TypePay == pTypePay).Select(x => x.SUM).Sum() - TotalRefundSum;
+
+
+            TextReport.Add(PrintCenter("Продажі"));
+            TextReport.Add(PrintTwoColums("Чеків", CountSaleReceipt.ToString()));
+            TextReport.Add(PrintTwoColums("Загальна сума:", TotalSaleSum.ToString("0.00")));
+            TextReport.Add(PrintCenter("----------------------"));
+            TextReport.Add(PrintCenter("Повернення"));
+            TextReport.Add(PrintTwoColums("Чеків", CountRefunddReceipt.ToString()));
+            TextReport.Add(PrintTwoColums("Загальна сума:", TotalRefundSum.ToString("0.00")));
+            TextReport.Add(PrintCenter("----------------------"));
+
+            if (pTypePay == eTypePay.Cash)
+            {
+                TextReport.Add(PrintCenter("Службові внесення/вилучення"));
+                if (CountMoneyInReceipt > 0)
+                {
+                    TextReport.Add(PrintTwoColums("Кількість внесень:", CountMoneyInReceipt.ToString()));
+                    TextReport.Add(PrintTwoColums("Сума внесень:", TotalMoneyInSum.ToString("0.00")));
+                }
+                if (CountMoneyOutReceipt > 0)
+                {
+                    TextReport.Add(PrintTwoColums("Кількість вилучень:", CountMoneyOutReceipt.ToString()));
+                    TextReport.Add(PrintTwoColums("Сума вилучень:", TotalMoneyOutSum.ToString("0.00")));
+                }
+                if (typeOperation != eTypeOperation.PeriodZReport)
+                    TextReport.Add(PrintTwoColums("Готівки в касі:", TotalSum.ToString("0.00")));
+            }
+            
+
         }
         private string PrintCenter(string text)
         {

@@ -32,6 +32,7 @@ namespace ModelMID
         public string Description { get; set; }
         public UInt64 NumberReceipt { get; set; }
         public long CodeClientCard { get; set; }
+        public string CodeClientCard1C { get; set; }
         public int CodeWarehouse { get; set; }
         public string CodeWarehouse1C { get; set; }
         public string RefundNumber { get; set; }
