@@ -666,6 +666,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
 
         public async Task<bool> CheckDiscountBarCodeAsync(IdReceipt pIdReceipt, string pBarCode, int pPercent)
         {
+            //Global.Settings.Is2CategoryMultyUse = true;//!!!TMP
             bool isGood = true;
             decimal CountDiscount = 0; // На скільки товарів вже є знижка.
             try
@@ -677,7 +678,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.IncorectProductForDiscount, StatusDescription = "Для даного товару не можливо застосувати знижку 2 категорії." });
                     return false;
                 }
-                if (db.IsUseBarCode2Category(pBarCode))
+                if (!Global.Settings.Is2CategoryMultyUse && db.IsUseBarCode2Category(pBarCode))
                 {
                     Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.IncorectDiscountBarcode, StatusDescription = $"Даний штрихкод =>{pBarCode} другої категорії вже використаний!" });
                     return false;
@@ -703,12 +704,16 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     Cat2First.Quantity = LastQuantyity;
                     try
                     {
-                        ///!!!TMP треба буде перейти на цей механізм
-                        var R = await CheckOneTime(new OneTime(pIdReceipt) { CodePS = Cat2First.CodePS, TypeData = Model.eTypeCode.BarCode2Category, CodeData = pBarCode.ToLong() });
-                        isGood = !(R == null || !R.status || R.Data == null || !pIdReceipt.Equals(R.Data));
+                        if (!Global.Settings.Is2CategoryMultyUse)
+                        {
+                            ///!!!TMP треба буде перейти на цей механізм
+                            var R = await CheckOneTime(new OneTime(pIdReceipt) { CodePS = Cat2First.CodePS, TypeData = Model.eTypeCode.BarCode2Category, CodeData = pBarCode.ToLong() });
+                            isGood = !(R == null || !R.status || R.Data == null || !pIdReceipt.Equals(R.Data));
 
                             //isGood = await DataSync1C.IsUseDiscountBarCode(pBarCode);
-                        Global.ErrorDiscountOnLine = 0;
+                            Global.ErrorDiscountOnLine = 0;
+                        }
+                        else isGood = true;
                     }
                     catch (Exception ex)
                     {

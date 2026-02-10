@@ -105,5 +105,7 @@ namespace ModelMID
         /// В який IdWorkPlace конвертуємо "Управлінські" чеки.
         /// </summary>
         public int IdWorkPlaceManagement { get; set; }
+
+        public bool Is2CategoryMultyUse { get; set; }
     }
 }

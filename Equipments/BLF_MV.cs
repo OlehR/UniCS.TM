@@ -34,6 +34,8 @@ namespace Front.Equipments
 
         public void GetBarCode(string pBarCode, string pTypeBarCode)
         {
+            if (pBarCode?.StartsWith("]C1") == true)//!!!TMP 
+                pBarCode = pBarCode[3..];
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pBarCode=>{pBarCode},  pTypeBarCode=>{pTypeBarCode})");
             if (string.IsNullOrEmpty(pBarCode)) return;
             if (pBarCode.ToUpper().StartsWith("HTTP") && !pBarCode.ToUpper().Contains("T.GOV.UA"))
