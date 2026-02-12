@@ -165,7 +165,7 @@ namespace Front.Equipments
                         var res = Bl.ds.CheckExciseStamp(new ExciseStamp(MW.CurWares, pES));
                         if (res != null)
                         {
-                            if (!res.Equals(MW.CurWares) && res.State >= 0)
+                            if (!res.Equals(MW.CurWares)) //&& res.State >= 0
                             {
                                 Global.Message?.Invoke($"Дана акцизна марка {pES} вже використана {res.CodePeriod} Касове місце=>{res.IdWorkplace} Чек=>{res.CodeReceipt} CodeWares=>{res.CodeWares}!", eTypeMessage.Error);
                                 return;
