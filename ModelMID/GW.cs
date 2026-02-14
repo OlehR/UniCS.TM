@@ -38,7 +38,7 @@ namespace ModelMID
 		public string GetName { get { return (Type == 1 ? "G" : "W") + Code.ToString(); } }
 		public string Image { get; set; }
 		public string Pictures { get {
-				string Pictures= Path.Combine(Global.PathPictures, (Type == 1 ? "Categories" : "Products"), string.IsNullOrEmpty(Image)? $"{Code.ToString("D9")}" : Image);
+				string Pictures= Path.Combine(Global.PathPictures, (Type == 1 ? "Categories" : "Products"), string.IsNullOrEmpty(Image) ? (Code > 1000000000 ?$"{Code}" : $"{Code:D9}") : Image);
 				if (File.Exists(Pictures + ".png"))
 					return Pictures + ".png";
 				else

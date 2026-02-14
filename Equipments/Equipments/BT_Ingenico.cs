@@ -177,7 +177,11 @@ namespace Front.Equipments
             if (StartBPOS())
             {
                 BPOS.POSGetInfo();
-                Thread.Sleep(1000);
+                int i = 7;                
+                do
+                {
+                    Thread.Sleep(1000);
+                } while (string.IsNullOrEmpty(BPOS.TerminalInfo)&&i-->0);
                 string terminalInfo = BPOS.TerminalInfo;
                 StopBPOS();
                 if (string.IsNullOrEmpty(terminalInfo))
@@ -199,7 +203,12 @@ namespace Front.Equipments
                 if (!StartBPOS())
                     return string.Empty;
                 BPOS.POSGetInfo();
-                Thread.Sleep(1000);
+
+                int i = 7;
+                do
+                {
+                    Thread.Sleep(1000);
+                } while (string.IsNullOrEmpty(BPOS.TerminalInfo) && i-- > 0);
                 string terminalInfo = BPOS.TerminalInfo;
                 string str = @$"Model: Ingenico {Environment.NewLine}TerminalId: {GetTerminalID}{Environment.NewLine}Bank: {CodeBank}{Environment.NewLine}{base.GetDeviceInfo()}{Environment.NewLine}";
 
