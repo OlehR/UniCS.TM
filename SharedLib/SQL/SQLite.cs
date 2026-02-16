@@ -119,7 +119,7 @@ namespace SharedLib
                 return Connection.Query<T1>(pQuery, parameters);
             } catch (Exception e)
             {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name + Environment.NewLine + pQuery, e);
+              FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name + Environment.NewLine + pQuery, e);
                 throw;
             }
         }

@@ -203,6 +203,7 @@ namespace Front.Equipments.Implementation
 
         private string PrintTwoColums(string str1, string str2)
         {
+            if (str2 == null) str2 = "";
             if (str1.Length + str2.Length >= MaxCountCharacters)
             {
                 // Розділити текст на слова

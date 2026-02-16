@@ -103,8 +103,8 @@ namespace ModelMID
         /// <summary>
         /// Перелік одиниць, по яким необхідно вводити кількість(при пошуку по назві чи коду)
         /// </summary>
-        public static int WeightCodeUnit = 7;//кг
-        public static int[] UnitMustInputQuantity = { 7 };
+        public static int WeightCodeUnit { get { return Settings?.WeightCodeUnit>0? Settings.WeightCodeUnit : 7; } }//кг
+        //public static int[] UnitMustInputQuantity = { 7 };
 
         /// <summary>
         /// Тип періоду документів (0 - Глобальний, 1- рік, 2 -місяць, 3 - день.)

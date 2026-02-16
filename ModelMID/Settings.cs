@@ -31,6 +31,10 @@ namespace ModelMID
         /// </summary>
         public IEnumerable<decimal> Bags { get; set; }
         /// <summary>
+        /// Код вагова одинація (кг)
+        /// </summary>
+        public int WeightCodeUnit { get; set; }
+        /// <summary>
         /// максимальна вага власної сумки.
         /// </summary>
         public decimal MaxWeightBag { get; set; }

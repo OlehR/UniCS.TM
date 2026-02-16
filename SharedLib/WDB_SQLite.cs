@@ -540,7 +540,7 @@ namespace SharedLib
         public virtual IEnumerable<ReceiptWares> FindWares(string pBarCode = null, string pName = null, long pCodeWares = 0, int pCodeUnit = 0, int pCodeFastGroup = 0, int pArticl = -1, int pOffSet = -1, int pLimit = 10)
         {
            var Lim = pOffSet >= 0 ? $" limit {pLimit} offset {pOffSet}" : "";
-            var Wares = db.Execute<object, ReceiptWares>(SqlFoundWares + Lim, new { CodeWares = pCodeWares, CodeUnit = pCodeUnit, BarCode = pBarCode, NameUpper = (pName == null ? null : "%" + pName.ToUpper().Replace(" ", "%") + "%"), CodeDealer = Global.DefaultCodeDealer, CodeFastGroup = pCodeFastGroup, Articl = pArticl });
+       var Wares = db.Execute<object, ReceiptWares>(SqlFoundWares + Lim, new { CodeWares = pCodeWares, CodeUnit = pCodeUnit, BarCode = pBarCode, NameUpper = (pName == null ? null : "%" + pName.ToUpper().Replace(" ", "%") + "%"), CodeDealer = Global.DefaultCodeDealer, CodeFastGroup = pCodeFastGroup, Articl = pArticl });
 
             if (pBarCode?.Length == 13 && Wares?.Any() != true) //Пошук по штрихкоду виробника
             {
