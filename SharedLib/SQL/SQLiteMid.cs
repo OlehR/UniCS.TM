@@ -432,7 +432,7 @@ replace into PROMOTION_SALE_FILTER(CODE_PS, CODE_GROUP_FILTER, TYPE_GROUP_FILTER
 replace into Wares(CODE_WARES, CODE_GROUP, CodeGroupUp, NAME_WARES, Name_Wares_Upper, ARTICL, CODE_BRAND, CODE_UNIT,
                      Percent_Vat, Type_VAT, NAME_WARES_RECEIPT, DESCRIPTION, Type_Wares, Weight_brutto,
                      Weight_Fact, Weight_Delta, CODE_UKTZED, Limit_Age, PLU, Code_Direction, Code_TM,ProductionLocation,Country)
-             values(@CodeWares, @CodeGroup,@CodeGroupUp, @NameWares, @NameWaresUpper, @Articl, @CodeBrand, @CodeUnit,
+             values(@CodeWares, @CodeGroup,@CodeGroupUp, @NameWares, @NameWaresUpper, @Article, @CodeBrand, @CodeUnit,
                      @PercentVat, @TypeVat, @NameWaresReceipt, @Description, @TypeWares, @WeightBrutto,
                      @WeightFact, @WeightDelta, @CodeUKTZED, @LimitAge, @PLU, @CodeDirection, @CodeTM,@ProductionLocation,@Country);";
         public bool ReplaceWares(IEnumerable<Wares> parData) => BulkExecuteNonQuery<Wares>(SqlReplaceWares, parData, true) > 0;

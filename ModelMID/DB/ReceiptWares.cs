@@ -36,7 +36,9 @@ namespace ModelMID
         /// </summary>
         public string NameWaresReceipt { get { return NameWares.Replace((char)9, ' ').Replace((char)10, ' ').Replace((char)13, ' '); } }
 
-        public int Articl { get; set; }
+        //[Obsolete("Articl is deprecated, please use Article instead.")]
+        //public int Articl { get { return Article; } set { Article = value; } }
+        public int Article { get; set; }
         public int CodeBrand { get; set; }
 
         /// <summary>

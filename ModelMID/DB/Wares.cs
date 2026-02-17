@@ -26,7 +26,9 @@ namespace ModelMID
         /// </summary>
         public string NameWaresUpper { get { return NameWares.ToUpper(); } }
         public string NameWaresReceipt { get; set; }
-        public int Articl { get; set; }
+        [Obsolete("Articl is deprecated, please use Article instead.")]
+        public int Articl { get { return Article; } set { Article = value; } }
+        public int Article { get; set; }
         public int CodeBrand { get; set; }
         /// <summary>
         /// % Ставки ПДВ (0 -0 ,20 -20%)

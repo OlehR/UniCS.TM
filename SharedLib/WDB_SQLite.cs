@@ -344,7 +344,7 @@ namespace SharedLib
                     {
                         var W = r.GetLastWares;
                         if (W != null && pUser == null) // dblf
-                            VR.SendMessage(W.IdWorkplace, pUser == null ? W.NameWares : $"{pUser.NameUser}=>{W.NameWares}", W.Articl, W.Quantity, W.Sum, VR.eTypeVRMessage.AddWares, r.SumTotal);
+                            VR.SendMessage(W.IdWorkplace, pUser == null ? W.NameWares : $"{pUser.NameUser}=>{W.NameWares}", W.Article, W.Quantity, W.Sum, VR.eTypeVRMessage.AddWares, r.SumTotal);
                     }
                 }
             });
@@ -537,10 +537,10 @@ namespace SharedLib
         /// <summary>
         /// Повертає знайдений товар/товари
         /// </summary>
-        public virtual IEnumerable<ReceiptWares> FindWares(string pBarCode = null, string pName = null, long pCodeWares = 0, int pCodeUnit = 0, int pCodeFastGroup = 0, int pArticl = -1, int pOffSet = -1, int pLimit = 10)
+        public virtual IEnumerable<ReceiptWares> FindWares(string pBarCode = null, string pName = null, long pCodeWares = 0, int pCodeUnit = 0, int pCodeFastGroup = 0, int pArticle = -1, int pOffSet = -1, int pLimit = 10)
         {
            var Lim = pOffSet >= 0 ? $" limit {pLimit} offset {pOffSet}" : "";
-       var Wares = db.Execute<object, ReceiptWares>(SqlFoundWares + Lim, new { CodeWares = pCodeWares, CodeUnit = pCodeUnit, BarCode = pBarCode, NameUpper = (pName == null ? null : "%" + pName.ToUpper().Replace(" ", "%") + "%"), CodeDealer = Global.DefaultCodeDealer, CodeFastGroup = pCodeFastGroup, Articl = pArticl });
+       var Wares = db.Execute<object, ReceiptWares>(SqlFoundWares + Lim, new { CodeWares = pCodeWares, CodeUnit = pCodeUnit, BarCode = pBarCode, NameUpper = (pName == null ? null : "%" + pName.ToUpper().Replace(" ", "%") + "%"), CodeDealer = Global.DefaultCodeDealer, CodeFastGroup = pCodeFastGroup, Article = pArticle });
 
             if (pBarCode?.Length == 13 && Wares?.Any() != true) //Пошук по штрихкоду виробника
             {

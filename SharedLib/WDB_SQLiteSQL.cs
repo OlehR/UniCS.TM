@@ -436,7 +436,7 @@ union
 select w.code_wares ,case when @CodeUnit=0 then au.CODE_UNIT else @CodeUnit end as code_unit,0 as orders
     from wares w 
     join addition_unit au on (w.CODE_WARES=au.code_wares and au.DEFAULT_UNIT=1)
-    where w.articl=@Articl 
+    where w.articl=@Article 
 union
 select ifnull(w.code_wares,bc.code_wares),bc.code_unit,0 as orders
                  from bar_code bc left join wares w
@@ -476,7 +476,7 @@ select t.code_wares as CodeWares,w.name_wares NameWares,w.name_wares_receipt  as
         ,w.Weight_Delta as WeightDelta
         ,count(*) over() as TotalRows
         ,w.code_UKTZED as CodeUKTZED
-        ,w.Articl as Articl
+        ,w.Articl as Article
         ,w.Limit_Age as LimitAge
         ,w.PLU    
         ,w.Code_Direction as CodeDirection

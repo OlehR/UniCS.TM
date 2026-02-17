@@ -116,7 +116,7 @@ namespace SharedLib
             stopWatch.Start();
             // Get the elapsed time as a TimeSpan value.            
 
-            VR.SendMessage(pW.IdWorkplace, pW.NameWares, pW.Articl, pW.Quantity, pW.Sum);
+            VR.SendMessage(pW.IdWorkplace, pW.NameWares, pW.Article, pW.Quantity, pW.Sum);
             stopWatch.Stop();
             TimeSpan ts = stopWatch.Elapsed;
             Console.WriteLine("\nVR=>" + ts.TotalMilliseconds + "\n");
@@ -392,7 +392,7 @@ namespace SharedLib
                 if (pQuantity == 0)
                 {
                     db.DeleteReceiptWares(w);
-                    VR.SendMessage(w.IdWorkplace, $"{pUser?.NameUser} =>{w.NameWares}", w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.DeleteWares);
+                    VR.SendMessage(w.IdWorkplace, $"{pUser?.NameUser} =>{w.NameWares}", w.Article, w.Quantity, w.Sum, VR.eTypeVRMessage.DeleteWares);
                 }
                 else
                 {
@@ -408,7 +408,7 @@ namespace SharedLib
                     }
 
                     res = db.UpdateQuantityWares(w);
-                    VR.SendMessage(w.IdWorkplace, $"{pUser?.NameUser} => {w.NameWares}", w.Articl, w.Quantity, w.Sum, VR.eTypeVRMessage.UpdateWares);
+                    VR.SendMessage(w.IdWorkplace, $"{pUser?.NameUser} => {w.NameWares}", w.Article, w.Quantity, w.Sum, VR.eTypeVRMessage.UpdateWares);
                 }
                 if (Global.RecalcPriceOnLine)
                     db.RecalcPriceAsync(pReceiptWaresId, pQuantity==0?pUser:null);
