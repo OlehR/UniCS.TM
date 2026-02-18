@@ -184,14 +184,14 @@ namespace SharedLib
             return Res;
         }
 
-        public ReceiptWares AddWaresBarCode(IdReceipt pReceipt, string pBarCode, decimal pQuantity = 0, bool IsOnlyDiscount = false)
+        public ReceiptWares AddWaresBarCode(IdReceipt pReceipt, string pBarCode, decimal pQuantity = 0, bool IsOnlyDiscount = false,bool pIsBarCode=false)
         {
             if (pBarCode == null)
                 return null;
             IEnumerable<ReceiptWares> w = null;
             pBarCode = (string)pBarCode.Trim().Clone();
             if (!IsOnlyDiscount)
-                if (pBarCode.Length >= 8)
+                if (pBarCode.Length >= 8 || pIsBarCode)
                     w = db.FindWares(pBarCode);//Пошук по штрихкоду
                 else// Можливо артикул товару
                 {

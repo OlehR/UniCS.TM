@@ -94,7 +94,7 @@ namespace Front.Equipments
                     {
                         if (MW.curReceipt == null)
                             NewReceipt();
-                        w = Bl.AddWaresBarCode(MW.curReceipt, pBarCode, 1);
+                        w = Bl.AddWaresBarCode(MW.curReceipt, pBarCode, 1,false,true);
                         if (w != null && w.CodeWares > 0)
                         {
                             MW.CurWares = w;
@@ -104,7 +104,7 @@ namespace Front.Equipments
                 }
                 else
                 {
-                    w = Bl.AddWaresBarCode(MW.curReceipt, pBarCode, 1, true);
+                    w = Bl.AddWaresBarCode(MW.curReceipt, pBarCode, 1, true, true);
                 }
                 if (w != null)
                     return;

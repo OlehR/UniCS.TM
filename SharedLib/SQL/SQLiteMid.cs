@@ -379,7 +379,7 @@ replace into PROMOTION_SALE_FILTER(CODE_PS, CODE_GROUP_FILTER, TYPE_GROUP_FILTER
 
         public bool ReplacePromotionSale2Category(IEnumerable<PromotionSale2Category> parData)
         {
-            ExecuteNonQuery("delete from PROMOTION_SALE_2_category", new { }, Transaction);
+            //ExecuteNonQuery("delete from PROMOTION_SALE_2_category", new { }, Transaction);
             string SqlReplacePromotionSale2Category = "replace into PROMOTION_SALE_2_category(CODE_PS, CODE_WARES) values(@CodePS, @CodeWares)";
             return BulkExecuteNonQuery<PromotionSale2Category>(SqlReplacePromotionSale2Category, parData, true) > 0;
         }
