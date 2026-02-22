@@ -38,7 +38,7 @@ namespace SharedLib
         public string GetMIDFile(DateTime pD = default, bool pTmp = false)
         {
             DateTime Date = pD == default ? DateTime.Today : pD;
-            int Wh= (Global.CodeWarehouse==0) ? GetCodeWarehouse() : Global.CodeWarehouse;
+            int Wh = (Global.CodeWarehouse == 0) ? GetCodeWarehouse() : Global.CodeWarehouse;
             return SQLiteMid.GetMIDFile(Date, pTmp, Wh); //  Path.Combine(Global.PathDB, $"{Date:yyyyMM}", $"MID_{Wh}_{Date:yyyyMMdd}{(pTmp ? "_tmp" : "")}.db");
         }
 
@@ -105,10 +105,10 @@ namespace SharedLib
             }
         }
 
-         int GetCodeWarehouse()
+        int GetCodeWarehouse()
         {
             string SqlGetCodeWarehouse = "select CODE_WAREHOUSE from WORKPLACE where ID_WORKPLACE=@IdWorkplace";
-            var res = dbConfig?.ExecuteScalar<object, int>(SqlGetCodeWarehouse, new { IdWorkplace = Global.IdWorkPlace })??0;            
+            var res = dbConfig?.ExecuteScalar<object, int>(SqlGetCodeWarehouse, new { IdWorkplace = Global.IdWorkPlace }) ?? 0;
             return res;
         }
 
@@ -380,7 +380,7 @@ namespace SharedLib
                             {
                                 RW.Price = RW.PriceDealer;
                                 RW.ParPrice1 = 888888;
-                                RW.ParPrice2 = (Res.IsOneTime ? -1 : 1)*(long)Res.TypeDiscount;
+                                RW.ParPrice2 = (Res.IsOneTime ? -1 : 1) * (long)Res.TypeDiscount;
                                 RW.ParPrice3 = Res.Data;
                                 RW.Priority = Res.Priority;
 
@@ -391,10 +391,10 @@ namespace SharedLib
                             }
                             else
                             {
-                                RW.Price = MPI.GetPrice(Res.Price, Res.IsIgnoreMinPrice == 0, Res.CodePs > 0&& Res.TypeDiscount!= eTypeDiscount.PercentDiscount);
+                                RW.Price = MPI.GetPrice(Res.Price, Res.IsIgnoreMinPrice == 0, Res.CodePs > 0 && Res.TypeDiscount != eTypeDiscount.PercentDiscount);
                                 RW.TypePrice = MPI.typePrice;
                                 RW.ParPrice1 = Res.CodePs;
-                                RW.ParPrice2 = (Res.IsOneTime?-1:1)* (long)Res.TypeDiscount;
+                                RW.ParPrice2 = (Res.IsOneTime ? -1 : 1) * (long)Res.TypeDiscount;
                                 RW.ParPrice3 = Res.Data;
                                 RW.Priority = Res.Priority;
                             }
@@ -500,7 +500,7 @@ namespace SharedLib
 
 
 
-        public IEnumerable<ReceiptWares> GetWaresFromFastGroup(int parCodeFastGroup)=> FindWares(null, null, 0, 0, parCodeFastGroup);
+        public IEnumerable<ReceiptWares> GetWaresFromFastGroup(int parCodeFastGroup) => FindWares(null, null, 0, 0, parCodeFastGroup);
 
         public IEnumerable<ReceiptWares> GetBags() => FindWares(null, null, 0, 0, Global.CodeFastGroupBag);
 
@@ -539,8 +539,8 @@ namespace SharedLib
         /// </summary>
         public virtual IEnumerable<ReceiptWares> FindWares(string pBarCode = null, string pName = null, long pCodeWares = 0, int pCodeUnit = 0, int pCodeFastGroup = 0, int pArticle = -1, int pOffSet = -1, int pLimit = 10)
         {
-           var Lim = pOffSet >= 0 ? $" limit {pLimit} offset {pOffSet}" : "";
-       var Wares = db.Execute<object, ReceiptWares>(SqlFoundWares + Lim, new { CodeWares = pCodeWares, CodeUnit = pCodeUnit, BarCode = pBarCode, NameUpper = (pName == null ? null : "%" + pName.ToUpper().Replace(" ", "%") + "%"), CodeDealer = Global.DefaultCodeDealer, CodeFastGroup = pCodeFastGroup, Article = pArticle });
+            var Lim = pOffSet >= 0 ? $" limit {pLimit} offset {pOffSet}" : "";
+            var Wares = db.Execute<object, ReceiptWares>(SqlFoundWares + Lim, new { CodeWares = pCodeWares, CodeUnit = pCodeUnit, BarCode = pBarCode, NameUpper = (pName == null ? null : "%" + pName.ToUpper().Replace(" ", "%") + "%"), CodeDealer = Global.DefaultCodeDealer, CodeFastGroup = pCodeFastGroup, Article = pArticle });
 
             if (pBarCode?.Length == 13 && Wares?.Any() != true) //Пошук по штрихкоду виробника
             {
@@ -555,7 +555,7 @@ where w.CODE_UNIT=@CodeUnit and  substring(bar_code, 1,6) = @BC";
                         Wares = FindWares(null, null, el.CodeWares);
                         var Quantity = pBarCode[8..12].ToDecimal();
                         foreach (var e in Wares)
-                            e.Quantity = Quantity/1000m;
+                            e.Quantity = Quantity / 1000m;
                         break;
                     }
                 }
@@ -783,7 +783,7 @@ insert into RECEIPT_Event(
         ////////////////////////// MID
 
         //public bool CreateMIDTable() => dbMid.ExecuteNonQuery(SqlCreateMIDTable) > 0;
-                
+
         public bool UpdateQR(ReceiptWares pRW)
         {
             string SqlUpdateQR = "update wares_receipt set QR = @QR where id_workplace = @IdWorkplace and code_period = @CodePeriod and code_receipt = @CodeReceipt  and code_wares = @CodeWares";
@@ -804,7 +804,7 @@ insert into RECEIPT_Event(
     join wares w on wr.code_wares = w.code_wares
         where wr.id_workplace = @IdWorkplace and wr.code_period = @CodePeriod and wr.code_receipt = @CodeReceipt and QR is not null;";
             return db.Execute<IdReceipt, QR>(SqlGetQR, pR);
-        }       
+        }
 
         public bool InsertLogRRO(IEnumerable<LogRRO> pLog)
         {
@@ -853,7 +853,7 @@ Where ID_WORKPLACE = @IdWorkplace
             string Sql = @"update Client_New set STATE=1 where Barcode_Client = @BarcodeClient and Phone=@Phone";
             return dbRC.ExecuteNonQuery<ClientNew>(Sql, pC) > 0;
         }
-        
+
         /// <summary>
         /// Повертає знайденого клієнта(клієнтів)
         /// </summary>
@@ -924,7 +924,7 @@ Where ID_WORKPLACE = @IdWorkplace
                     r.ReceiptEvent = GetReceiptEvent(pIdReceipt);
                     r.LogRROs = GetLogRRO(pIdReceipt);
                     r.OneTime = GetOneTime(pIdReceipt);
-                    r.ReceiptWaresPromotionNoPrice =GetReceiptWaresPromotionNoPrice(pIdReceipt);
+                    r.ReceiptWaresPromotionNoPrice = GetReceiptWaresPromotionNoPrice(pIdReceipt);
                 }
                 return r;
             }
@@ -988,8 +988,8 @@ Where ID_WORKPLACE = @IdWorkplace
             return Res;
         }
 
-        public Int64 GetPricePromotionSale2Category(IdReceiptWares parIdReceiptWares) =>  db.ExecuteScalar<IdReceiptWares, Int64>(SqlGetPricePromotionSale2Category, parIdReceiptWares);
-        
+        public Int64 GetPricePromotionSale2Category(IdReceiptWares parIdReceiptWares) => db.ExecuteScalar<IdReceiptWares, Int64>(SqlGetPricePromotionSale2Category, parIdReceiptWares);
+
         public virtual IEnumerable<WorkPlace> GetWorkPlace()
         {
             string SqlGetWorkplace = @"select ID_WORKPLACE as IdWorkplace, NAME as Name,
@@ -1016,7 +1016,7 @@ Select min(case when CODE_DEALER = -888888  then PRICE_DEALER else null end) as 
             if (res != null)
                 return res.FirstOrDefault();
             return null;
-        }        
+        }
 
         public IEnumerable<Payment> GetPayment(IdReceipt pIdR)
         {
@@ -1036,8 +1036,8 @@ Select min(case when CODE_DEALER = -888888  then PRICE_DEALER else null end) as 
             }
         }
 
-        public IEnumerable<WaresReceiptPromotion> CheckLastWares2Cat(IdReceipt parIdReceipt)=>db.Execute<IdReceipt, WaresReceiptPromotion>(SqlCheckLastWares2Cat, parIdReceipt);
-       
+        public IEnumerable<WaresReceiptPromotion> CheckLastWares2Cat(IdReceipt parIdReceipt) => db.Execute<IdReceipt, WaresReceiptPromotion>(SqlCheckLastWares2Cat, parIdReceipt);
+
         public Receipt GetLastReceipt(IdReceipt parIdReceipt)
         {
             var r = this.db.Execute<IdReceipt, Receipt>(SqlGetLastReceipt, parIdReceipt);
@@ -1062,13 +1062,13 @@ sum_receipt SumReceipt, vat_receipt VatReceipt, code_pattern CodePattern, state_
 
         public IEnumerable<Receipt> GetReceiptByFiscalNumber(int pIdWorkPlace, string pFiscalNumber, DateTime pStartDate = default(DateTime), DateTime pFinishDate = default(DateTime)) =>
             db.Execute<object, Receipt>(SqlReceiptByFiscalNumbers, new { StartDate = pStartDate, FinishDate = pFinishDate, IdWorkPlace = pIdWorkPlace, NumberReceipt = pFiscalNumber });
-        
-        public IEnumerable<ReceiptEvent> GetReceiptEvent(IdReceipt parIdReceipt)=>db.Execute<IdReceipt, ReceiptEvent>(SqlGetReceiptEvent, parIdReceipt);
+
+        public IEnumerable<ReceiptEvent> GetReceiptEvent(IdReceipt parIdReceipt) => db.Execute<IdReceipt, ReceiptEvent>(SqlGetReceiptEvent, parIdReceipt);
 
         public IEnumerable<WaresReceiptPromotion> GetReceiptWaresPromotion(IdReceiptWares parIdReceiptWares) => this.db.Execute<IdReceipt, WaresReceiptPromotion>(SqlGetReceiptWaresPromotion, parIdReceiptWares);
-        
+
         public virtual IEnumerable<WaresReceiptPromotion> GetReceiptWaresPromotion(IdReceipt parIdReceipt) => GetReceiptWaresPromotion(new IdReceiptWares(parIdReceipt));
-        
+
         public decimal GetLastQuantity(IdReceiptWares parIdReceiptWares)
         {
             string SqlGetLastQuantity = @"select QUANTITY from(
@@ -1078,7 +1078,7 @@ SELECT QUANTITY - QUANTITY_OLD as QUANTITY, ROW_NUMBER()   OVER(ORDER BY  DATE_C
             return db.ExecuteScalar<IdReceiptWares, decimal>(SqlGetLastQuantity, parIdReceiptWares);
         }
 
-        public virtual IEnumerable<ReceiptWaresDeleted1C> GetReceiptWaresDeleted() =>  db.Execute<ReceiptWaresDeleted1C>(SqlGetReceiptWaresDeleted);
+        public virtual IEnumerable<ReceiptWaresDeleted1C> GetReceiptWaresDeleted() => db.Execute<ReceiptWaresDeleted1C>(SqlGetReceiptWaresDeleted);
 
         public virtual IEnumerable<User> GetUser(User pUser)
         {
@@ -1129,7 +1129,7 @@ select sum( sum_pay* case when TYPE_PAY in (4) then -1 else 1 end) as sum from p
         /// <param name="parParameters"> </param>
         /// <returns></returns>
      	public IEnumerable<ReceiptWares> ViewReceiptWares(IdReceipt parIdReceipt, bool pIsReceiptWaresPromotion = false) => ViewReceiptWares(new IdReceiptWares(parIdReceipt), pIsReceiptWaresPromotion); //this.db.Execute<IdReceipt, ReceiptWares>(SqlViewReceiptWares, parIdReceipt);
-  
+
         public bool IsWaresInPromotionKit(long parCodeWares) => db.ExecuteScalar<object, long>(SqlIsWaresInPromotionKit, new { CodeWares = parCodeWares }) > 0;
 
         public IEnumerable<WaresWarehouse> GetWaresWarehouse() => db.Execute<WaresWarehouse>("Select * from WaresWarehouse");
@@ -1207,7 +1207,7 @@ from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWare
 
         public bool ReplaceOneTime(OneTime pRC) => dbRC.ExecuteNonQuery<OneTime>(SqlReplaceOneTime, pRC) > 0;
 
-        public ParameterPromotion GetParameterPromotion(IdReceipt pIdR,bool pIsPricePromotion=true)
+        public ParameterPromotion GetParameterPromotion(IdReceipt pIdR, bool pIsPricePromotion = true)
         {
             ParameterPromotion par;
             var InfoClient = GetInfoClientByReceipt(pIdR);
@@ -1224,7 +1224,7 @@ from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWare
             return par;
         }
 
-        public IEnumerable<PricePromotion> GetNoPricePromorion( Receipt pR)
+        public IEnumerable<PricePromotion> GetNoPricePromorion(Receipt pR)
         {
             List<PricePromotion> Res = new List<PricePromotion>();
             ParameterPromotion par = GetParameterPromotion(pR, false);
@@ -1235,21 +1235,21 @@ from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWare
             {
                 par.CodeWares = RW.CodeWares;
                 par.Quantity = RW.Quantity;
-                
-                var res=db.Execute<ParameterPromotion, PricePromotion>(SqlGetPrice, par);
+
+                var res = db.Execute<ParameterPromotion, PricePromotion>(SqlGetPrice, par);
 
                 //IEnumerable<int> dd=db.Execute<ParameterPromotion, int>(SqlGetPriceFilter + " select * from ExeptionPS ", par);
 
                 if (res?.Any() == true)
-                {                   
+                {
                     Res.AddRange(res);
                     foreach (var el in res)
                     {
-                        if (el.TypeDiscount == eTypeDiscount.ForCountOtherPromotion && pR.CodeClient!=0)
+                        if (el.TypeDiscount == eTypeDiscount.ForCountOtherPromotion && pR.CodeClient != 0)
                             ReplaceReceiptWaresPromotionNoPrice(new ReceiptWaresPromotionNoPrice(RW) { CodePS = el.CodePs, Data = RW.Quantity, TypeDiscount = el.TypeDiscount, DataEx = pR.CodeClient });
                     }
                 }
-            }             
+            }
             return Res;
         }
 
@@ -1267,7 +1267,7 @@ from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWare
         public bool DeleteReceiptWaresPromotionNoPrice(IdReceipt pIdR, eTypeDiscount pTD)
         {
             string Sql = $@"delete from ReceiptWaresPromotionNoPrice where IdWorkplace = @IdWorkplace and CodePeriod = @CodePeriod and CodeReceipt = @CodeReceipt and TypeDiscount={(int)pTD}";
-            return dbRC.ExecuteNonQuery<IdReceipt>(Sql, pIdR)>0;
+            return dbRC.ExecuteNonQuery<IdReceipt>(Sql, pIdR) > 0;
         }
 
         /*public IEnumerable<long> GetParamPrice(ParameterPromotion par)
@@ -1282,8 +1282,8 @@ from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWare
             using var dbT = new WDB_SQLite(pIdR.DTPeriod);
             return dbT.ViewReceipt(pIdR, parWithDetail);
         }
-        
-       public IEnumerable<ReceiptWaresLink> GetReceiptWaresLink(IdReceiptWares pIdRW)
+
+        public IEnumerable<ReceiptWaresLink> GetReceiptWaresLink(IdReceiptWares pIdRW)
         {
             string Sql = @"select wrl.*,w.NAME_WARES as NameWares from WaresReceiptLink wrl 
     join Wares w on wrl.CodeWares=w.Code_Wares
@@ -1298,7 +1298,7 @@ where wrl.IdWorkplace = @IdWorkplace and wrl.CodePeriod = @CodePeriod and wrl.Co
                 string SQL = @"replace into ReceiptGift ( IdWorkplace, CodePeriod, CodeReceipt, CodePS, NumberGroup, CodeCoupon, Quantity) values 
                                                         (@IdWorkplace,@CodePeriod,@CodeReceipt,@CodePS,@NumberGroup,@CodeCoupon,@Quantity)";
                 return dbRC.ExecuteNonQuery<ReceiptGift>(SQL, pRG) > 0;
-            }catch(Exception e)
+            } catch (Exception e)
             {
                 var a = e.Message;
             }
@@ -1315,9 +1315,9 @@ join WARES_RECEIPT wr on re.ID_WORKPLACE=wr.ID_WORKPLACE and wr.CODE_RECEIPT=re.
 where RE.EVENT_TYPE=1";
             return dbRC.Execute<WeightReceipt>(SQL);
         }
-        class cReplaceWorkplaceId:IdReceipt
+        class cReplaceWorkplaceId : IdReceipt
         {
-            public cReplaceWorkplaceId(IdReceipt Id) : base(Id){ }
+            public cReplaceWorkplaceId(IdReceipt Id) : base(Id) { }
             public int From { get; set; }
             public int To { get; set; }
         }
@@ -1327,14 +1327,21 @@ where RE.EVENT_TYPE=1";
                      where id_workplace = @IdWorkplace and code_period = @CodePeriod and code_receipt = @CodeReceipt and id_workplace_pay =@From;";
             foreach (var el in Global.IdWorkPlaces)
             {
-                var xx=Global.GetWorkPlaceByIdWorkplace(el);
-                if(xx?.Settings?.IdWorkPlaceManagement>0)
+                var xx = Global.GetWorkPlaceByIdWorkplace(el);
+                if (xx?.Settings?.IdWorkPlaceManagement > 0)
                 {
                     var par = new cReplaceWorkplaceId(pIdR) { To = xx.Settings.IdWorkPlaceManagement, From = xx.IdWorkplace };
                     db.ExecuteNonQuery<cReplaceWorkplaceId>(Sql, par);
-                }                
+                }
             }
             return true;
         }
+        public bool ReplaceClient(Client pC)
+        {
+            string MidFile = GetMIDFile();
+            SQLiteMid SqlM = new(MidFile);
+            List < Client > LC = new() { pC };
+            return SqlM.ReplaceClient(LC);
+        }        
     }
 }

@@ -828,6 +828,7 @@ namespace SharedLib
                     //cl = await ds.GetDiscount(pFC);
                     if (cl != null)
                     {
+                        db.ReplaceClient(cl);
                         UpdateClientInReceipt(pIdReceipt, cl, false);
                     }
                 }
