@@ -363,10 +363,8 @@ namespace Front.Control
 
         private void EKKA_Z_Click(object sender, RoutedEventArgs e)
         {
-            if ((MW.curReceipt == null || MW.curReceipt.Wares == null || !MW.curReceipt.Wares.Any()) && (MW.ReceiptPostpone == null || MW.ReceiptPostpone.Wares == null || !MW.ReceiptPostpone.Wares.Any()))
+            if(!((IMW)MW).IsOpenReceipt) //(MW.curReceipt == null || MW.curReceipt.Wares == null || !MW.curReceipt.Wares.Any()) && (MW.ReceiptPostpone == null || MW.ReceiptPostpone.Wares == null || !MW.ReceiptPostpone.Wares.Any()))
             {
-
-
                 MW.CustomMessage.Show("Ви хочете зробити Z - звіт на фіскальному апараті ? ", "Увага!", eTypeMessage.Question);
                 MW.CustomMessage.Result = (bool res) =>
                 {
@@ -404,37 +402,27 @@ namespace Front.Control
             });
         }
 
-        private void EKKA_Copy_Click(object sender, RoutedEventArgs e)
-        {
-            EF.RroPrintCopyReceipt(SelectedCashRegister);
-        }
+        private void EKKA_Copy_Click(object sender, RoutedEventArgs e) => EF.RroPrintCopyReceipt(SelectedCashRegister);        
 
-        private void WorkStart_Click(object sender, RoutedEventArgs e)
-        {
-            OpenShift(AdminUser);
-        }
+        private void WorkStart_Click(object sender, RoutedEventArgs e) => OpenShift(AdminUser);
 
         public void OpenShift(User pU)
         {
-            Blf.OpenShift(pU);
+            string res=Blf.OpenShift(pU);
             Init();
+            if (!string.IsNullOrEmpty(res))
+                MW.CustomMessage.Show(res, "Увага!", eTypeMessage.Warning);
         }
 
         private void WorkFinish_Click(object sender, RoutedEventArgs e)
         {
-            if ((MW.curReceipt == null || MW.curReceipt.Wares == null || !MW.curReceipt.Wares.Any()) && (MW.ReceiptPostpone == null || MW.ReceiptPostpone.Wares == null || !MW.ReceiptPostpone.Wares.Any()))
+            var res = Blf.CloseShift();
+            Init();
+            if (!string.IsNullOrEmpty(res))
             {
-                MW.AdminSSC = null;
-                MW.Bl.db.SetConfig<string>("CodeAdminSSC", string.Empty);
-                MW.Bl.StoptWork(Global.IdWorkPlace);
-                Init();
-            }
-            else
-            {
-                MW.SetStateView(eStateMainWindows.StartWindow);
                 TabAdmin.SelectedIndex = 0;
-                MW.CustomMessage.Show("Існує відкритий чек! Для закриття зміни потрібно закрити всі чеки!", "Увага!", eTypeMessage.Warning);
-            }
+                MW.CustomMessage.Show(res, "Увага!", eTypeMessage.Warning);
+            }            
         }
 
         private void CloseDay_Click(object sender, RoutedEventArgs e)

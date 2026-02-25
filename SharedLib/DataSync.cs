@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
@@ -11,9 +12,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Xml.Linq;
 using UtilNetwork;
 using Utils;
-using System.IO.Compression;
 
 //using Model;
 
@@ -1075,6 +1076,32 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                 return false;
             }
             return true;
+        }
+        public async Task<Result<bool>> OpenCloseShiftAsync(bool pIsOpen=true)
+        {
+            try
+            {
+                HttpClient client = new() { Timeout = TimeSpan.FromMilliseconds(90000) };
+                HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "CashRegister/OpenCloseShift");
+
+                requestMessage.Content = new StringContent(new {Global.CodeWarehouse, IsOpen= pIsOpen }.ToJson(), Encoding.UTF8, "application/json");
+                var response = await client.SendAsync(requestMessage);
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    if (!string.IsNullOrEmpty(res))
+                    {
+                        var r = Newtonsoft.Json.JsonConvert.DeserializeObject<Result<bool>>(res);
+                        return r;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e);
+                return new(e);
+            }
+            return null;
         }
     }
 }

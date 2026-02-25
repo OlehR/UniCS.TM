@@ -415,9 +415,9 @@ namespace Front.Equipments
             }
 
         }
-        public global::UtilNetwork.Result CallBackApi(string pDataApi)
+        public Result CallBackApi(string pDataApi)
         {
-            global::UtilNetwork.Result Res = null;
+            Result Res = null;
             try
             {
                 CommandAPI<dynamic> pC = JsonSerializer.Deserialize<CommandAPI<dynamic>>(pDataApi);
@@ -427,23 +427,23 @@ namespace Front.Equipments
                 switch (pC.Command)
                 {
                     case eCommand.GetCurrentReceipt:
-                        Res = new global::UtilNetwork.Result(0, MW.curReceipt?.ToJson());
+                        Res = new(0, MW.curReceipt?.ToJson());
                         break;
                     case eCommand.GetReceipt:
                         var Command = JsonSerializer.Deserialize<CommandAPI<IdReceipt>>(pDataApi);
-                        Res = new global::UtilNetwork.Result(0, Bl.GetReceiptHead(Command.Data, true)?.ToJSON());
+                        Res = new(0, Bl.GetReceiptHead(Command.Data, true)?.ToJSON());
                         break;
                     case eCommand.XReport:
                         CommandInt = JsonSerializer.Deserialize<CommandAPI<int>>(pDataApi);
-                        Res = new global::UtilNetwork.Result(0, EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = CommandInt.Data })?.ToJSON());
+                        Res = new (0, EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = CommandInt.Data })?.ToJSON());
                         break;
                     case eCommand.OpenShift:
                         CommandString = JsonSerializer.Deserialize<CommandAPI<string>>(pDataApi);
                         var u = Bl.GetUserByBarCode(CommandString.Data);
                         if (u != null)
                         {
-                            OpenShift(u);
-                            Res = new global::UtilNetwork.Result(0, $"Зміна відкрита:{u.NameUser}");
+                            string res=OpenShift(u);
+                            Res = string.IsNullOrEmpty(res)? new(0, $"Зміна відкрита:{u.NameUser}") : new (-1, res);
                         }
                         break;
                     case eCommand.GeneralCondition:
@@ -451,7 +451,7 @@ namespace Front.Equipments
                         var r = Bl.GetUserByBarCode(CommandRemoteInfo.Data.UserBarcode);
                         MW.RemoteCheckout = CommandRemoteInfo.Data;
 
-                        Res = new global::UtilNetwork.Result(0, $"Загальний стан каси: {MW.RemoteWorkplace.Name}");
+                        Res = new(0, $"Загальний стан каси: {MW.RemoteWorkplace.Name}");
                         break;
                     case eCommand.Confirm:
                         CommandRemoteInfo = JsonSerializer.Deserialize<CommandAPI<InfoRemoteCheckout>>(pDataApi);
@@ -470,7 +470,7 @@ namespace Front.Equipments
                             MW.QuantityCigarettes = 1;
                             SetStateView(eStateMainWindows.WaitInput);
                         }
-                        Res = new global::UtilNetwork.Result(0, $"{CommandRemoteInfo.Data.StateMainWindows} {CommandRemoteInfo.Data.TypeAccess}");
+                        Res = new(0, $"{CommandRemoteInfo.Data.StateMainWindows} {CommandRemoteInfo.Data.TypeAccess}");
                         break;
                     case eCommand.DeleteReceipt:
                         if (MW.curReceipt != null && MW.curReceipt.StateReceipt == eStateReceipt.Prepare)
@@ -478,11 +478,11 @@ namespace Front.Equipments
 
                         SetCurReceipt(null);
                         SetStateView(eStateMainWindows.StartWindow);
-                        Res = new global::UtilNetwork.Result(0, $"Чек видалено!");
+                        Res = new(0, $"Чек видалено!");
                         break;
                 }
             }
-            catch (Exception ex) { Res = new global::UtilNetwork.Result(ex); }
+            catch (Exception ex) { Res = new(ex); }
             return Res;
         }
 

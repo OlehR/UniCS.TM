@@ -1,16 +1,17 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Front.Equipments.Utils;
+using Front.Equipments.Virtual;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RJCP.IO.Ports;
 using System;
+using System.Data;
+using System.Diagnostics.Metrics;
 using System.Globalization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
-using Front.Equipments.Utils;
-using Front.Equipments.Virtual;
 using Utils;
-using System.Diagnostics.Metrics;
 
 namespace Front.Equipments
 {
@@ -81,7 +82,17 @@ namespace Front.Equipments
         private void OnTimedEvent(object sender, ElapsedEventArgs e)
         {
             IsRead = true;
-            SerialDevice?.Write(ModelScale == eScaleCom.ICS15 ? new byte[4] { 0, 0, 0, 3 } : new byte[1] { 0 });
+
+            byte[] SendCommand = ModelScale switch
+            {
+                eScaleCom.ICS15 => [0, 0, 0, 3],
+                eScaleCom.CASPDC15 => [0],
+                eScaleCom.LongG => [0x53, 0x49, 0x0D, 0x0A],
+                _ => [0]
+            };
+
+        
+            SerialDevice?.Write(SendCommand);
             if (CountZero++ >= 2)
             {
                 OnScalesData?.Invoke(0d, true);
@@ -107,11 +118,11 @@ namespace Front.Equipments
         private bool OnDataReceived(byte[] data)
         {
             CountZero = 0;
-            string  Str = Encoding.ASCII.GetString(data);            
+            string  Str = Encoding.ASCII.GetString(data);
             if (ModelScale == eScaleCom.ICS15)
             {
                 if (IsRead && Str.Length >= 6)
-                {                    
+                {
                     IsRead = false;
                     Str = Str.Substring(0, 6);
                     char[] charArray = Str.ToCharArray();
@@ -119,11 +130,11 @@ namespace Front.Equipments
                     if (double.TryParse(charArray, out double Weight))
                     {
                         //if (Weight == 0d)
-                            //{
-                            // if (CountZero < 3)
-                            //  {
-                            //     CountZero++;
-                           // return true;
+                        //{
+                        // if (CountZero < 3)
+                        //  {
+                        //     CountZero++;
+                        // return true;
                         // }
                         //}
                         //CountZero = 0;
@@ -133,9 +144,9 @@ namespace Front.Equipments
                     return true;
                 }
             }
-            else //eScaleCom.CASPDC15
+            else if (ModelScale == eScaleCom.CASPDC15)
             {
-                
+
                 if (Str.Length >= 22)
                 {
                     if (Str.IndexOf("ST") >= 0 && Str.IndexOf(".") > 0)
@@ -146,7 +157,16 @@ namespace Front.Equipments
                     }
                 }
             }
-            return true;
+            else if (ModelScale == eScaleCom.LongG)
+            {
+                if (Str.Length==16 && Str[0]==' ' && Str[1] == ' ' && Str[10] == ' ' && Str[13]==' ' && Str[14] == 0x0D && Str[15] == 0x0A)
+                {
+                    Str = Str.Substring(2, 8);
+                    if (decimal.TryParse(Str, out decimal Weight))
+                        OnScalesData?.Invoke((int)(1000*Weight), true);
+                }
+            }
+                return true;
         }
 
         public void GetReadDataSync(byte[] command, Action<byte[]> onDatAction)
@@ -173,6 +193,7 @@ namespace Front.Equipments
     public enum eScaleCom
     {
         ICS15,
-        CASPDC15
+        CASPDC15,
+        LongG
     }
 }

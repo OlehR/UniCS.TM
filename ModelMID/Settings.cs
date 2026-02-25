@@ -111,5 +111,9 @@ namespace ModelMID
         public int IdWorkPlaceManagement { get; set; }
 
         public bool Is2CategoryMultyUse { get; set; }
+        /// <summary>
+        /// Чи треба відправляти на сервер Відкриття закриття зміни.
+        /// </summary>
+        public bool IsOpenCloseShift { get; set; }
     }
 }

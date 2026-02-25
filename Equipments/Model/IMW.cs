@@ -15,8 +15,11 @@ namespace Front.Equipments
     public interface IMW
     {
         public Receipt curReceipt { get; set; }
+        public Receipt ReceiptPostpone { get; set; }
         public ReceiptWares CurWares { get; set; }
         public Client Client { get { return curReceipt?.Client; } }
+        public bool IsOpenReceipt { get { return curReceipt?.Wares?.Any() == true || ReceiptPostpone?.Wares?.Any() == true; } }
+
         public Sound s { get; set; }
         public ControlScale CS { get; set; }
         public BL Bl { get; set; }

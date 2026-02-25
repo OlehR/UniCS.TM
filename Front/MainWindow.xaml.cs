@@ -52,7 +52,7 @@ namespace Front
         public User AdminSSC { get; set; } = null;
         public DateTime DTAdminSSC { get; set; }
         public Receipt curReceipt { get; set; } = null;
-        public Receipt ReceiptPostpone = null;
+        public Receipt ReceiptPostpone { get; set; } = null;
         bool _IsWaitAdminTitle = false;
         public bool IsWaitAdminTitle { get => _IsWaitAdminTitle; set { _IsWaitAdminTitle = value; OnPropertyChanged(nameof(IsWaitAdminTitle)); } }
         /// <summary>
