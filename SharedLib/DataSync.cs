@@ -1084,7 +1084,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                 HttpClient client = new() { Timeout = TimeSpan.FromMilliseconds(90000) };
                 HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "CashRegister/OpenCloseShift");
 
-                requestMessage.Content = new StringContent(new {Global.CodeWarehouse, IsOpen= pIsOpen }.ToJson(), Encoding.UTF8, "application/json");
+                requestMessage.Content = new StringContent(new OpenCloseShift (){ CodeWarehouse=Global.CodeWarehouse, IsOpen= pIsOpen }.ToJson(), Encoding.UTF8, "application/json");
                 var response = await client.SendAsync(requestMessage);
                 if (response.IsSuccessStatusCode)
                 {
