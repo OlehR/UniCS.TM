@@ -1,5 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   
+  <PropertyGroup Label="Globals">
+    <WebView2EnableCsWinRTProjection>False</WebView2EnableCsWinRTProjection>
+  </PropertyGroup>
+  
   <PropertyGroup>
     <InterceptorsPreviewNamespaces>$(InterceptorsPreviewNamespaces);Microsoft.Extensions.Configuration.Binder.SourceGeneration</InterceptorsPreviewNamespaces>
 

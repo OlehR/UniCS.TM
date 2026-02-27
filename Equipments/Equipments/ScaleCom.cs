@@ -159,11 +159,22 @@ namespace Front.Equipments
             }
             else if (ModelScale == eScaleCom.LongG)
             {
-                if (Str.Length==16 && Str[0]==' ' && Str[1] == ' ' && Str[10] == ' ' && Str[13]==' ' && Str[14] == 0x0D && Str[15] == 0x0A)
+                if (Str.Length == 16 && Str[0] == ' ' && Str[1] == ' ' && Str[10] == ' ' && Str[13] == ' ' && Str[14] == 0x0D && Str[15] == 0x0A)
                 {
                     Str = Str.Substring(2, 8);
                     if (decimal.TryParse(Str, out decimal Weight))
-                        OnScalesData?.Invoke((int)(1000*Weight), true);
+                        OnScalesData?.Invoke((int)(1000 * Weight), true);
+                }
+            }
+            else if (ModelScale == eScaleCom.AXIS)
+            {
+                if (data[0] == 2 && data[1] == 45 && data[2] == 48)
+                {
+                    data = data[4..10];
+                    Str = Encoding.ASCII.GetString(data);
+                    // Str = Str.Substring(4, 10);
+                    if (int.TryParse(Str, out int Weight))
+                        OnScalesData?.Invoke(Weight, true);
                 }
             }
                 return true;
@@ -194,6 +205,7 @@ namespace Front.Equipments
     {
         ICS15,
         CASPDC15,
-        LongG
+        LongG,
+        AXIS
     }
 }
