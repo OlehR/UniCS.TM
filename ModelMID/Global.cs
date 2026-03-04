@@ -48,6 +48,8 @@ namespace ModelMID
 
         public static int IdWorkPlaceIssuingCash;
 
+        public static int IdWorkPlaceAdd;
+
         public static int CodeWarehouse { get { return Settings?.CodeWarehouse ?? 0; } }
 
         public static bool IsTest = false;

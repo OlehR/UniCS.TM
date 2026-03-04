@@ -71,7 +71,7 @@ namespace SharedLib
             }
             //Провірка на час продажу алкоголю
 
-            if (Global.BlockSales != null && Global.BlockSales.Any() && Global.BlockSales.Max(el => el.IsBlock(pW.TypeWares)))
+            if (Global.BlockSales?.Any()==true && Global.BlockSales.Max(el => el.IsBlock(pW.TypeWares)))
             {
                 OnCustomWindow?.Invoke(new CustomWindow(eWindows.BlockSale, $"Товари {pW.NameWares} з групи {pW.TypeWares}{Environment.NewLine} продаж тимчасово заборонено на даній КСО"));
                 return null;
@@ -419,6 +419,7 @@ namespace SharedLib
         public Receipt GetReceiptHead(IdReceipt pIdR, bool parWithDetail = false) => db.GetReceiptHead(pIdR, parWithDetail);
 
         public bool ReplaceWorkplaceId(IdReceipt pIdR) => db.ReplaceWorkplaceId(pIdR);
+        public bool ReplaceIdWorkplacePay(IdReceipt pIdR, int pFrom, int pTo) => db.ReplaceIdWorkplacePay(pIdR, pFrom, pTo);
         public ModelMID.Client GetClientByCode(IdReceipt pIdReceipt, long pCode) => SetClient(pIdReceipt, db.FindClient(null, null, null, pCode));
 
         public ModelMID.Client GetClientByBarCode(IdReceipt pIdReceipt, string pBarCode) => SetClient(pIdReceipt, db.FindClient(pBarCode));

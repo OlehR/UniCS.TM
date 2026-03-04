@@ -67,7 +67,14 @@ namespace SharedLib
             }
             catch
             { Global.IdWorkPlace = 36; }
-
+            try
+            {
+                Global.IdWorkPlaceAdd = 0;
+                Global.IdWorkPlaceAdd = Convert.ToInt32(AppConfiguration["MID:IdWorkPlaceAdd"]);
+            }
+            catch
+            { Global.IdWorkPlaceAdd = 0; }
+            
             try
             {
                 Global.IdWorkPlaceIssuingCash = Convert.ToInt32(AppConfiguration["MID:IdWorkPlaceIssuingCash"]);

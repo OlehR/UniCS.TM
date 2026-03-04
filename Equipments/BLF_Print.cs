@@ -79,9 +79,14 @@ namespace Front.Equipments
         public bool PrintAndCloseReceipt(Receipt pR = null, eTypePay pTP = eTypePay.Card, decimal pSumCash = 0m, decimal pIssuingCash = 0, decimal pSumWallet = 0, decimal pSumBonus = 0, bool pIsCashBack = false)
         {
             bool Res = false;
-            string TextError = null;
+            string TextError = null;      
 
             var R = MW.Bl.GetReceiptHead(pR ?? MW.curReceipt, true);
+            if (Global.IdWorkPlaceAdd > 0 &&  R.CodeReceipt%2==0)//Для олівє 
+            {
+                MW.Bl.ReplaceIdWorkplacePay(R, Global.IdWorkPlace, Global.IdWorkPlaceAdd);
+            }
+           
             SetCurReceipt(R, false);
             R.NameCashier = MW.AdminSSC?.NameUser;
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"pTP=>{pTP} pSumCash=>{pSumCash} pIssuingCash=>{pIssuingCash} pSumWallet=>{pSumWallet} pSumBonus=>{pSumBonus} curReceipt=> {MW.curReceipt.ToJson()}", eTypeLog.Expanded);

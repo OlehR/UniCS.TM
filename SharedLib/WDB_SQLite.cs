@@ -1321,18 +1321,21 @@ where RE.EVENT_TYPE=1";
             public int From { get; set; }
             public int To { get; set; }
         }
-        public bool ReplaceWorkplaceId(IdReceipt pIdR)
+
+        public bool ReplaceIdWorkplacePay(IdReceipt pIdR, int pFrom, int pTo)
         {
             string Sql = @"update WARES_RECEIPT set id_workplace_pay = @To
-                     where id_workplace = @IdWorkplace and code_period = @CodePeriod and code_receipt = @CodeReceipt and id_workplace_pay =@From;";
+                     where id_workplace = @IdWorkplace and code_period = @CodePeriod and code_receipt = @CodeReceipt and id_workplace_pay = @From;";
+            var par = new cReplaceWorkplaceId(pIdR) { To = pTo, From = pFrom };
+            return db.ExecuteNonQuery<cReplaceWorkplaceId>(Sql, par) > 0;
+        }
+        public bool ReplaceWorkplaceId(IdReceipt pIdR)
+        {
             foreach (var el in Global.IdWorkPlaces)
             {
                 var xx = Global.GetWorkPlaceByIdWorkplace(el);
                 if (xx?.Settings?.IdWorkPlaceManagement > 0)
-                {
-                    var par = new cReplaceWorkplaceId(pIdR) { To = xx.Settings.IdWorkPlaceManagement, From = xx.IdWorkplace };
-                    db.ExecuteNonQuery<cReplaceWorkplaceId>(Sql, par);
-                }
+                    ReplaceIdWorkplacePay(pIdR, xx.IdWorkplace, xx.Settings.IdWorkPlaceManagement);
             }
             return true;
         }
