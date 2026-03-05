@@ -4,12 +4,13 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
-using System.Threading;
+using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Text.Encodings.Web;
 using System.Text.Unicode;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Utils
 {
@@ -36,7 +37,13 @@ namespace Utils
             return res;
 
         }
-        
+        public static string GetBase64(this string pStr)
+        {            
+            var plainTextBytes = Encoding.UTF8.GetBytes(pStr);
+            var res = Convert.ToBase64String(plainTextBytes);
+            return res;
+        }
+
     }
 
 }
