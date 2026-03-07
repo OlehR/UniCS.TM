@@ -224,7 +224,7 @@ namespace ModelMID
             return null;
         }
 
-        public static int GetIdWorkPlacePay(Int64 pCodeDirection, Int64 pCodeTM, Int64[] pCodeGroup = null,long pCodeWares=0)
+        public static int GetIdWorkPlacePay(Int64 pCodeDirection, Int64 pCodeTM, Int64[] pCodeGroup = null, long pCodeWares=0, int pCodeReceipt=0)
         {
             if (IdWorkPlacePayWares.ContainsKey(pCodeWares))
                 return IdWorkPlacePayWares[pCodeWares];
@@ -235,7 +235,9 @@ namespace ModelMID
                     if (el != 0 && IdWorkPlacePayGroup.ContainsKey(el))
                         return IdWorkPlacePayGroup[el];
             if (IdWorkPlacePayDirection.ContainsKey(pCodeDirection))
-                return IdWorkPlacePayDirection[pCodeDirection];            
+                return IdWorkPlacePayDirection[pCodeDirection];
+            if (Global.IdWorkPlaceAdd > 0 && pCodeReceipt % 2 == 1) 
+                return Global.IdWorkPlaceAdd;
             return IdWorkPlace;
         }
         public static IEnumerable<int> IdWorkPlaces;

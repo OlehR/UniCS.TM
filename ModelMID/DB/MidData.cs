@@ -33,5 +33,7 @@ namespace ModelMID.DB
         public IEnumerable<TypeDiscount> TypeDiscount { get; set; }
         public IEnumerable<FastGroup> FastGroup { get; set; }
         public IEnumerable<FastWares> FastWares { get; set; }
+        public IEnumerable<SegmentWares> SegmentWares { get; set; }
+         
     }
 }

@@ -738,7 +738,12 @@ select PSF.CODE_PS
   from wares w
   join PROMOTION_SALE_GROUP_WARES PSGW on PSGW.CODE_GROUP_WARES= w.CODE_GROUP
   join PROMOTION_SALE_FILTER PSF on (PSF.TYPE_GROUP_FILTER= 15 and PSF.RULE_GROUP_FILTER= -1 and PSF.CODE_DATA= PSGW.CODE_GROUP_WARES_PS)
-  where w.CODE_WARES=@CodeWares  
+  where w.CODE_WARES=@CodeWares 
+union --Виключення по сегменту товарів
+select PSF.CODE_PS
+  from SegmentWares PSGW 
+  join PROMOTION_SALE_FILTER PSF on (PSF.TYPE_GROUP_FILTER= 16 and PSF.RULE_GROUP_FILTER= -1 and PSF.CODE_DATA= PSGW.CodeSegment)
+  where PSGW.CodeWares=@CodeWares 
  union  --Виключення акцій з купонами
   select PSF.CODE_PS
 	from PROMOTION_SALE_FILTER PSF 
@@ -781,6 +786,17 @@ and EPS.code_ps  is null
  where EPS.CODE_PS is null
  and abs(PSD.TYPE_DISCOUNT) = PSD.TYPE_DISCOUNT * case when @IsPricePromotion=0 then -1 else 1 end
  and w.CODE_WARES= @CodeWares
+union all 
+select PSF.CODE_PS,0 as priority , PSD.TYPE_DISCOUNT as Type_discont, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice,0 as MaxQuantity, ps.IsOneTime,psd.DATA_TEXT as DataText
+from SegmentWares SW
+join PROMOTION_SALE_FILTER PSF on (PSF.TYPE_GROUP_FILTER= 16 and PSF.RULE_GROUP_FILTER= 1 and PSF.CODE_DATA= SW.CodeSegment)
+join PROMOTION_SALE ps on ps.CODE_PS=PSF.CODE_PS
+join PROMOTION_SALE_DATA PSD on(PSD.CODE_WARES= 0 and PSD.CODE_PS= PSF.CODE_PS)
+left join ExeptionPS EPS on(PSF.CODE_PS= EPS.CODE_PS)
+where EPS.CODE_PS is null and 
+abs(PSD.TYPE_DISCOUNT) = PSD.TYPE_DISCOUNT * case when @IsPricePromotion=0 then -1 else 1 end and 
+sw.CodeWares = @CodeWares
+
  union all --По товарам
  select PSF.CODE_PS,0 as priority , PSD.TYPE_DISCOUNT as TypeDiscount, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice,0 as MaxQuantity, ps.IsOneTime,psd.DATA_TEXT as DataText
  from PROMOTION_SALE_FILTER PSF

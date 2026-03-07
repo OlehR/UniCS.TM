@@ -279,6 +279,7 @@ CREATE TABLE FAST_GROUP
      CodeWares INTEGER NOT NULL,
      CodeSegment INTEGER NOT NULL
  );
+
 ";
 
         readonly static string SqlCreateMIDIndex = @"
@@ -338,6 +339,7 @@ CREATE TABLE FAST_GROUP
         CREATE INDEX  WaresLink_CWT ON WaresLink (CodeWaresTo);
  
         CREATE UNIQUE INDEX  SegmentWares_ID ON SegmentWares (CodeWares,CodeSegment);
+        CREATE UNIQUE INDEX  SegmentWares_ID2 ON SegmentWares (CodeSegment,CodeWares);
 ";
         public SQLiteMid(String pConectionString) : base(pConectionString) { }
 
@@ -512,5 +514,16 @@ values
             }
             return Res;
         }
+        public bool ReplaceSegmentWares(IEnumerable<SegmentWares> pSW)
+        {
+            bool Res = false;
+            if (pSW?.Any() == true)
+            {
+                string SQL = "replace into SegmentWares (CodeWares,CodeSegment) values (@CodeWares,@CodeSegment)";
+                Res = BulkExecuteNonQuery<SegmentWares>(SQL, pSW, true) > 0;
+            }
+            return Res;
+        }
+
     }
 }

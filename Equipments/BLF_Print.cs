@@ -82,10 +82,11 @@ namespace Front.Equipments
             string TextError = null;      
 
             var R = MW.Bl.GetReceiptHead(pR ?? MW.curReceipt, true);
-            if (Global.IdWorkPlaceAdd > 0 &&  R.CodeReceipt%2==0)//Для олівє 
+            /*if (Global.IdWorkPlaceAdd > 0 &&  R.CodeReceipt%2==0)//Для олівє 
             {
                 MW.Bl.ReplaceIdWorkplacePay(R, Global.IdWorkPlace, Global.IdWorkPlaceAdd);
-            }
+                R = MW.Bl.GetReceiptHead(pR ?? MW.curReceipt, true);
+            }*/
            
             SetCurReceipt(R, false);
             R.NameCashier = MW.AdminSSC?.NameUser;
