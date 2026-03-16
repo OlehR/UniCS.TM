@@ -140,10 +140,10 @@ namespace Utils
             }            
         }
 
-        public static bool In(this int me, params int[] set)
-        {
-            return set.Contains(me);
-        }
+        public static bool In(this int me, params int[] set) => set.Contains(me);        
+
+        public static bool In(this long me, params long[] set) => set.Contains(me);
+        
         public static bool In<T>(this T obj, IEnumerable<T> values)
         {
             return values.Contains(obj);
