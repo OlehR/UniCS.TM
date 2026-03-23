@@ -290,7 +290,7 @@ namespace SharedLib
                 R = await ds.CheckOneTime(RC);
                 if (R == null || !R.status || R.Data == null || !pReceipt.Equals(R.Data))
                 {
-                    Global.Message?.Invoke(R == null || R.status == false || R.Data == null ? $"Проблема з перевіркою купона {pCodeData} => {R?.TextState}" :
+                    Global.Message?.Invoke(R == null || R.Success == false || R.Data == null ? $"Проблема з перевіркою купона {pCodeData} => {R?.TextState}" :
                                     (R.Data.State > 0 ? $"Даний купон=>{pCodeData} вже використано в чеку {R.Data.IdWorkplace}/{R.Data.NumberReceipt1C}" :
                                     $"Купон=>{pCodeData} тимчасово недоступний. Оскільки була спроба використати в чеку => {R.Data.NumberReceipt1C} Повторно можна використати {R.Data.DateCreate.AddMinutes(5)}")
                                     , eTypeMessage.Information);

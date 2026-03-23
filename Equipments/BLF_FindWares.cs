@@ -52,6 +52,7 @@ namespace Front.Equipments
                     Quantity = Math.Round(Quantity, 0);
                     if (Quantity == 0) Quantity=1m;
                 }
+                if(Quantity<0) Quantity=0;
             }
             return pCodeUnit != Global.WeightCodeUnit && Quantity == 0 ?1:Quantity;
         }

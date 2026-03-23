@@ -709,7 +709,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                         {
                             ///!!!TMP треба буде перейти на цей механізм
                             var R = await CheckOneTime(new OneTime(pIdReceipt) { CodePS = Cat2First.CodePS, TypeData = Model.eTypeCode.BarCode2Category, CodeData = pBarCode.ToLong() });
-                            isGood = !(R == null || !R.status || R.Data == null || !pIdReceipt.Equals(R.Data));
+                            isGood = !(R == null || !R.Success || R.Data == null || !pIdReceipt.Equals(R.Data));
 
                             //isGood = await DataSync1C.IsUseDiscountBarCode(pBarCode);
                             Global.ErrorDiscountOnLine = 0;
@@ -953,9 +953,8 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             try
             {
                 HttpClient client = new() {  Timeout = TimeSpan.FromMilliseconds(90000)};
-                HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "CashRegister/LoadData");
-
-                requestMessage.Content = new StringContent(pData.ToJson(), Encoding.UTF8, "application/json");
+                HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "CashRegister/LoadData")
+                                                        { Content = new StringContent(pData.ToJson(), Encoding.UTF8, "application/json") };
                 var response = await client.SendAsync(requestMessage);
                 if (response.IsSuccessStatusCode)
                 {
