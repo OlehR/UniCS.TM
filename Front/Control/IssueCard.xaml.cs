@@ -91,6 +91,7 @@ namespace Front.Control
         private void CancelClick(object sender, RoutedEventArgs e)
         {
             // EquipmentFront.OnBarCode -= SetBarCode;
+            IssueCardVM.Reset();
             MW.SetStateView(eStateMainWindows.WaitInput);
         }
         private (string, bool) PhoneCorrection(string phoneNumber)

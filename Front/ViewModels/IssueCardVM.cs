@@ -47,6 +47,9 @@ namespace Front.ViewModels
             PhoneIssueCard = string.Empty;
             BarcodeIssueCard = string.Empty;
             VerifyCode = string.Empty;
+            IsGetCard = false;
+            LastVerifyCode.Data = null;
+            OnPropertyChanged(nameof(IsGetCard));
             OnPropertyChanged(nameof(IsBarcodeIssueCard));
         }
         public RelayCommand EnterPhone
