@@ -461,6 +461,8 @@ namespace ModelMID
         }
 
         public decimal SumCashBack { get { return Wares?.Where(el=>el.Country==-2)?.Sum(el => el.SumTotal)??0; } }
+
+        public bool IsProductionLocation => Wares?.Where(x => x.ProductionLocation != 0)?.Any()??false;
     }
     public class WorkplacePay
     {

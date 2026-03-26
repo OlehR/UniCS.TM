@@ -480,6 +480,11 @@ namespace Front.Equipments
                         SetStateView(eStateMainWindows.StartWindow);
                         Res = new(0, $"Чек видалено!");
                         break;
+                    case eCommand.GetDataSkyNex:
+                        var D = JsonSerializer.Deserialize<CommandAPI<DateTime>>(pDataApi);
+                        SharedLib.SkyNex.OrdersRoot OR = new(D.Data);
+                        Res = new(0,"Ok",OR.ToJson());
+                        break;
                 }
             }
             catch (Exception ex) { Res = new(ex); }
@@ -502,7 +507,7 @@ namespace Front.Equipments
                     catch (Exception ex)
                     {
                         FileLogger.WriteLogMessage(this, $"{LogText} DNSName=>{MW.RemoteWorkplace.DNSName} {Command} ", ex);
-                        MW.SocketAnsver?.Invoke(comand, MW.MainWorkplace, new global::UtilNetwork.Result(ex));
+                        MW.SocketAnsver?.Invoke(comand, MW.MainWorkplace, new Result(ex));
                     }
                 });
         }

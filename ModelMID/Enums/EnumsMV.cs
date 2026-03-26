@@ -238,5 +238,9 @@ namespace ModelMID
         /// Отримати активні замовлення (всі окрім виконаних)
         /// </summary>
         GetActiveOrders,
+        /// <summary>
+        /// Дані для SkyNex (піцци та інші замовлення)
+        /// </summary>
+        GetDataSkyNex
     }
 }

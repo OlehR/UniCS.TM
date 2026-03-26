@@ -323,13 +323,13 @@ namespace Front.Equipments
         }
         private void PrintOrderReceipt(Receipt R, bool IsTryAgain = true)
         {
-            bool IsNeadOrderReceipt = R.Wares.Where(x => x.ProductionLocation != 0).Any();
+            bool IsNeadOrderReceipt = R.IsProductionLocation;
             if (Global.IsPrintOrderReceipt && IsNeadOrderReceipt && R.TypeReceipt == eTypeReceipt.Sale)
             {
-
-
                 Task.Run(async () =>
                 {
+                    if (Global.IsSkyNex)
+                        SharedLib.SkyNex.OrdersRoot.AddOrder(R);
                     List<OrderWares> wares = new();
                     foreach (var goods in R.Wares)
                     {

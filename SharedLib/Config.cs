@@ -221,6 +221,14 @@ namespace SharedLib
             }
             catch
             { Global.PortAPI = 0; }
+
+            try
+            {
+                Global.IsSkyNex = false;
+                Global.IsSkyNex = AppConfiguration["MID:IsSkyNex"].ToLower().Equals("true");
+            }
+            catch
+            { Global.IsSkyNex = false; }
         }
 
         public static IConfigurationRoot GetConfiguration()

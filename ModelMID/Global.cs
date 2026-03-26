@@ -153,6 +153,8 @@ namespace ModelMID
         public static string AlcoholTimeStop = "23:00:00";
 
         public static bool IsOldInterface = true;
+
+        public static bool IsSkyNex = false;
        
         /// <summary>
         ///  час Першого помилкового запита до сервера 
