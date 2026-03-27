@@ -1,16 +1,17 @@
 ﻿using Front.Equipments;
-using ModelMID.DB;
 using ModelMID;
+using ModelMID.DB;
 using SharedLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
+using UtilNetwork;
 using Utils;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrayNotify;
-using UtilNetwork;
-using System.Net;
 
 namespace Front.Equipments
 {
@@ -328,43 +329,51 @@ namespace Front.Equipments
             {
                 Task.Run(async () =>
                 {
+                    string CodeOrder = "", ComandStr="";
                     if (Global.IsSkyNex)
-                        SharedLib.SkyNex.OrdersRoot.AddOrder(R);
-                    List<OrderWares> wares = new();
-                    foreach (var goods in R.Wares)
                     {
-                        if (goods.ProductionLocation > 0) // Перевірка чи товар потрібно готувати на якісь із зон
-                            wares.Add(new OrderWares(goods));
+                        CodeOrder = Bl.db.GetCodeOrder().ToString();
+                        SharedLib.SkyNex.OrdersRoot.AddOrder(R, CodeOrder);
+
                     }
-                    var order = (new Order { IdWorkplace = R.IdWorkplace, Status = eStatus.Waiting, CodePeriod = R.CodePeriod, CodeReceipt = R.CodeReceipt, DateCreate = DateTime.Now, Type = R.TranslationTypeReceipt, Wares = wares });
-
-                    CommandAPI<Order> Command = new() { Command = eCommand.GetOrderNumber, Data = order };
-
-                    try
+                    else
                     {
-                        var r = new SocketClient(IPAddress.Parse(Global.IPAddressOrderService), 3444);
-                        var ComandStr = Command.ToJson();
-                        var Ansver = await r.StartAsync(ComandStr);
-                        //if (!Ansver.status && IsTryAgain)
-                        //{
-                        //    FileLogger.WriteLogMessage($"SocketAnsver: {Environment.NewLine}Command: {ComandStr} {Environment.NewLine}IdWorkPlace: {R.IdWorkplace}{Environment.NewLine}Ansver: {Ansver.TextState}{Environment.NewLine} Перша спроба", eTypeLog.Error);
-                        //    PrintOrderReceipt(R, false);
-                        //    return;
-                        //}
-                        List<string> list = new List<string>() { "Номер замовлення:", $"{Ansver.TextState}" };
+                        List<OrderWares> wares = new();
+                        foreach (var goods in R.Wares)
+                        {
+                            if (goods.ProductionLocation > 0) // Перевірка чи товар потрібно готувати на якісь із зон
+                                wares.Add(new OrderWares(goods));
+                        }
+                        var order = (new Order { IdWorkplace = R.IdWorkplace, Status = eStatus.Waiting, CodePeriod = R.CodePeriod, CodeReceipt = R.CodeReceipt, DateCreate = DateTime.Now, Type = R.TranslationTypeReceipt, Wares = wares });
+
+                        CommandAPI<Order> Command = new() { Command = eCommand.GetOrderNumber, Data = order };
+                        try
+                        {
+                            var r = new SocketClient(IPAddress.Parse(Global.IPAddressOrderService), 3444);
+                            ComandStr = Command.ToJson();
+                            var Ansver = await r.StartAsync(ComandStr);
+                            CodeOrder = Ansver.TextState;
+                        }
+                        catch (Exception ex)
+                        {
+                            FileLogger.WriteLogMessage(this, $"GeneralCondition DNSName=>{IPAddress.Parse(Global.IPAddressOrderService)} {Command.ToJson()} ", ex);
+                        }
+                    }
+                    try
+                    { 
+                        List<string> list = ["Номер замовлення:", $"{CodeOrder}"];
                         var res = EF.PrintNoFiscalReceipt(R, list);
-                        List<string> listWares = new List<string>();
+                        List<string> listWares = [];
                         listWares = R.Wares.Where(x => x.ProductionLocation > 0).Select(x => $"{x.NameWares} => {x.Quantity}").ToList();
-                        listWares.Insert(0, $"Список замовлення №{Ansver.TextState}");
+                        listWares.Insert(0, $"Список замовлення №{CodeOrder}");
                         listWares.Add(DateTime.Now.ToString("g"));
                         var res2 = EF.PrintNoFiscalReceipt(R, listWares);
-                        FileLogger.WriteLogMessage($"SocketAnsver: {Environment.NewLine}Command: {ComandStr} {Environment.NewLine}IdWorkPlace: {R.IdWorkplace}{Environment.NewLine}Ansver: {Ansver.TextState}", eTypeLog.Full);
+                        FileLogger.WriteLogMessage($"SocketAnsver: {Environment.NewLine}Command: {ComandStr} {Environment.NewLine}IdWorkPlace: {R.IdWorkplace}{Environment.NewLine}Ansver:{CodeOrder}", eTypeLog.Full);
                         //SocketAnsver?.Invoke(eCommand.GetOrderNumber, MainWorkplace, Ansver);
                     }
                     catch (Exception ex)
                     {
-                        FileLogger.WriteLogMessage(this, $"GeneralCondition DNSName=>{IPAddress.Parse(Global.IPAddressOrderService)} {Command.ToJson()} ", ex);
-                        //SocketAnsver?.Invoke(eCommand.GetOrderNumber, MainWorkplace, new Status(ex));
+                        FileLogger.WriteLogMessage(this, $"GeneralCondition DNSName=>{IPAddress.Parse(Global.IPAddressOrderService)} ", ex);
                     }
                 });
             }

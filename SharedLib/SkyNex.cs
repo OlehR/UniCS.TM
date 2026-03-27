@@ -33,9 +33,9 @@ namespace SharedLib.SkyNex
         [JsonPropertyName("orders")]
         public List<Order> Orders { get; set; } = new();
 
-        public static void AddOrder(Receipt pR)
+        public static void AddOrder(Receipt pR, string pCodeOrder=null)
         {
-            Order O = new Order(pR);
+            Order O = new Order(pR, pCodeOrder);
             List.TryAdd(pR.DateReceipt, O);
             File.AppendAllText(FileName, O.ToJson() + Environment.NewLine);
         }
@@ -65,7 +65,7 @@ namespace SharedLib.SkyNex
     public class Order
     {
         public Order() { }
-        public Order(Receipt R)
+        public Order(Receipt R, string pCodeOrder=null)
         {
             foreach(var el in R.Wares.Where(x => x.ProductionLocation > 0))
             {
@@ -79,8 +79,9 @@ namespace SharedLib.SkyNex
                     Products.Add(new Product(el));
             }
             //Products = R.Wares.Where(x => x.ProductionLocation > 0).Select(x => new Product(x));
-            ReceiptNumber = R.NumberReceipt1C;
+            ReceiptNumber = pCodeOrder??R.NumberReceipt1C;
             CreatedAt = R.DateReceipt;
+            
         }
         [JsonPropertyName("id")]
         public int Id { get; set; }

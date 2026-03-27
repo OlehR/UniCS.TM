@@ -581,7 +581,12 @@ where w.CODE_UNIT=@CodeUnit and  substring(bar_code, 1,6) = @BC";
             return dbMid.ExecuteNonQuery<AddWeight>(SqlInsertAddWeight, parAddWeight) > 0;
         }
 
-        ////////////////// RC
+        string SqlGetNewReceipt = @"
+INSERT OR ignore into GEN_WORKPLACE(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT) values(@IdWorkplace, @CodePeriod, @CodeReceipt);
+            update GEN_WORKPLACE set CODE_RECEIPT = CODE_RECEIPT + 1 where ID_WORKPLACE = @IdWorkplace and CODE_PERIOD = @CodePeriod;
+            --insert into receipt(id_workplace, code_period, code_receipt) values(@IdWorkplace, @CodePeriod, (select CODE_RECEIPT from GEN_WORKPLACE where ID_WORKPLACE = @IdWorkplace and CODE_PERIOD = @CodePeriod));
+            select CODE_RECEIPT from GEN_WORKPLACE where ID_WORKPLACE = @IdWorkplace and CODE_PERIOD = @CodePeriod;";
+
 
         /// <summary>
         /// Вертає код Чека в зазначеному періоді
@@ -593,12 +598,7 @@ where w.CODE_UNIT=@CodeUnit and  substring(bar_code, 1,6) = @BC";
         public IdReceipt GetNewReceipt(IdReceipt pIdReceipt)
         {
             NewDBRC();
-            string SqlGetNewReceipt = @"
-INSERT OR ignore into GEN_WORKPLACE(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT) values(@IdWorkplace, @CodePeriod, @CodeReceipt);
-            update GEN_WORKPLACE set CODE_RECEIPT = CODE_RECEIPT + 1 where ID_WORKPLACE = @IdWorkplace and CODE_PERIOD = @CodePeriod;
-            --insert into receipt(id_workplace, code_period, code_receipt) values(@IdWorkplace, @CodePeriod, (select CODE_RECEIPT from GEN_WORKPLACE where ID_WORKPLACE = @IdWorkplace and CODE_PERIOD = @CodePeriod));
-            select CODE_RECEIPT from GEN_WORKPLACE where ID_WORKPLACE = @IdWorkplace and CODE_PERIOD = @CodePeriod;";
-
+           
             string SqlGetNewReceipt2 = @"insert into receipt (id_workplace, code_period, code_receipt) values (@IdWorkplace,@CodePeriod,@CodeReceipt);";
 
             lock (GetObjectForLockByIdWorkplace(pIdReceipt.IdWorkplace))
@@ -609,6 +609,13 @@ INSERT OR ignore into GEN_WORKPLACE(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT) val
                 dbRC.ExecuteNonQuery<IdReceipt>(SqlGetNewReceipt2, pIdReceipt);
             }
             return pIdReceipt;
+        }
+        public int GetCodeOrder()
+        {
+            IdReceipt IdR = new()  { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod() };
+            IdReceipt Id = new() { IdWorkplace = 1000*IdR.GetNumberCashDesk, CodePeriod = IdR.CodePeriod, CodeReceipt = 0 };
+            int Code= dbConfig.ExecuteScalar<IdReceipt, int>(SqlGetNewReceipt, Id);    
+            return Id.IdWorkplace+Code;
         }
 
         public bool ReplaceReceipt(Receipt parReceipt) => dbRC.ExecuteNonQuery<Receipt>(SqlReplaceReceipt, parReceipt) > 0;

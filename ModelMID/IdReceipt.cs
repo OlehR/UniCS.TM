@@ -8,7 +8,7 @@ namespace ModelMID
     public class IdReceipt
     {
 
-        protected string PrefixWarehouse { get { return $"{(IdWorkplace%10000):D4}"; } }
+        protected string PrefixWarehouse { get { return $"{(IdWorkplace % 10000):D4}"; } }
 
         protected string Prefix
         {
@@ -47,7 +47,9 @@ namespace ModelMID
         public int CodePeriod { get; set; }
         public int CodeReceipt { get; set; }
 
-        public DateTime DTPeriod { get
+        public DateTime DTPeriod
+        {
+            get
             {
                 DateTime res;
                 if (DateTime.TryParseExact(CodePeriod.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out res))
@@ -94,15 +96,33 @@ namespace ModelMID
         public string NumberReceipt1C { get { return Prefix + OnlyNumberReceipt1C; } }
         public string NumberReceiptMain1C { get { return PrefixMain + OnlyNumberReceipt1C; } }
 
-        public string OnlyNumberReceipt1C { get { return (CodePeriod >= 20250101 ? $"{DTPeriod.Month:X1}{DTPeriod.Day:D2}": Convert.ToInt32(Math.Floor((DTPeriod - new DateTime(2019, 01, 01)).TotalDays)).ToString("D4") )+ CodeReceipt.ToString("D4"); } }
-    /// <summary>
-    /// Унікальний номер чека  коли 2 підприємця і 2 чека 
-    /// </summary>
-    public string NumberReceiptRRO
+        public string OnlyNumberReceipt1C { get { return (CodePeriod >= 20250101 ? $"{DTPeriod.Month:X1}{DTPeriod.Day:D2}" : Convert.ToInt32(Math.Floor((DTPeriod - new DateTime(2019, 01, 01)).TotalDays)).ToString("D4")) + CodeReceipt.ToString("D4"); } }
+        /// <summary>
+        /// Унікальний номер чека  коли 2 підприємця і 2 чека 
+        /// </summary>
+        public string NumberReceiptRRO
         {
-            get { return (DTPeriod.Year >= 2025? DTPeriod.Year.ToString() : "")+"_"+NumberReceipt1C + (IdWorkplacePay>0?$"_{IdWorkplacePay}":"");}
+            get { return (DTPeriod.Year >= 2025 ? DTPeriod.Year.ToString() : "") + "_" + NumberReceipt1C + (IdWorkplacePay > 0 ? $"_{IdWorkplacePay}" : ""); }
         }
         public string NumberReceipt1CNew { get { return $"{Prefix}-{CodeReceipt:D6}"; } }
+
+
+        public int GetNumberCashDesk
+        {
+            get
+            {
+                int Res = 0;
+                string Pref = Prefix;
+                if (Pref.Length == 4)
+                {
+                    if (Pref[1] > '0' && Pref[1] <= '9')
+                        Res = 10 * (Pref[1] - '0');
+                    if (Pref[2] > '0' && Pref[2] <= '9')
+                        Res += (int)(Pref[2] - '0');
+                }
+                return Res;
+            }
+        }
     }
-    
-    }
+        
+}
