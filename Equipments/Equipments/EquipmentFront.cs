@@ -1,23 +1,13 @@
 ﻿using Front.Equipments;
-//using Front.Equipments.Ingenico;
-//using Front.Equipments.pRRO_SG;
-using Front.Equipments.Virtual;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ModelMID;
 using ModelMID.DB;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using Front.Equipments.Implementation;
-using System.Threading.Tasks;
 using Utils;
 using Microsoft.Extensions.Logging;
 using SharedLib;
-using System.Threading;
-using System.Collections;
-using System.Windows;
 
 namespace Front
 {
@@ -41,12 +31,12 @@ namespace Front
         BankTerminal Terminal;
         ScanerKeyBoard KB;
         //Rro RRO;
-        SortedList<int, Rro> RROs = new();
-        IEnumerable<Rro> GetRROs(int pIdWorkplace)
+        SortedList<long, Rro> RROs = [];
+        /*IEnumerable<Rro> GetRROs(int pIdWorkplace)
         {
             return RROs.Where(el => el.Key >= pIdWorkplace * 100 && el.Key < pIdWorkplace * 100 + 99).Select(el => el.Value);
-        }
-        Rro GetRRO(Receipt pR) { return GetRRO(pR, null, pR.TypePay); }
+        }*/
+        //Rro GetRRO(Receipt pR) { return GetRRO(pR, null, pR.TypePay); }
         Rro GetRRO(IdReceipt pIdR, Rro pRRO = null, eTypePay pTypePay = eTypePay.None)
         {
             if (pRRO != null)
@@ -57,18 +47,28 @@ namespace Front
             if (RROs == null)
                 return null;
             Rro Res = null;
-            int Key = pIdR.IdWorkplacePay * 100 + (int)pTypePay;
+
+            eTypeWares? TypeWares = null;
+            Receipt R = pIdR as Receipt;
+            var TW = R?.Wares?.Select(el => el.TypeWares).DistinctBy(el => el);
+            if (TW?.Count() == 1)
+                TypeWares = TW.FirstOrDefault();
+
+            long Key = pIdR.IdWorkplacePay * 10000L;
             if (RROs.ContainsKey(Key))
                 Res = RROs[Key];
-            else
+
+            Key += 100L * (long)pTypePay;
+            if (RROs.ContainsKey(Key))
+                Res = RROs[Key];
+
+            if (TypeWares != null)
             {
-                if (pTypePay != eTypePay.None)
-                {
-                    Key = pIdR.IdWorkplacePay * 100;
-                    if (RROs.ContainsKey(Key))
-                        Res = RROs[Key];
-                }
+                Key += 1L + (long)TypeWares;
+                if (RROs.ContainsKey(Key))
+                    Res = RROs[Key];
             }
+
             return Res;
         }
         /// <summary>
@@ -99,19 +99,12 @@ namespace Front
             }
         }
 
-        public eStateEquipment State
-        {
-            get
-            {
-                return ListEquipment.Where(el => el.IsСritical == true).Max(el => el.State);
-            }
-        }
-
+        public eStateEquipment State =>ListEquipment.Where(el => el.IsСritical == true).Max(el => el.State);
         public Action<StatusEquipment> SetStatus { get; set; }
 
         static EquipmentFront sEquipmentFront;
 
-        public static EquipmentFront GetEquipmentFront { get { return sEquipmentFront; } }
+        public static EquipmentFront GetEquipmentFront => sEquipmentFront;
 
         readonly ILoggerFactory LF = LoggerFactory.Create(builder =>
         {
@@ -119,7 +112,7 @@ namespace Front
         });
 
         static EquipmentFront sEF = null;
-        public static EquipmentFront GetEF { get { return sEF ?? new EquipmentFront(); } }
+        public static EquipmentFront GetEF => sEF ?? new EquipmentFront();
         public EquipmentFront()
         {
             sEF = this;
@@ -368,7 +361,7 @@ namespace Front
                                 break;
                         }
                         NewListEquipment.Add(RRO);
-                        RROs.Add(RRO.IdWorkplacePay * 100 + (int)RRO.TypePay, RRO);
+                        RROs.Add((long)RRO.IdWorkplacePay * 10000L + (long)RRO.TypePay*100L+(RRO.TypeWares==null?0:1L+(long)RRO.TypeWares), RRO);
                     }
                     catch (Exception e)
                     {
@@ -460,7 +453,9 @@ namespace Front
                 return new LogRRO(pReceipt) { CodeError = -1, Error = $"Відсутня оплата по Робочому місцю № ({pReceipt.IdWorkplacePay})" };
             var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
             {
-                var RRO = GetRRO(pReceipt);
+
+                var TypePay = pReceipt?.Payment?.Where(el=> el.TypePay==eTypePay.Cash|| el.TypePay==eTypePay.Card).FirstOrDefault()?.TypePay ?? eTypePay.None;
+                var RRO = GetRRO(pReceipt,null, TypePay);
                 LogRRO Res;
                 try
                 {

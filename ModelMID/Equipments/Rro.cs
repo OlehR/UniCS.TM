@@ -29,6 +29,7 @@ namespace Front.Equipments
         public DateTime LockDT { get; set; }
         public eTypeOperation TypeOperation { get; set; } = eTypeOperation.NotDefine;
 
+        public eTypeWares? TypeWares = null;
         string DefaultTax = null;
         SortedList<int, string> Tax = new SortedList<int, string>();
 
@@ -55,7 +56,7 @@ namespace Front.Equipments
                 IdWorkplacePay = Global.IdWorkPlace;
 
             DefaultTax = Configuration[$"{KeyPrefix}DefaultTax"];
-            var LTax = new List<TAX>();
+            List<TAX> LTax = [];
             Configuration.GetSection($"{KeyPrefix}Tax").Bind(LTax);
             if (LTax.Count() == 0)
                 Configuration.GetSection("MID:VAT").Bind(LTax);
@@ -63,6 +64,14 @@ namespace Front.Equipments
                 if (!Tax.ContainsKey(el.Code))
                     Tax.Add(el.Code, el.CodeEKKA);
             TypePay = Configuration.GetValue<eTypePay>($"{KeyPrefix}TypePay", eTypePay.None);
+
+            try
+            {
+                string xx = Configuration[$"{KeyPrefix}TypeWares"];
+                if(xx!=null)
+                TypeWares = Configuration.GetValue<eTypeWares>($"{KeyPrefix}TypeWares");
+            }
+            catch (Exception ex) { TypeWares = null; }
         }
 
         public virtual void SetOperatorName(string pOperatorName)
