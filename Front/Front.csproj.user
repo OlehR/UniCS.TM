@@ -48,6 +48,9 @@
     <Compile Update="KeyPad.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="MoneyOutWin.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="SecondMonitorWindows.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
