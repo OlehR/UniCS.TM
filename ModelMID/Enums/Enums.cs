@@ -567,7 +567,7 @@ namespace ModelMID
         ErrorCardIsAlreadyPresent = -2,
         [Description("По даній картці вже є обороти в системі. Операція реєстрації не виконана!")]   
         ErrorCardIsUse = -1,
-        [Description("Картка не активована. Зверніться у відділ Маркетингу")]
+        [Description("Картка не активована. Зверніться у відділ Реклами")]
         ErrorInputData = -0,
         [Description("Карточка успішно зареєстрована")]
         Ok = 1

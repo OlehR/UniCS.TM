@@ -4,23 +4,25 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Front.ViewModels"
-        mc:Ignorable="d"
-        Title="MoneyOutWin" Height="450" Width="800">
+        mc:Ignorable="d" 
+        WindowState="Maximized"         
+        WindowStyle="None"
+        xmlns:uc="clr-namespace:Front.Control" 
+>
     <Window.Resources>
         <Style x:Key="PrimaryButton" TargetType="Button">
             <Setter Property="Background" Value="#4A6CF7"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Padding" Value="14,6"/>
+            <Setter Property="FontSize" Value="30"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}"
-                                CornerRadius="6" Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <Border Background="{TemplateBinding Background}" CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                              TextBlock.FontSize="{TemplateBinding FontSize}"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
@@ -37,14 +39,13 @@
 
         <Style x:Key="RowButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
             <Setter Property="Background" Value="#22C55E"/>
-            <Setter Property="Padding" Value="10,4"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}"
-                                CornerRadius="5" Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <Border Background="{TemplateBinding Background}" CornerRadius="5">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                              TextBlock.FontSize="{TemplateBinding FontSize}" />
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
@@ -62,19 +63,17 @@
         <Style x:Key="StyledTextBox" TargetType="TextBox">
             <Setter Property="BorderBrush" Value="#D1D5DB"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="8,5"/>
-            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="8,0"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
                         <Border Background="White"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="6">
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="6">
                             <ScrollViewer x:Name="PART_ContentHost"
-                                          Margin="{TemplateBinding Padding}"
-                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsFocused" Value="True">
@@ -89,7 +88,7 @@
             </Setter>
         </Style>
 
-        <local:InverseBoolConverter     x:Key="InverseBool"/>
+        <local:InverseBoolConverter x:Key="InverseBool"/>
         <local:ConfirmedRowBrushConverter x:Key="ConfirmedRowBrush"/>
         <local:TopAmountBorderBrushConverter x:Key="TopAmountBorderBrush"/>
     </Window.Resources>
@@ -99,48 +98,43 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="550"/>
+        </Grid.ColumnDefinitions>
         <!-- ═══════════════════════════════════════
      ВЕРХНЯ ПОЛОСКА
      Колонки: [назва/сума *] [на касі 120] [поле 130] [кнопка 120]
 ════════════════════════════════════════ -->
-        <Border Grid.Row="0" Background="White"
-        BorderBrush="#E5E7EB" BorderThickness="0,0,0,2"
-        Padding="16,10">
-            <Grid>
+        <Border Grid.Row="0" Background="White" BorderBrush="#E5E7EB" BorderThickness="0,0,0,2" Padding="16,10">
+            <Grid Height="100">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="5*"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="120"/>
-                    <ColumnDefinition Width="130"/>
-                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="2*"/>
                 </Grid.ColumnDefinitions>
 
                 <!-- Сума (колонка 0) -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal"
                     VerticalAlignment="Center" Margin="4,0,0,0">
-                    <TextBlock Text="Сума:" FontSize="13" Foreground="#6B7280"
+                    <TextBlock Text="Сума:" FontSize="46" Foreground="#6B7280" 
                        VerticalAlignment="Center" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding TotalSum, StringFormat={}{0:F2} ₴}"
-                       FontSize="20" FontWeight="Bold" Foreground="#111827"
+                    <TextBlock Text="{Binding TotalSum, StringFormat={}{0:F2} ₴}" 
+                       FontSize="50" FontWeight="Bold" Foreground="#111827"
                        VerticalAlignment="Center"/>
                 </StackPanel>
 
                 <!-- Колонка 1: порожня — вирівнювання із "На касі" -->
 
                 <!-- Поле вводу суми (колонка 2) -->
-                <TextBox Grid.Column="2"
-                 Style="{StaticResource StyledTextBox}"
-                 Text="{Binding TopAmount, UpdateSourceTrigger=PropertyChanged}"
-                 BorderBrush="{Binding TopAmountIsValid, Converter={StaticResource TopAmountBorderBrush}}"
-                 ToolTip="Введіть суму — має бути менше загальної"
-                 Height="34" VerticalAlignment="Center"/>
+                <TextBox Grid.Column="2" Style="{StaticResource StyledTextBox}" Text="{Binding TopAmount, UpdateSourceTrigger=PropertyChanged}"
+                         BorderBrush="{Binding TopAmountIsValid, Converter={StaticResource TopAmountBorderBrush}}" FontSize="46" GotFocus="GotFocusTotal"
+                         ToolTip="Введіть суму — має бути менше загальної" Height="60" VerticalAlignment="Center"/>
 
                 <!-- Кнопка підтвердити (колонка 3) -->
-                <Button Grid.Column="3"
-                Content="✓ Підтвердити"
-                Style="{StaticResource PrimaryButton}"
-                Command="{Binding ConfirmTopCommand}"
-                Height="34" VerticalAlignment="Center"
-                Margin="8,0,0,0"/>
+                <Button Grid.Column="3"  Padding="0" Content="Підтвердити"  Style="{StaticResource PrimaryButton}" 
+                        Command="{Binding ConfirmTopCommand}" Height="60" VerticalAlignment="Center" Margin="8,0,0,0"/>
             </Grid>
         </Border>
 
@@ -154,70 +148,61 @@
             </Grid.RowDefinitions>
 
             <!-- Заголовки — ті самі ColumnDefinitions -->
-            <Border Grid.Row="0" Background="#4A6CF7"
-            CornerRadius="8,8,0,0" Padding="16,8">
+            <Border Grid.Row="0" Background="#4A6CF7" CornerRadius="8,8,0,0" Padding="8,0">
                 <Grid>
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*"/>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="120"/>
-                        <ColumnDefinition Width="130"/>
-                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="Товар"     Foreground="White" FontWeight="SemiBold" FontSize="13"/>
-                    <TextBlock Grid.Column="1" Text="На касі"   Foreground="White" FontWeight="SemiBold" FontSize="13" HorizontalAlignment="Center"/>
-                    <TextBlock Grid.Column="2" Text="Кількість" Foreground="White" FontWeight="SemiBold" FontSize="13" HorizontalAlignment="Center"/>
-                    <TextBlock Grid.Column="3" Text="Дія"       Foreground="White" FontWeight="SemiBold" FontSize="13" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="0" Text="Каса"     Foreground="White" FontWeight="SemiBold" FontSize="40"/>
+                    <TextBlock Grid.Column="1" Text="В касі"   Foreground="White" FontWeight="SemiBold" FontSize="40" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="2" Text="Зняти" Foreground="White" FontWeight="SemiBold" FontSize="40" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="3" Text="Дія"       Foreground="White" FontWeight="SemiBold" FontSize="40" HorizontalAlignment="Center"/>
                 </Grid>
             </Border>
 
             <!-- Рядки -->
-            <Border Grid.Row="1" Background="White"
-            BorderBrush="#E5E7EB" BorderThickness="1,0,1,1"
-            CornerRadius="0,0,8,8">
+            <Border Grid.Row="1" Background="White"  BorderBrush="#E5E7EB" BorderThickness="1,0,1,1" CornerRadius="0,0,8,8">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <ItemsControl ItemsSource="{Binding Items}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Border Padding="16,7"
-                                Background="{Binding IsConfirmed, Converter={StaticResource ConfirmedRowBrush}}"
-                                BorderBrush="#F3F4F6" BorderThickness="0,0,0,1">
+                                <Border Padding="16,5" Background="{Binding IsConfirmed, Converter={StaticResource ConfirmedRowBrush}}"
+                                        BorderBrush="#F3F4F6" BorderThickness="0,0,0,1">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="3*"/>
                                             <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="120"/>
-                                            <ColumnDefinition Width="130"/>
-                                            <ColumnDefinition Width="120"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
 
                                         <TextBlock Grid.Column="0"
                                            Text="{Binding Name}"
-                                           FontSize="13" Foreground="#111827"
+                                           FontSize="28" Foreground="#111827"
                                            VerticalAlignment="Center"
                                            TextTrimming="CharacterEllipsis"/>
 
                                         <TextBlock Grid.Column="1"
                                            Text="{Binding AvailableQty, StringFormat={}{0:F2}}"
-                                           FontSize="13" Foreground="#374151"
+                                           FontSize="28" Foreground="#374151"
                                            VerticalAlignment="Center"
                                            HorizontalAlignment="Center"
                                            FontWeight="Medium"/>
 
-                                        <TextBox Grid.Column="2"
-                                         Style="{StaticResource StyledTextBox}"
-                                         Text="{Binding InputQty, UpdateSourceTrigger=PropertyChanged}"
-                                         IsEnabled="{Binding IsConfirmed, Converter={StaticResource InverseBool}}"
-                                         Height="30" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="2" Padding="5, 0"  Style="{StaticResource StyledTextBox}" GotFocus="GotFocusElement"
+                                                 Text="{Binding InputQty, UpdateSourceTrigger=PropertyChanged}" FontSize="28"
+                                                 IsEnabled="{Binding IsConfirmed, Converter={StaticResource InverseBool}}"  VerticalAlignment="Center"/>
 
-                                        <Button Grid.Column="3"
-                                        Content="✓"
-                                        Style="{StaticResource RowButton}"
-                                        Command="{Binding DataContext.ConfirmRowCommand,
+
+                                        <Button Grid.Column="3" Content="✓"  Style="{StaticResource RowButton}" Margin="10,0,0,0"
+                                                Command="{Binding DataContext.ConfirmRowCommand,
                                                   RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                        CommandParameter="{Binding}"
-                                        IsEnabled="{Binding IsConfirmed, Converter={StaticResource InverseBool}}"
-                                        Height="30" Width="60"
-                                        VerticalAlignment="Center"
-                                        HorizontalAlignment="Center"/>
+                                                CommandParameter="{Binding}" IsEnabled="{Binding IsConfirmed, Converter={StaticResource InverseBool}}"
+                                                 VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+
                                     </Grid>
                                 </Border>
                             </DataTemplate>
@@ -226,5 +211,16 @@
                 </ScrollViewer>
             </Border>
         </Grid>
+        <Grid Grid.Column="1">
+            <Button Content="Відправити 1C" Style="{DynamicResource Default}" Click="Exit_Click" Height="65" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+            <Button Content="Вихід" Style="{DynamicResource Default}"  VerticalAlignment="Top" Click="Exit_Click" HorizontalAlignment="Right"/>
+        </Grid>
+        <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1" Grid.Column="1" Grid.Row="1"
+                Name="Admin_NumericPad" Visibility="Collapsed" Grid.ZIndex="5" CornerRadius="10" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Border.Effect>
+                <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+            </Border.Effect>
+            <uc:NumericPad x:Name="AdminUC_NumericPad"   />
+        </Border>
     </Grid>
 </Window>

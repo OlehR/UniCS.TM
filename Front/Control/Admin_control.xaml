@@ -356,6 +356,23 @@
                                         </Style>
                                     </Button.Style>
                                 </Button>
+                                <Button x:Name="EKKA_MoveMoneyCentralCashDesk"  Content="Вилучення В ЦК"      
+                                    VerticalAlignment="Top" Width="280" Height="60" Click="EKKA_MoveMoneyCentralCashDesk_Click">
+                                    <Button.Style>
+                                        <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                            <Setter Property="IsEnabled" Value="True"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsCashRegister}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsCashRegister}" Value="False">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+
 
                             </StackPanel>
 

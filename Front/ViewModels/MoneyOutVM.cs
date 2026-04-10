@@ -1,4 +1,6 @@
-﻿using Front.Models;
+﻿using Front.Equipments;
+using Front.Models;
+using ModelMID;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,6 +14,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using Utils;
 
 namespace Front.ViewModels
 {
@@ -21,7 +24,7 @@ namespace Front.ViewModels
         private decimal _totalSum;
         private string _topAmount = string.Empty;
 
-        public ObservableCollection<CashItem> Items { get; } = new();
+        public ObservableCollection<CashItem> Items { get; } = [];
 
         /// <summary>Сума AvailableQty по всіх рядках</summary>
         public decimal TotalSum
@@ -37,9 +40,29 @@ namespace Front.ViewModels
             set
             {
                 _topAmount = value;
-                OnPropertyChanged();
+                OnPropertyChanged();               
                 OnPropertyChanged(nameof(TopAmountIsValid));
                 CommandManager.InvalidateRequerySuggested();
+                if (!IsRecalc) return;
+                decimal Sum = _topAmount.ToDecimal();
+                if(Sum>0)
+                {
+                    foreach (var el in Items)
+                    {
+                        var s=Math.Floor(el.AvailableQty / 100) * 100;
+                        if (s < Sum)
+                        {
+                            el.InputQty = s.ToString();
+                            Sum -= s;
+                        }
+                        else
+                        {
+                            el.InputQty = Sum.ToString();
+                                s = 0;
+                            break;
+                        }
+                    }
+                }
             }
         }
 
@@ -68,15 +91,23 @@ namespace Front.ViewModels
         /// </summary>
         public ICommand ConfirmTopCommand { get; }
 
-        public MoneyOutVM()
+        //public IEnumerable<Rro> RRO;
+        public MoneyOutVM(IEnumerable<Equipment> pRRO)
         {
+
+            foreach (var el in pRRO)
+            {
+                var RRO = el as Rro;
+                if (RRO is not null)
+                    Items.Add(new(RRO, RecalcTotal) { });
+            }
+
             ConfirmRowCommand = new RelayCommand(
                 execute: param =>
                 {
                     if (param is not CashItem item) return;
 
-                    // TODO: виклик сервісу/репозиторію для підтвердження рядка
-                    item.IsConfirmed = true;
+                    MoneyOutCommand(item);
                 },
                 canExecute: param => param is CashItem { IsConfirmed: false }
             );
@@ -84,40 +115,61 @@ namespace Front.ViewModels
             ConfirmTopCommand = new RelayCommand(
                 execute: _ =>
                 {
-                    // TODO: виклик сервісу/репозиторію для підтвердження всієї операції
+                    bool allOk = true;
+                    if (TopAmount.ToInt() > 0)
+                        foreach (var el in Items)
+                            allOk = allOk && MoneyOutCommand(el);
+
+                    if (allOk)
+                    {
+                        bool Res = Send1CMonyeOut(TopAmount.ToInt());
+                        if (Res)
+                        {
+                            Global.Message($"Успішно відправлено в 1С. Сума=>{TopAmount}", eTypeMessage.Information);
+                            TopAmount = "";
+                        }
+                    }
                 },
                 canExecute: _ => TopAmountIsValid
             );
         }
 
+        bool Send1CMonyeOut(int pSum)
+        {
+            return true;
+        }
+        private bool MoneyOutCommand(CashItem pCashItem)
+        {
+            if (pCashItem.InputQty.ToInt() <= 0) return true;
+
+            var r = pCashItem.RRO.MoveMoney(-pCashItem.InputQty.ToInt());
+
+            if (r.CodeError == 0)
+            {
+                pCashItem.IsConfirmed = true;
+                pCashItem.InputQty = "";
+                return true;
+            }
+            else
+            {
+                Global.Message.Invoke("Помилка " + r.Error, eTypeMessage.Error);
+                return false;
+            }
+        }
         // =========================================================
         // ПУБЛІЧНИЙ API для додавання рядків
         // (викликати з code-behind або сервісу коли прийшов новий запис)
         // =========================================================
 
-        /// <summary>
-        /// Додає один рядок до таблиці та перераховує загальну суму.
-        /// Метод потокобезпечний — маршалізує виклик до UI-потоку.
-        /// </summary>
-        public void AddItem(CashItem item)
-        {
-            Application.Current.Dispatcher.Invoke(() =>
+
+        bool IsRecalc = true;
+        private void RecalcTotal()
             {
-                Items.Add(item);
-                RecalcTotal();
-            });
+            TotalSum = Items.Sum(i => i.AvailableQty);
+            IsRecalc = false;
+            TopAmount = Items.Sum(i => i.InputQty.ToInt()).ToString();
+            IsRecalc = true;
         }
-
-        /// <summary>
-        /// Додає кілька рядків одним викликом (кожен окремо — без batch-змін).
-        /// </summary>
-        public void AddItems(IEnumerable<CashItem> items)
-        {
-            foreach (var item in items)
-                AddItem(item);
-        }
-
-        private void RecalcTotal() => TotalSum = Items.Sum(i => i.AvailableQty);
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? n = null)

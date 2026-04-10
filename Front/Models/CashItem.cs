@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Front.Equipments;
+using ModelMID;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -15,19 +17,28 @@ namespace Front.Models
         private decimal _availableQty;
         private string _inputQty = string.Empty;
         private bool _isConfirmed;
+        public Rro RRO;
+        Action Recalc;
+        public CashItem(Rro pRRO,Action pA=null)
+        {
+            IdReceipt IdR = new() { CodePeriod = Global.GetCodePeriod() };
+            RRO = pRRO;
+            Recalc = pA;
+            Task.Run(() => 
+            { 
+                AvailableQty = RRO.GetSumInCash(IdR); 
+            });
+        }
 
         /// <summary>Назва товару</summary>
-        public string Name
-        {
-            get => _name;
-            set { _name = value; OnPropertyChanged(); }
-        }
+        public string Name => RRO.Name;
+        
 
         /// <summary>Кількість наявна на касі</summary>
         public decimal AvailableQty
         {
             get => _availableQty;
-            set { _availableQty = value; OnPropertyChanged(); }
+            set { _availableQty = value; OnPropertyChanged(); Recalc?.Invoke(); }
         }
 
         /// <summary>
@@ -37,12 +48,8 @@ namespace Front.Models
         public string InputQty
         {
             get => _inputQty;
-            set { _inputQty = value; OnPropertyChanged(); OnPropertyChanged(nameof(ParsedInputQty)); }
+            set { _inputQty = value; OnPropertyChanged();  Recalc?.Invoke(); }
         }
-
-        /// <summary>Розпарсене decimal-значення поля InputQty</summary>
-        public decimal ParsedInputQty =>
-            decimal.TryParse(InputQty, NumberStyles.Any, CultureInfo.InvariantCulture, out var v) ? v : 0m;
 
         /// <summary>Чи підтверджено рядок кнопкою ✓</summary>
         public bool IsConfirmed

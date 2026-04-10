@@ -1168,6 +1168,13 @@ from RECEIPT r
 
         }
 
+        private void EKKA_MoveMoneyCentralCashDesk_Click(object sender, RoutedEventArgs e)
+        {
+            var RROs = AllEquipment.Where(x => x.Type == eTypeEquipment.RRO);
+            MoneyOutWin MOW = new (AllEquipment.Where(x => x.Type == eTypeEquipment.RRO));
+            MOW.Show();
+        }
+
         private void AddOrRemoveMoney(string pRes, bool IsRemoveMoney, string pDesciption)
         {
             if (pRes.Length != 0)

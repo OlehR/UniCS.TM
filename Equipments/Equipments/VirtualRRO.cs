@@ -1,23 +1,8 @@
-﻿using Front.Equipments.Implementation.ModelVchasno;
-using Front.Equipments.Virtual;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using ModelMID;
 using ModelMID.DB;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Utils;
-using Front.Equipments.Implementation.FP700_Model;
-using Front.Equipments.Utils;
 using SharedLib;
-using Microsoft.Extensions.FileSystemGlobbing;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Front.Equipments.Implementation
 {
@@ -233,8 +218,6 @@ namespace Front.Equipments.Implementation
                 int remainingSpaces = MaxCountCharacters - (currentLine.Length + str2.Length);
                 string alignedStr1 = currentLine.PadRight(currentLine.Length + remainingSpaces);
                 return alignedStr1 + str2;
-
-
                 //return str1.PadRight(maxLength) + Environment.NewLine + str2.PadLeft(maxLength);
             }
             else
@@ -470,10 +453,7 @@ namespace Front.Equipments.Implementation
 
         }
 
-        override public bool PutToDisplay(string ptext, int pLine = 1)
-        {
-            return true;
-        }
+        override public bool PutToDisplay(string ptext, int pLine = 1) => true;
 
         override public bool PeriodZReport(IdReceipt pIdR, DateTime pBegin, DateTime pEnd, bool IsFull = true)
         {
@@ -496,12 +476,10 @@ namespace Front.Equipments.Implementation
         public override decimal GetSumInCash(IdReceipt pIdR)
         {
             pIdR.IdWorkplace = Global.IdWorkPlace; //ПЕРЕРОБИТИ
-
             var logRRO = Bl.GetLogRRO(pIdR);
             decimal TotalRefundSum = logRRO.Where(x => x.TypeOperation == eTypeOperation.Refund).Select(x => x.SUM).Sum();
             decimal TotalSum = logRRO.Where(x => x.TypeOperation != eTypeOperation.Refund).Select(x => x.SUM).Sum() - TotalRefundSum;
             return TotalSum; // загальна готівка по всім IdWorkplace
         }
-
     }
 }
