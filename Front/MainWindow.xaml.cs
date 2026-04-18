@@ -636,7 +636,7 @@ namespace Front
             }
             else
             {
-                _videoFiles = Array.Empty<string>();
+                _videoFiles = [];
             }
         }
 
