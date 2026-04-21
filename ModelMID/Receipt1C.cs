@@ -49,6 +49,10 @@ namespace ModelMID
         public decimal SumRound { get; set; }
         public string NumberOrder { get; set; }
         public decimal Bonus { get; set; }
+        /// <summary>
+        /// Чи фіскальний чек. 
+        /// </summary>
+        public int IsNotFiscalReceipt { get; set; }
         public IEnumerable<GiftCard> GiftCard { get; set; }
         public Receipt1C() { }
         public Receipt1C(Receipt pR)
@@ -67,6 +71,7 @@ namespace ModelMID
             CodeClientCard = pR.CodeClient;
             BarCodeCashier = pR.UserCreate.ToString();
             CodeWarehouse = wp.CodeWarehouse;
+            IsNotFiscalReceipt= pR.LogRROs?.Where(el=> el.CodeError == 0 && "VirtualRRO".Equals(el.TypeRRO))?.Any()==true?1:0;
 
             if (ulong.TryParse(pR.NumberReceipt, out ulong nr))
                 NumberReceipt = nr;
