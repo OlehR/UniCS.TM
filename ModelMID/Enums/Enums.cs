@@ -50,7 +50,11 @@ namespace ModelMID
         /// <summary>
         /// Готівкова оплата через кеш-машину
         /// </summary>
-        CashMachine = 8
+        CashMachine = 8,
+        /// <summary>
+        /// післяплата
+        /// </summary>
+        Postpaid = 9,
     }
 
     public enum eTypeBonus

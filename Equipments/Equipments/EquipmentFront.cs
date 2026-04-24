@@ -449,12 +449,12 @@ namespace Front
         {
             var aa = pReceipt.Payment.ToList();
             string NameMetod = System.Reflection.MethodBase.GetCurrentMethod().Name;
-            if (pReceipt == null || pReceipt.Payment == null || !pReceipt.Payment.Any(el => el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Cash || el.TypePay==eTypePay.CashMachine))
+            if (pReceipt == null || pReceipt.Payment == null || !pReceipt.Payment.Any(el => el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Cash || el.TypePay==eTypePay.CashMachine || el.TypePay == eTypePay.Postpaid))
                 return new LogRRO(pReceipt) { CodeError = -1, Error = $"Відсутня оплата по Робочому місцю № ({pReceipt.IdWorkplacePay})" };
             var r = Task.Run<LogRRO>((Func<LogRRO>)(() =>
             {
 
-                var TypePay = pReceipt?.Payment?.Where(el=> el.TypePay==eTypePay.Cash|| el.TypePay==eTypePay.Card).FirstOrDefault()?.TypePay ?? eTypePay.None;
+                var TypePay = pReceipt?.Payment?.Where(el=> el.TypePay==eTypePay.Cash|| el.TypePay==eTypePay.Card || el.TypePay == eTypePay.Postpaid).FirstOrDefault()?.TypePay ?? eTypePay.None;
                 var RRO = GetRRO(pReceipt,null, TypePay);
                 LogRRO Res;
                 try

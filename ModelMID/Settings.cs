@@ -115,5 +115,9 @@ namespace ModelMID
         /// Чи треба відправляти на сервер Відкриття закриття зміни.
         /// </summary>
         public bool IsOpenCloseShift { get; set; }
+        /// <summary>
+        /// Чи можлива післяплата
+        /// </summary>
+        public bool IsPostpaid { get; set; }
     }
 }

@@ -29,6 +29,7 @@ namespace Front.Control
         public decimal SumMaxWallet { get; set; } = 0;
         public bool IsPaymentBonuses { get; set; } = true;
         public bool IsManagement { get { return Global.Settings.IsManagement;}}
+        public bool IsPostpaid { get { return Global.Settings.IsPostpaid;  } }
         public bool IsUseСertificate { get => MW?.Client?.IsСertificate == true; }
         public bool EnteringPriceManually { get; set; } = false;
         decimal _SumUseWallet = 0;
@@ -106,6 +107,7 @@ namespace Front.Control
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsPaymentBonuses"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsManagement"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsUseСertificate)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsPostpaid)));
 
             Rounding();
         }
@@ -144,7 +146,7 @@ namespace Front.Control
 
         public void TransferAmounts(decimal pMoneySum, decimal pSumCashBack)
         {
-            //IsManagement = true;
+           
             MW.IsCashBackPay = false;
             MoneySumToRound = pMoneySum;
             CashBackMoneySum = pSumCashBack;
@@ -450,9 +452,6 @@ namespace Front.Control
         private void OpenMoneyBoxButton(object sender, RoutedEventArgs e)
         {
             MW.StartOpenMoneyBox();
-            //test
-            //IsManagement=!IsManagement;
-            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsManagement)));
 
         }
 
@@ -475,6 +474,12 @@ namespace Front.Control
         {
             MW.Bl.ReplaceWorkplaceId(MW.curReceipt);
             _ButtonPaymentBank(null, null);
+        }
+
+        private void ButtonPostpaid(object sender, RoutedEventArgs e)
+        {
+            Rounding();
+            var task = Task.Run(() => MW.Blf.PrintAndCloseReceipt(null, eTypePay.Postpaid, MoneySumToRound));
         }
     }
 }

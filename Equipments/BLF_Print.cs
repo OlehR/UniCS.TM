@@ -182,6 +182,11 @@ namespace Front.Equipments
                                 pay = EF.CashMachinePay(R, Rro.GetSumRoundCash(pSumCash) * 100m, pay);
                                 Bl.db.ReplacePayment(pay, true);
                             }
+                            else if(pTP == eTypePay.Postpaid)
+                            {
+                                pay = new Payment(R) { IsSuccess = true, TypePay = eTypePay.Postpaid, SumPay = pSumCash, SumExt = 0 };
+                                Bl.db.ReplacePayment(pay, true);
+                            }
                             else if (pIsCashBack) //2 оплати при використанні карточки нац кешбек
                             {
                                 bool IsPay = true;

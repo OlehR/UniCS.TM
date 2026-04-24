@@ -72,7 +72,7 @@ namespace Front.Equipments.Implementation
             if (!IsOpenWorkDay) return new LogRRO(pR) { CodeError = -1, Error = "Не вдалось відкрити зміну" };
 
             //var c = pR.Payment?.Where(el => el.TypePay == eTypePay.IssueOfCash);
-            var RealPay = pR.Payment?.Where(el => el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Cash || el.TypePay == eTypePay.Wallet || el.TypePay == eTypePay.CashMachine);
+            var RealPay = pR.Payment?.Where(el => el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Cash || el.TypePay == eTypePay.Wallet || el.TypePay == eTypePay.CashMachine || el.TypePay == eTypePay.Postpaid);
             if (RealPay?.Any() == true)
             {
                 //pR.Payment = RealPay;
@@ -497,7 +497,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
             if (pR != null)
             {
                 rows = pR.GetParserWaresReceipt(true, false)?.Select(el => new WaresRRO(el, pRro));
-                pays = pR.Payment?.Where(el => el.TypePay == eTypePay.Cash || el.TypePay == eTypePay.Card).Select(el => new PaysRRO(el));
+                pays = pR.Payment?.Where(el => el.TypePay == eTypePay.Cash || el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Postpaid).Select(el => new PaysRRO(el));
                 comment_up = String.Join('\n', pR.ReceiptComments);
                 if (pR.Footer?.Any() == true)
                     comment_down = String.Join('\n', pR.Footer);
@@ -602,6 +602,8 @@ namespace Front.Equipments.Implementation.ModelVchasno
             {
                 case eTypePay.Card:
                     type = eTypePayRRO.Card; break;
+                case eTypePay.Postpaid:
+                    type = eTypePayRRO.PostPay; break;
                 case eTypePay.Cash:
                 case eTypePay.CashMachine:
                     type = eTypePayRRO.Cash; break;
