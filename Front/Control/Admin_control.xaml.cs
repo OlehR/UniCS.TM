@@ -75,6 +75,7 @@ namespace Front.Control
         //BatchTotals LastReceipt = null;
 
         public bool IsCashRegister { get { return Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister; } }
+        public bool IsAnyRRO { get { return Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister && AllEquipment.Where(x => x.Type == eTypeEquipment.RRO)?.Count() > 1; } }
 
         public DateTime DateSoSearch { get; set; } = DateTime.Now.Date;
         public DateTime DateStartPeriodZ { get; set; } = DateTime.Now.Date;

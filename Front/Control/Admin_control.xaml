@@ -362,10 +362,10 @@
                                         <Style BasedOn="{StaticResource Default}" TargetType="Button">
                                             <Setter Property="IsEnabled" Value="True"/>
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsCashRegister}" Value="True">
+                                                <DataTrigger Binding="{Binding IsAnyRRO}" Value="True">
                                                     <Setter Property="Visibility" Value="Visible" />
                                                 </DataTrigger>
-                                                <DataTrigger Binding="{Binding IsCashRegister}" Value="False">
+                                                <DataTrigger Binding="{Binding IsAnyRRO}" Value="False">
                                                     <Setter Property="Visibility" Value="Collapsed" />
                                                 </DataTrigger>
                                             </Style.Triggers>
