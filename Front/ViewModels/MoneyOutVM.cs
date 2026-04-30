@@ -1,6 +1,7 @@
 ﻿using Front.Equipments;
 using Front.Models;
 using ModelMID;
+using SharedLib;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -23,7 +24,7 @@ namespace Front.ViewModels
         // ---- Стан ----
         private decimal _totalSum;
         private string _topAmount = string.Empty;
-
+        BL Bl;
         public ObservableCollection<CashItem> Items { get; } = [];
 
         /// <summary>Сума AvailableQty по всіх рядках</summary>
@@ -94,7 +95,7 @@ namespace Front.ViewModels
         //public IEnumerable<Rro> RRO;
         public MoneyOutVM(IEnumerable<Equipment> pRRO)
         {
-
+            Bl = BL.GetBL;
             foreach (var el in pRRO)
             {
                 var RRO = el as Rro;
@@ -140,14 +141,27 @@ namespace Front.ViewModels
         }
         private bool MoneyOutCommand(CashItem pCashItem)
         {
-            if (pCashItem.InputQty.ToInt() <= 0) return true;
+            int Sum = pCashItem.InputQty.ToInt();
+            if (Sum <= 0) return true;
 
-            var r = pCashItem.RRO.MoveMoney(-pCashItem.InputQty.ToInt());
+            InOutMoney IOM = new()
+            {
+                IdWorkplace = pCashItem.RRO.IdWorkplacePay,
+                Sum = Sum
+            };
+
+            var r = pCashItem.RRO.MoveMoney(-Sum);
 
             if (r.CodeError == 0)
             {
                 pCashItem.IsConfirmed = true;
                 pCashItem.InputQty = "";
+
+                Task.Run(async()=> { 
+                    var r= await Bl.ds.InOutMoneyAsync(IOM);
+                    if(!(r?.Success==true))
+                        Global.Message.Invoke($"Помилка збереження винесення коштів по {IOM.IdWorkplace} в 1С=> " + r?.TextError, eTypeMessage.Error);
+                });
                 return true;
             }
             else

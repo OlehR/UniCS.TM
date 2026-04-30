@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 
 namespace ModelMID
 {
-    public class OpenCloseShift
+    public class InOutMoney
     {
         public int IdWorkplace { get; set; }
-        public bool IsOpen { get; set; }
-        public string TextReport { get; set; }
-        public string JsonXml { get; set; }
+        public decimal Sum { get; set; }
     }
 }

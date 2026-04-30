@@ -542,7 +542,7 @@ namespace ModelMID
         /// </summary>
         TobaccoNoExcise = 3,
         /// <summary>
-        /// Пиво (Ще не використавується)
+        /// Пиво
         /// </summary>
         Beer = 4,
         /// <summary>

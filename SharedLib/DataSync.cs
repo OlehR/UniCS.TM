@@ -1083,7 +1083,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                 HttpClient client = new() { Timeout = TimeSpan.FromMilliseconds(90000) };
                 HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "CashRegister/OpenCloseShift");
 
-                requestMessage.Content = new StringContent(new OpenCloseShift (){ CodeWarehouse=Global.CodeWarehouse, IsOpen= pIsOpen }.ToJson(), Encoding.UTF8, "application/json");
+                requestMessage.Content = new StringContent(new OpenCloseShift (){ IdWorkplace=Global.IdWorkPlace, IsOpen= pIsOpen }.ToJson(), Encoding.UTF8, "application/json");
                 var response = await client.SendAsync(requestMessage);
                 if (response.IsSuccessStatusCode)
                 {
@@ -1094,6 +1094,35 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                         return r;
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e);
+                return new(e);
+            }
+            return null;
+        }
+
+        public async Task<Result<bool>> InOutMoneyAsync(InOutMoney pIOM)
+        {
+            try
+            {
+                HttpClient client = new() { Timeout = TimeSpan.FromMilliseconds(20000) };
+                HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "CashRegister/InOutMoney");
+
+                requestMessage.Content = new StringContent(pIOM.ToJson(), Encoding.UTF8, "application/json");
+                var response = await client.SendAsync(requestMessage);
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    if (!string.IsNullOrEmpty(res))
+                    {
+                        var r = Newtonsoft.Json.JsonConvert.DeserializeObject<Result<bool>>(res);
+                        return r;
+                    }
+                }
+                else
+                    return new(response.StatusCode);
             }
             catch (Exception e)
             {

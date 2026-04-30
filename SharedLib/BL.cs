@@ -893,5 +893,16 @@ namespace SharedLib
                 return res.Data;
             return false;
         }
+        public async Task<bool> InOutMoney(InOutMoney pIOM)
+        {
+            //return false;
+            if (!Global.Settings.IsOpenCloseShift)
+                return true;
+            var res = await ds.InOutMoneyAsync(pIOM);
+            if (res.Success)
+                return res.Data;
+            return false;
+        }
+
     }
 }
