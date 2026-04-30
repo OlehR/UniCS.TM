@@ -144,11 +144,7 @@ namespace Front.ViewModels
             int Sum = pCashItem.InputQty.ToInt();
             if (Sum <= 0) return true;
 
-            InOutMoney IOM = new()
-            {
-                IdWorkplace = pCashItem.RRO.IdWorkplacePay,
-                Sum = Sum
-            };
+            InOutMoney IOM = new() { IdWorkplace = pCashItem.RRO.IdWorkplacePay, Sum = Sum };
 
             var r = pCashItem.RRO.MoveMoney(-Sum);
 
