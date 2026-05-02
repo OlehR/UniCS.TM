@@ -28,7 +28,7 @@ DROP INDEX IF exists id_FiscalArticle;--Ver=>15
 CREATE UNIQUE INDEX id_FiscalArticle ON FiscalArticle(IdWorkplacePay,CodeWares);--Ver=>15
 CREATE UNIQUE INDEX id_FiscalArticle_PLU ON FiscalArticle(IdWorkplacePay,PLU);--Ver=>16";
 
-        public readonly int VerRC = 31;
+        public readonly int VerRC = 32;
         readonly string SqlUpdateRC = @"alter TABLE WARES_RECEIPT            add Fix_Weight NUMBER NOT NULL DEFAULT 0;--Ver=>0
 alter TABLE WARES_RECEIPT_PROMOTION  add TYPE_DISCOUNT  INTEGER  NOT NULL  DEFAULT (12);--Ver=>0
 alter TABLE wares_receipt            add Priority INTEGER  NOT NULL DEFAULT 0;--Ver=>0
@@ -70,6 +70,9 @@ CREATE UNIQUE INDEX IdReceiptGift ON ReceiptGift(IdWorkplace,CodePeriod,CodeRece
 alter TABLE WARES_RECEIPT_PROMOTION  add Coefficient  NUMBER  NOT NULL  DEFAULT (0);--Ver=>29
 alter TABLE ReceiptGift add CodeCoupon INTEGER  NOT NULL DEFAULT 0;--Ver=>30
 alter TABLE payment    add  IsCashBack INTEGER  NOT NULL DEFAULT 0;--Ver=>31
+CREATE TABLE ReceiptLimitPS (IdWorkplace INTEGER NOT NULL, CodePeriod INTEGER NOT NULL, CodeReceipt INTEGER NOT NULL,CodePS INTEGER NOT NULL,CodeClient INTEGER NOT NULL, CodeWares INTEGER NOT NULL, Data NUMBER NOT NULL default 0);--Ver=>32
+CREATE UNIQUE INDEX IdReceiptLimitPS ON ReceiptLimitPS(IdWorkplace,CodePeriod,CodeReceipt,CodePS,CodeClient,CodeWares);;--Ver=>32
+CREATE INDEX IndReceiptLimitPS ON ReceiptLimitPS(CodeClient,CodeWares,CodePS);;--Ver=>32
 ";
        
         readonly string SqlCreateConfigTable = @"
@@ -373,6 +376,19 @@ CodeCoupon  INTEGER NOT NULL default 0,
 Quantity NUMBER   NOT NULL
 );
 CREATE UNIQUE INDEX IdReceiptGift ON ReceiptGift(IdWorkplace,CodePeriod,CodeReceipt,CodePS,NumberGroup,CodeCoupon);
+
+CREATE TABLE ReceiptLimitPS (
+IdWorkplace INTEGER NOT NULL,
+CodePeriod  INTEGER NOT NULL,
+CodeReceipt INTEGER NOT NULL,    
+CodePS      INTEGER NOT NULL,
+CodeClient INTEGER NOT NULL,
+CodeWares INTEGER NOT NULL,
+Data NUMBER NOT NULL default 0
+);
+
+CREATE UNIQUE INDEX IdReceiptLimitPS ON ReceiptLimitPS(IdWorkplace,CodePeriod,CodeReceipt,CodePS,CodeClient,CodeWares);
+CREATE INDEX IndReceiptLimitPS ON ReceiptLimitPS(CodeClient,CodeWares,CodePS);
 ";
 
         readonly string SqlSpeedScan = @"select 
@@ -1026,6 +1042,7 @@ where r.STATE_RECEIPT=-1
         private readonly string SqlReplaceOneTime = @"replace into ReceiptOneTime(IdWorkplace, CodePeriod, CodeReceipt, CodePS, TypeData, CodeData) 
             values (@IdWorkplace, @CodePeriod, @CodeReceipt, @CodePS, @TypeData, @CodeData )";
 
-
+        private readonly string SqlReplaceReceiptLimitPS = @"replace into ReceiptLimitPS(IdWorkplace, CodePeriod, CodeReceipt, CodePS, CodeClient, CodeWares, Data) 
+            values (@IdWorkplace, @CodePeriod, @CodeReceipt, @CodePS, @CodeClient, @CodeWares, @Data)";
     }
 }

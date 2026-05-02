@@ -16,5 +16,6 @@ namespace ModelMID.DB
         //public int ExData { get; set; }
         public DateTime DateCreate { get; set; }
         public Int64 CodeClient { get; set; }
+        public Int64 CodeWares { get; set; }
     }
 }

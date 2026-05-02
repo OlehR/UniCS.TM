@@ -1352,6 +1352,8 @@ where RE.EVENT_TYPE=1";
             SQLiteMid SqlM = new(MidFile);
             List < Client > LC = new() { pC };
             return SqlM.ReplaceClient(LC);
-        }        
+        }
+
+        public bool ReplaceReceiptLimitPS(OneTime pRC) => dbRC.ExecuteNonQuery<OneTime>(SqlReplaceReceiptLimitPS, pRC) > 0;
     }
 }

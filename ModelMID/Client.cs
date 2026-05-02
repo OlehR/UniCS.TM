@@ -13,6 +13,8 @@ namespace ModelMID
     public class Client : Model.Client
     {
         public IEnumerable<ReceiptGift> ReceiptGift { get; set; }
+        public IEnumerable<ReceiptLimitPS> LimitPS { get; set; }
+
         public Client() { }
         public Client(int parCodeClient) => CodeClient = parCodeClient;
         public Client(Model.Client pC)

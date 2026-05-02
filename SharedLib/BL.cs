@@ -837,6 +837,8 @@ namespace SharedLib
                 {
                     foreach (var el in cl.OneTimePromotion.Select(el => new OneTime(pIdReceipt) { CodePS = el, TypeData = eTypeCode.Client, CodeData = cl.CodeClient }))
                         db.ReplaceOneTime(el);
+                   
+                    
                     if (Global.RecalcPriceOnLine)
                         db.RecalcPriceAsync(new IdReceiptWares(pIdReceipt));
                 }
