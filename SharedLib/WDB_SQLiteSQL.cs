@@ -782,7 +782,11 @@ where psf.code_ps  is null
 and EPS.code_ps  is null
 )";
         string SqlGetPrice { get { return SqlGetPriceFilter + @"
- select psd.CODE_PS as CodePs,psd.PRIORITY as Priority ,11 as TypeDiscount  ,p.PRICE_DEALER as Data,1 as IsIgnoreMinPrice, MaxQuantity as MaxQuantity, ps.IsOneTime,'' as DataText
+ select psd.CODE_PS as CodePs, psd.PRIORITY as Priority, 11 as TypeDiscount, p.PRICE_DEALER as Data, 1 as IsIgnoreMinPrice,  
+  (select case when psd.MaxQuantity>0 then psd.MaxQuantity-max(Lps.Data) else 0 end from ReceiptLimitPS as Lps 
+    where Lps.IdWorkplace=@IdWorkplace and Lps.CodePeriod=@CodePeriod and Lps.CodeReceipt= @CodeReceipt and Lps.CodePS=@CodePS and 
+        Lps.CodeClient=@CodeClient and Lps.CodeWares=@CodeWares) as MaxQuantity,
+ps.IsOneTime, '' as DataText
  from  PROMOTION_SALE_DEALER psd
  join PROMOTION_SALE ps on ps.CODE_PS=psd.CODE_PS
  join PRICE p on psd.CODE_DEALER=p.CODE_DEALER and psd.CODE_WARES= p.CODE_WARES
