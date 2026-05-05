@@ -71,7 +71,7 @@ alter TABLE WARES_RECEIPT_PROMOTION  add Coefficient  NUMBER  NOT NULL  DEFAULT 
 alter TABLE ReceiptGift add CodeCoupon INTEGER  NOT NULL DEFAULT 0;--Ver=>30
 alter TABLE payment    add  IsCashBack INTEGER  NOT NULL DEFAULT 0;--Ver=>31
 CREATE TABLE ReceiptLimitPS (IdWorkplace INTEGER NOT NULL, CodePeriod INTEGER NOT NULL, CodeReceipt INTEGER NOT NULL,CodePS INTEGER NOT NULL,CodeClient INTEGER NOT NULL, CodeWares INTEGER NOT NULL, Data NUMBER NOT NULL default 0);--Ver=>32
-CREATE UNIQUE INDEX IdReceiptLimitPS ON ReceiptLimitPS(IdWorkplace,CodePeriod,CodeReceipt,CodePS,CodeClient,CodeWares);;--Ver=>32
+CREATE INDEX IdReceiptLimitPS ON ReceiptLimitPS(IdWorkplace,CodePeriod,CodeReceipt,CodePS,CodeClient,CodeWares);;--Ver=>32
 CREATE INDEX IndReceiptLimitPS ON ReceiptLimitPS(CodeClient,CodeWares,CodePS);;--Ver=>32
 ";
        
@@ -387,7 +387,7 @@ CodeWares INTEGER NOT NULL,
 Data NUMBER NOT NULL default 0
 );
 
-CREATE UNIQUE INDEX IdReceiptLimitPS ON ReceiptLimitPS(IdWorkplace,CodePeriod,CodeReceipt,CodePS,CodeClient,CodeWares);
+CREATE INDEX IdReceiptLimitPS ON ReceiptLimitPS(IdWorkplace,CodePeriod,CodeReceipt,CodePS,CodeClient,CodeWares);
 CREATE INDEX IndReceiptLimitPS ON ReceiptLimitPS(CodeClient,CodeWares,CodePS);
 ";
 
@@ -782,19 +782,24 @@ where psf.code_ps  is null
 and EPS.code_ps  is null
 )";
         string SqlGetPrice { get { return SqlGetPriceFilter + @"
+,UsedPS as  ( 
+select Lps.CodePS, sum(Lps.Data) as Data from ReceiptLimitPS as Lps 
+    where Lps.IdWorkplace=@IdWorkplace and Lps.CodePeriod=@CodePeriod and Lps.CodeReceipt= @CodeReceipt and 
+        Lps.CodeClient=@CodeClient and Lps.CodeWares=@CodeWares
+group by Lps.CodePS )
+
  select psd.CODE_PS as CodePs, psd.PRIORITY as Priority, 11 as TypeDiscount, p.PRICE_DEALER as Data, 1 as IsIgnoreMinPrice,  
-  (select case when psd.MaxQuantity>0 then psd.MaxQuantity-max(Lps.Data) else 0 end from ReceiptLimitPS as Lps 
-    where Lps.IdWorkplace=@IdWorkplace and Lps.CodePeriod=@CodePeriod and Lps.CodeReceipt= @CodeReceipt and Lps.CodePS=@CodePS and 
-        Lps.CodeClient=@CodeClient and Lps.CodeWares=@CodeWares) as MaxQuantity,
-ps.IsOneTime, '' as DataText
+  case when psd.MaxQuantity>0 then psd.MaxQuantity - COALESCE(u.data,0)  else 0 end  as MaxQuantity, ps.IsOneTime, '' as DataText
  from  PROMOTION_SALE_DEALER psd
  join PROMOTION_SALE ps on ps.CODE_PS=psd.CODE_PS
  join PRICE p on psd.CODE_DEALER=p.CODE_DEALER and psd.CODE_WARES= p.CODE_WARES
+ LEFT JOIN UsedPS U on (U.CodePS=psd.CODE_PS)
  LEFT JOIN EXEPTIONPS EPS ON  (psd.CODE_PS= EPS.CODE_PS)
  WHERE EPS.CODE_PS IS NULL and
  psd.CODE_WARES = @CodeWares and
  datetime('now','localtime') between psd.Date_begin and psd.DATE_END
  and p.PRICE_DEALER>0 and @IsPricePromotion=1
+and (psd.MaxQuantity=0 or psd.MaxQuantity>COALESCE(u.data,0))
  union all -- По групам товарів
  select PSF.CODE_PS,0 as priority , 13 as Type_discont, PSD.DATA, PSD.DATA_ADDITIONAL_CONDITION as IsIgnoreMinPrice,0 as MaxQuantity, ps.IsOneTime,psd.DATA_TEXT as DataText
  from wares w

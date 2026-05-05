@@ -379,7 +379,7 @@ namespace SharedLib
                             if (Res.MaxQuantity > 0)// Якщо акція обмежена по кількості робимо на шталт сигарет
                             {
                                 RW.Price = RW.PriceDealer;
-                                RW.ParPrice1 = 888888;
+                                RW.ParPrice1 = -Res.CodePs; //888888;
                                 RW.ParPrice2 = (Res.IsOneTime ? -1 : 1) * (long)Res.TypeDiscount;
                                 RW.ParPrice3 = Res.Data;
                                 RW.Priority = Res.Priority;
@@ -1354,6 +1354,6 @@ where RE.EVENT_TYPE=1";
             return SqlM.ReplaceClient(LC);
         }
 
-        public bool ReplaceReceiptLimitPS(OneTime pRC) => dbRC.ExecuteNonQuery<OneTime>(SqlReplaceReceiptLimitPS, pRC) > 0;
+        public bool ReplaceReceiptLimitPS(ReceiptLimitPS pRC) => dbRC.ExecuteNonQuery<ReceiptLimitPS>(SqlReplaceReceiptLimitPS, pRC) > 0;
     }
 }

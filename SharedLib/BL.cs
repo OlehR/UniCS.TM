@@ -843,6 +843,12 @@ namespace SharedLib
                         db.RecalcPriceAsync(new IdReceiptWares(pIdReceipt));
                 }
 
+                if(cl?.LimitPS!=null)
+                {
+                    foreach (var el in cl.LimitPS.Select(el => new ReceiptLimitPS(pIdReceipt) {CodePS=el.CodePS, CodeClient = el.CodeClient, CodeWares=el.CodeWares,  Data= el.Data}))
+                        db.ReplaceReceiptLimitPS(el);
+                }
+
                 if (cl?.ReceiptGift?.Any() == true)
                 {
                     foreach (var el in cl.ReceiptGift.Select(el => new ReceiptGift(pIdReceipt) { CodePS = el.CodePS, NumberGroup = el.NumberGroup, Quantity = el.Quantity }))

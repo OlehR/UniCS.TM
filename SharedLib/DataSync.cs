@@ -128,6 +128,7 @@ namespace SharedLib
 
         public bool SyncData(ref bool pIsFull)
         {
+            //return true;//!!!TMP 
             bool IsFull = pIsFull;
             lock (this._locker)
             {
