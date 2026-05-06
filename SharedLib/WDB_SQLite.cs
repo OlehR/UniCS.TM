@@ -618,10 +618,15 @@ INSERT OR ignore into GEN_WORKPLACE(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT) val
             return Id.IdWorkplace+Code;
         }
 
-        public bool ReplaceReceipt(Receipt parReceipt) => dbRC.ExecuteNonQuery<Receipt>(SqlReplaceReceipt, parReceipt) > 0;
+        public bool ReplaceReceipt(Receipt pR)
+        {
+            FileLogger.WriteLogMessage(this, "ReplaceReceipt", $"({pR.IdWorkplace}, {pR.CodePeriod}, {pR.CodeReceipt}) StateReceipt=>{pR.StateReceipt}");
+            return dbRC.ExecuteNonQuery<Receipt>(SqlReplaceReceipt, pR) > 0;
+        }
 
         public bool CloseReceipt(Receipt pR)
         {
+            FileLogger.WriteLogMessage(this, "CloseReceipt", $"({pR.IdWorkplace}, {pR.CodePeriod}, {pR.CodeReceipt}) StateReceipt=>{pR.StateReceipt}");
             pR.TypeWorkplace = Global.TypeWorkplaceCurrent;
             lock (GetObjectForLockByIdWorkplace(pR.IdWorkplace))
             {

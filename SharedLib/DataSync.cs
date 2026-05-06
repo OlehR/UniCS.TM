@@ -652,17 +652,17 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                             pR.StateReceipt = eStateReceipt.Send;
                             db.SetStateReceipt(pR);
                         }
-                        FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"CodeReceipt=>{pR.CodeReceipt} State=>${Res.State} Text=>{Res.TextState}");
+                        FileLogger.WriteLogMessage(this, "SendReceipt", $"CodeReceipt=>{pR.CodeReceipt} State=>{Res.State} Text=>{Res.TextState}");
                         return Res;
                     }
                 }
                 else
                 {
-                    FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, response.StatusCode.ToString());
+                    FileLogger.WriteLogMessage(this, "SendReceipt", response.StatusCode.ToString());
                 }
             }
             catch (Exception e)
-            { FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e); }
+            { FileLogger.WriteLogMessage(this, "SendReceipt", e); }
             return null;
         }
 
