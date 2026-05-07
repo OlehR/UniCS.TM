@@ -501,7 +501,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
                 comment_up = String.Join('\n', pR.ReceiptComments);
                 if (pR.Footer?.Any() == true)
                     comment_down = String.Join('\n', pR.Footer);
-                sum = pR.Wares?.Sum(el => Math.Round(el.Price * el.Quantity, 2, MidpointRounding.AwayFromZero) - el.SumTotalDiscount) ?? 0m; ;
+                sum = rows.Sum(el => el.cost-el.disc); //pR.Wares?.Sum(el => Math.Round(el.Price * el.Quantity, 2, MidpointRounding.AwayFromZero) - el.SumTotalDiscount) ?? 0m; ;
                 not_check_safe = true;
                 if (pR.TypeReceipt == eTypeReceipt.Refund) //Можливо варто перевести на рівень вище.
                 {

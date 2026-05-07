@@ -90,7 +90,9 @@ namespace ModelMID
             CashOutSum = pR.Payment.Where(r => r.TypePay == eTypePay.IssueOfCash && r.SumPay > 0)?.FirstOrDefault()?.SumPay ?? 0;
 
             var Cash = pR.Payment.Where(r => r.TypePay == eTypePay.Cash)?.FirstOrDefault();
+            var PostPaid = pR.Payment.Where(r => r.TypePay == eTypePay.Postpaid)?.FirstOrDefault();
             if (Cash != null) CodeBank = 1;
+            else if (PostPaid != null) CodeBank = 14;
             else
                 CodeBank = (int)(Card?.CodeBank ?? (wp?.TypePOS ?? eBank.NotDefine));
 

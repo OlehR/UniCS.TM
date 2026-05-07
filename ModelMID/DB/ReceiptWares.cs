@@ -516,7 +516,7 @@ namespace ModelMID
                 PromotionQuantity = PromotionPrice.Sum(r => r.Quantity);
             }
 
-            if (PromotionQuantity > 0 && el.ParPrice1 != 888888)
+            if (PromotionQuantity > 0 && (el.ParPrice1 != 888888 && el.ParPrice1>0))
             {
                 decimal AllQuantity = el.Quantity;
                 var OtherPromotion = el.ReceiptWaresPromotions.Where(r => r.TypeDiscount != eTypeDiscount.Price);
