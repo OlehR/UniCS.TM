@@ -1360,5 +1360,8 @@ where RE.EVENT_TYPE=1";
         }
 
         public bool ReplaceReceiptLimitPS(ReceiptLimitPS pRC) => dbRC.ExecuteNonQuery<ReceiptLimitPS>(SqlReplaceReceiptLimitPS, pRC) > 0;
+
+        public long GetCodeFromSKU(int CodeSKU)=> db.ExecuteScalar<long>($"select max(CodeWares) from SKU where SKU={CodeSKU}");
+        
     }
 }

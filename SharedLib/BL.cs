@@ -222,6 +222,10 @@ namespace SharedLib
                         {
                             switch (el.TypeCode)
                             {
+                                case eTypeCode.SKU:
+                                    long CodeWares = db.GetCodeFromSKU(Code);
+                                    w = db.FindWares(null, null, CodeWares);
+                                    break;
                                 case eTypeCode.Article:
                                     w = db.FindWares(null, null, 0, 0, 0, Code);
                                     break;

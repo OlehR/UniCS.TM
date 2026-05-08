@@ -12,7 +12,7 @@ namespace SharedLib
 {
     public class SQLiteMid: SQLite
     {
-        public static readonly int VerMID = 19;
+        public static readonly int VerMID = 20;
         public static readonly string SqlUpdateMID = @"--Ver=>0;Reload;
 alter TABLE wares add Weight_Delta INTEGER  DEFAULT 0;--Ver=>0
 alter TABLE PROMOTION_SALE_DEALER add PRIORITY INTEGER NOT NULL DEFAULT 1;--Ver=>0
@@ -31,6 +31,9 @@ alter TABLE PROMOTION_SALE  add IsOneTime INTEGER  NOT NULL default 0;--Ver=>16;
 alter TABLE PROMOTION_SALE_DATA add DATA_TEXT TEXT;--Ver=>17;
 alter TABLE TYPE_DISCOUNT add IsСertificate INTEGER NOT NULL DEFAULT(0);--Ver=>18;
 alter TABLE wares add Country INTEGER  DEFAULT 0;--Ver=>19;
+CREATE TABLE SKU(CodeWares INTEGER NOT NULL, SKU INTEGER NOT NULL);--Ver=>20;
+CREATE UNIQUE INDEX  SKU_ID ON SKU (SKU);--Ver=>20;
+
 --Ver=>11;Reload;";
 
         public static readonly string SqlCreateMIDTable = @"
@@ -280,6 +283,11 @@ CREATE TABLE FAST_GROUP
      CodeSegment INTEGER NOT NULL
  );
 
+CREATE TABLE SKU(
+     CodeWares INTEGER NOT NULL,
+     SKU INTEGER NOT NULL
+ );
+
 ";
 
         readonly static string SqlCreateMIDIndex = @"
@@ -340,6 +348,9 @@ CREATE TABLE FAST_GROUP
  
         CREATE UNIQUE INDEX  SegmentWares_ID ON SegmentWares (CodeWares,CodeSegment);
         CREATE UNIQUE INDEX  SegmentWares_ID2 ON SegmentWares (CodeSegment,CodeWares);
+
+        CREATE UNIQUE INDEX  SKU_ID ON SKU (SKU);
+
 ";
         public SQLiteMid(String pConectionString) : base(pConectionString) { }
 
@@ -397,6 +408,13 @@ replace into PROMOTION_SALE_FILTER(CODE_PS, CODE_GROUP_FILTER, TYPE_GROUP_FILTER
             string SqlReplaceSalesBan = "replace into  Sales_Ban(CODE_GROUP_WARES, Amount) values(@CodeGroupWares, @Amount);";
             return BulkExecuteNonQuery<SalesBan>(SqlReplaceSalesBan, pSB, true) > 0;
         }
+
+        public bool ReplaceSKU(IEnumerable<cSKU> pSKU)
+        {
+            string SqlReplaceSalesBan = "replace into  SKU (CodeWares, SKU) values(@CodeWares, @SKU);";
+            return BulkExecuteNonQuery<cSKU>(SqlReplaceSalesBan, pSKU, true) > 0;
+        }
+
         public bool ReplaceClientData(IEnumerable<ClientData> pCD = null)
         {
             string Sql = @"replace into ClientData (TypeData,CodeClient,Data) values (@TypeData,@CodeClient,@Data)";

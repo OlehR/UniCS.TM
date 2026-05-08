@@ -34,6 +34,6 @@ namespace ModelMID.DB
         public IEnumerable<FastGroup> FastGroup { get; set; }
         public IEnumerable<FastWares> FastWares { get; set; }
         public IEnumerable<SegmentWares> SegmentWares { get; set; }
-         
+        public IEnumerable<cSKU> SKU { get; set; }
     }
 }
