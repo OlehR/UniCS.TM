@@ -45,7 +45,7 @@ namespace ModelMID
         /// <summary>
         /// Код пакету який пропунує додати в чек
         /// </summary>
-        public int CodePackagesBag { get; set; } = 193122;
+        public long CodePackagesBag { get; set; } = 193122;
         /// <summary>
         /// Текст в кінці чека
         /// </summary>
