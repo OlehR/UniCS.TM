@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
@@ -91,7 +92,7 @@ namespace UtilNetwork
         }
         public Result(T pD) : base() { Data = pD; }
         public Result(Exception e) : base(e) { }
-        
-        public Result GetResult { get { return new Result { State=State, TextError = TextError }; } }
+        [JsonIgnore]
+        public Result GetResult => new() { State=State, TextError = TextError }; 
     }
 }
