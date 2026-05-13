@@ -9,7 +9,13 @@ namespace Front.Equipments
 {
     public class CommandAPI<t>
     {
-        public eCommand Command { get; set; }        
+        public CommandAPI() { }
+        public CommandAPI(eCommand pCommand, t pData)
+        {
+            Command = pCommand;
+            Data = pData;
+        }
+        public eCommand Command { get; set; }
         public t Data { get; set; }
     }
 }

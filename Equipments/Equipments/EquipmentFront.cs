@@ -8,6 +8,7 @@ using Front.Equipments.Implementation;
 using Utils;
 using Microsoft.Extensions.Logging;
 using SharedLib;
+using Equipments.Model;
 
 namespace Front
 {
@@ -86,7 +87,16 @@ namespace Front
         public BankTerminal BankTerminal2 { get { return GetBankTerminal?.Skip(1).FirstOrDefault() as BankTerminal; } }
 
         public void ControlWeight(double pWeight, bool pIsStable) => OnControlWeight?.Invoke(pWeight, pIsStable);
-        public void Weight(double pWeight, bool pIsStable) => OnWeight?.Invoke(pWeight, pIsStable);
+        public void Weight(double pWeight, bool pIsStable)
+        {
+            if (IsNetWeight && IP != null)
+            {
+                var Blf = BLF.GetBLF;
+                Blf.SendRemoteComand<double>( new(ModelMID.eCommand.WeightNet, pWeight), IP);
+            }
+            if (IsLocalWeight)
+                OnWeight?.Invoke(pWeight, pIsStable);
+        }
         void BarCode(string pBarCode, string pType) => OnBarCode?.Invoke(pBarCode, pType);
 
         public eStateEquipment StatCriticalEquipment
@@ -1087,8 +1097,20 @@ namespace Front
         /// <summary>
         /// Початок зважування на основній вазі
         /// </summary>
-        public void StartWeight()
+        /// 
+
+        System.Net.IPAddress IP;
+        bool IsLocalWeight = false;
+        bool IsNetWeight = false;
+        public void StartWeight(System.Net.IPAddress pIP =null)
         {
+            if (pIP == null) 
+                IsLocalWeight = true;
+            else
+            {
+                IP= pIP;
+                IsNetWeight = true;
+            }
             try
             {
                 IsControlScale = false;
@@ -1102,12 +1124,13 @@ namespace Front
         /// <summary>
         /// Завершення зважування на основній вазі
         /// </summary>
-        public void StoptWeight()
+        public void StoptWeight(bool IsNet = false)
         {
+            if (IsNet) IsNetWeight = false; else IsLocalWeight = false;
             try
             {
                 IsControlScale = true;
-                if (ControlScale?.Model != eModelEquipment.VirtualControlScale)
+                if (ControlScale?.Model != eModelEquipment.VirtualControlScale && !IsNetWeight && !IsLocalWeight)
                     Scale?.StopWeight();
             }
             catch (Exception e)

@@ -241,6 +241,18 @@ namespace ModelMID
         /// <summary>
         /// Дані для SkyNex (піцци та інші замовлення)
         /// </summary>
-        GetDataSkyNex
+        GetDataSkyNex,
+        /// <summary>
+        /// Початок віддаленого зважування товару
+        /// </summary>
+        StartWeightNet,
+        /// <summary>
+        /// Зупинка віддаленого зважування товару
+        /// </summary>
+        StopWeightNet,
+        /// <summary>
+        /// Отримати вагу з віддаленого зважування товару
+        /// </summary>
+        WeightNet
     }
 }

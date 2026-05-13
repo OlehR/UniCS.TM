@@ -1,10 +1,12 @@
 ﻿using Equipments.Model;
+//using Front.Equipments.Implementation;
 using Model;
 using ModelMID;
 using ModelMID.DB;
 using SharedLib;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Net;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using UtilNetwork;
@@ -423,6 +425,7 @@ namespace Front.Equipments
                 CommandAPI<dynamic> pC = JsonSerializer.Deserialize<CommandAPI<dynamic>>(pDataApi);
                 CommandAPI<int> CommandInt;
                 CommandAPI<string> CommandString;
+                CommandAPI<double> CommandDouble;
                 CommandAPI<InfoRemoteCheckout> CommandRemoteInfo;
                 switch (pC.Command)
                 {
@@ -485,6 +488,25 @@ namespace Front.Equipments
                         SharedLib.SkyNex.OrdersRoot OR = new(D.Data);
                         Res = new(0,"Ok",OR.ToJson());
                         break;
+
+                    case eCommand.StartWeightNet:
+                        CommandString = JsonSerializer.Deserialize<CommandAPI<string>>(pDataApi);
+                        if (IPAddress.TryParse(CommandString.Data, out var IP))
+                        {
+                            MW.EF.StartWeight(IP);
+                            Res = new(0, $"Почато зважування на вагах!");
+                        }
+                        else 
+                            Res = new(-1, $"Невірний IP адрес!");
+                        break;
+                    case eCommand.StopWeightNet:
+                        MW.EF.StoptWeight(true);
+                        Res = new(0, $"Зупинено зважування на вагах!");
+                        break;
+                    case eCommand.WeightNet:
+                        CommandDouble  = JsonSerializer.Deserialize<CommandAPI<double>>(pDataApi);
+                        MW.EF.OnWeight?.Invoke(CommandDouble.Data,true);
+                        break;
                 }
             }
             catch (Exception ex) { Res = new(ex); }
@@ -495,23 +517,31 @@ namespace Front.Equipments
         public void SendRemoteComand(eCommand comand, InfoRemoteCheckout remoteInfo, string LogText = "Confirm")
         {
             if (MW.RemoteWorkplace != null)
-                Task.Run(async () =>
-                {
-                    CommandAPI<InfoRemoteCheckout> Command = new() { Command = comand, Data = remoteInfo };
-                    try
-                    {
-                        var r = new SocketClient(MW.RemoteWorkplace.IP, Global.PortAPI);
-                        var Ansver = await r.StartAsync(Command.ToJSON());
-                        MW.SocketAnsver?.Invoke(comand, MW.MainWorkplace, Ansver);
-                    }
-                    catch (Exception ex)
-                    {
-                        FileLogger.WriteLogMessage(this, $"{LogText} DNSName=>{MW.RemoteWorkplace.DNSName} {Command} ", ex);
-                        MW.SocketAnsver?.Invoke(comand, MW.MainWorkplace, new Result(ex));
-                    }
-                });
+            {
+                CommandAPI<InfoRemoteCheckout> Command = new() { Command = comand, Data = remoteInfo };
+                SendRemoteComand<InfoRemoteCheckout>(Command, MW.RemoteWorkplace.IP, LogText);
+            }                
         }
 
+        public void SendRemoteComand<t>(CommandAPI<t> pCommand, IPAddress pIP = null, string LogText = "Confirm")
+        {
+            Task.Run(async () =>
+            {
+                string Data = null;
+                try
+                {
+                    Data = pCommand.ToJSON();
+                    var r = new SocketClient(pIP, Global.PortAPI);
+                    var Ansver = await r.StartAsync(Data);
+                    MW.SocketAnsver?.Invoke(pCommand.Command, MW.MainWorkplace, Ansver);
+                }
+                catch (Exception ex)
+                {
+                    FileLogger.WriteLogMessage(this, $"{LogText} DNSName=>{MW.RemoteWorkplace.DNSName} {Data} ", ex);
+                    MW.SocketAnsver?.Invoke(pCommand.Command, MW.MainWorkplace, new Result(ex));
+                }
+            });
+        }
 
         public bool SetConfirm(User pUser, bool pIsFirst = false, bool pIsAccess = false)
         {

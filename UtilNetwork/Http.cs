@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using Utils;
@@ -142,6 +143,15 @@ namespace UtilNetwork
                 //throw; // Re-throw the exception to handle it upstream if needed
                 pProgress?.Invoke(0.9);
             }
+        }
+
+        public static IPAddress GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                    return ip;
+            return null;
         }
     }
     public enum eStateHTTP

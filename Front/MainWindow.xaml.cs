@@ -1149,15 +1149,12 @@ namespace Front
                                 FWW.Top = additionalScreen.WorkingArea.Top;
                                 FWW.Width = additionalScreen.WorkingArea.Width;
                                 FWW.Height = additionalScreen.WorkingArea.Height;
-
                                 // Покажіть вікно
                                 FWW.Show();
                                 FWW.WindowState = WindowState.Maximized;
-
                             }
                             else
                             {
-
                                 FWW.WindowState = WindowState.Maximized;
                                 FWW.Show();
                             }

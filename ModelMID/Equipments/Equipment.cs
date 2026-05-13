@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Net;
 using Utils;
 
 namespace Front.Equipments
@@ -23,6 +24,7 @@ namespace Front.Equipments
         protected string SerialPort;
         protected int BaudRate;
         protected string IP;
+        protected IPAddress IPAddress { get { if (!string.IsNullOrEmpty(IP) && IPAddress.TryParse(IP, out var iPAddress)) return iPAddress; return null; } }
         protected int IpPort;
         protected IConfiguration Configuration;
         protected string KeyPrefix {get { return "Devices:" + (string.IsNullOrEmpty(DeviceConfigName) ? this.GetType().Name : DeviceConfigName) + ":"; }}
