@@ -316,6 +316,8 @@ namespace Front.Equipments
         ScaleCom,
         [Description("Контррльна вага")]
         ScaleModern,
+        [Description("Вага через IP до іншого комп'ютера")]
+        ScaleNet,
         [Description("Сигнальний стяг")]
         SignalFlagModern,
         [Description("POS-термінал Ingenico")]

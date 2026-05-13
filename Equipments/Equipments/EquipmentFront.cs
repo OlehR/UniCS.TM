@@ -208,6 +208,9 @@ namespace Front
                             Scale = new ScaleCom(ElEquipment, config, LF, Weight);
                             // Scale.StartWeight();
                             break;
+                        case eModelEquipment.ScaleNet:
+                            Scale = new ScaleNet(ElEquipment, config, LF, Weight);
+                            break;
                         default:
                             Scale = new Scale(ElEquipment, config);
                             break;
