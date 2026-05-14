@@ -2095,6 +2095,295 @@
                     </Grid>
 
                 </TabItem>
+                <TabItem Header="Кеш-машина">
+                    <TabItem.Style>
+                        <Style TargetType="{x:Type TabItem}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsCashMachine, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TabItem.Style>
+
+
+                    <!--місце для відображення таблиць з кількістю купюр в кеш-машині-->
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="10">
+
+                            <Button Click="RefreshCash" Content="Оновити"
+                Style="{StaticResource Default}"
+                Width="150" Height="50"
+                HorizontalAlignment="Left" Margin="0,0,0,10"/>
+
+                            <!-- КУПЮРИ -->
+                            <TextBlock Text="Купюри" FontSize="20" FontWeight="Bold" Margin="0,0,0,5"/>
+                            <ListView x:Name="BanknoteGrid"
+                  ItemsSource="{Binding BanknoteRows, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"
+                   Margin="0,0,0,20">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn  Header="Номінал">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Path=FaceValueDisplay}" TextAlignment="Center" >
+                                                        <TextBlock.Style>
+                                                            <Style  TargetType="TextBlock">
+                                                                <Setter Property="FontSize" Value="25" />
+                                                                <Setter Property="FontWeight" Value="Bold" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                                        <Setter Property="FontSize" Value="14" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn  Header="У барабані">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Path=DrumQuantity}" TextAlignment="Center" >
+                                                        <TextBlock.Style>
+                                                            <Style  TargetType="TextBlock">
+                                                                <Setter Property="FontSize" Value="25" />
+                                                                <Setter Property="FontWeight" Value="Bold" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                                        <Setter Property="FontSize" Value="14" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+
+                                        <GridViewColumn  Header="У сейфі">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Path=SafeQuantity}" TextAlignment="Center" >
+                                                        <TextBlock.Style>
+                                                            <Style  TargetType="TextBlock">
+                                                                <Setter Property="FontSize" Value="25" />
+                                                                <Setter Property="FontWeight" Value="Bold" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                                        <Setter Property="FontSize" Value="14" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+
+
+                                        <GridViewColumn  Header="Загалом">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Path=AllQuantity}" TextAlignment="Center" >
+                                                        <TextBlock.Style>
+                                                            <Style  TargetType="TextBlock">
+                                                                <Setter Property="FontSize" Value="25" />
+                                                                <Setter Property="FontWeight" Value="Bold" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                                        <Setter Property="FontSize" Value="14" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+
+                                        <GridViewColumn  Header="Сума у барабані">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Path=DrumAmount}" TextAlignment="Center" >
+                                                        <TextBlock.Style>
+                                                            <Style  TargetType="TextBlock">
+                                                                <Setter Property="FontSize" Value="25" />
+                                                                <Setter Property="FontWeight" Value="Bold" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                                        <Setter Property="FontSize" Value="14" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+
+                                        <GridViewColumn  Header="Сума загалом">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Path=AllAmount}" TextAlignment="Center" >
+                                                        <TextBlock.Style>
+                                                            <Style  TargetType="TextBlock">
+                                                                <Setter Property="FontSize" Value="25" />
+                                                                <Setter Property="FontWeight" Value="Bold" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                                        <Setter Property="FontSize" Value="14" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+
+                            <!-- МОНЕТИ -->
+                            <TextBlock Text="Монети" FontSize="20" FontWeight="Bold" Margin="0,0,0,5"/>
+                            <ListView x:Name="CoinGrid"
+                  ItemsSource="{Binding CoinRows, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn  Header="Номінал">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Path=FaceValueDisplay}" TextAlignment="Center" >
+                                                        <TextBlock.Style>
+                                                            <Style  TargetType="TextBlock">
+                                                                <Setter Property="FontSize" Value="25" />
+                                                                <Setter Property="FontWeight" Value="Bold" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                                        <Setter Property="FontSize" Value="14" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn  Header="У барабані">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Path=DrumQuantity}" TextAlignment="Center" >
+                                                        <TextBlock.Style>
+                                                            <Style  TargetType="TextBlock">
+                                                                <Setter Property="FontSize" Value="25" />
+                                                                <Setter Property="FontWeight" Value="Bold" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                                        <Setter Property="FontSize" Value="14" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+
+                                        <GridViewColumn  Header="У сейфі">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Path=SafeQuantity}" TextAlignment="Center" >
+                                                        <TextBlock.Style>
+                                                            <Style  TargetType="TextBlock">
+                                                                <Setter Property="FontSize" Value="25" />
+                                                                <Setter Property="FontWeight" Value="Bold" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                                        <Setter Property="FontSize" Value="14" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+
+
+                                        <GridViewColumn  Header="Загалом">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Path=AllQuantity}" TextAlignment="Center" >
+                                                        <TextBlock.Style>
+                                                            <Style  TargetType="TextBlock">
+                                                                <Setter Property="FontSize" Value="25" />
+                                                                <Setter Property="FontWeight" Value="Bold" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                                        <Setter Property="FontSize" Value="14" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+
+                                        <GridViewColumn  Header="Сума у барабані">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Path=DrumAmount}" TextAlignment="Center" >
+                                                        <TextBlock.Style>
+                                                            <Style  TargetType="TextBlock">
+                                                                <Setter Property="FontSize" Value="25" />
+                                                                <Setter Property="FontWeight" Value="Bold" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                                        <Setter Property="FontSize" Value="14" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+
+                                        <GridViewColumn  Header="Сума загалом">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Path=AllAmount}" TextAlignment="Center" >
+                                                        <TextBlock.Style>
+                                                            <Style  TargetType="TextBlock">
+                                                                <Setter Property="FontSize" Value="25" />
+                                                                <Setter Property="FontWeight" Value="Bold" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                                        <Setter Property="FontSize" Value="14" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
                 <TabItem Header="Вихід з програми" Visibility="Collapsed"/>
                 <TabItem Header="Вихід" Visibility="Collapsed"/>
 

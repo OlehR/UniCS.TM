@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using ModelMID;
 using ModelMID.DB;
 using Newtonsoft.Json;
+using System.Collections.ObjectModel;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -53,9 +54,9 @@ namespace Front.Equipments
             {
                 SessionID = open.SessionID;
                 // Атрибут result зчитується базовим BrueboxResponse через XmlAnyAttribute
-                Console.WriteLine(
-                    $"Result={open.Result}, Id={open.Id}, SeqNo={open.SeqNo}, User={open.User}, SessionID={open.SessionID}");
+                FileLogger.WriteLogMessage($"Result={open.Result}, Id={open.Id}, SeqNo={open.SeqNo}, User={open.User}, SessionID={open.SessionID}");
                 State = eStateEquipment.On;
+                //var aa = InventoryAsync().Result;
             }
             else State = eStateEquipment.Error;
 
@@ -162,5 +163,82 @@ namespace Front.Equipments
             return $"SessionID: {SessionID}";
         }
 
+        public override List<CashInventory> Inventory()
+        {
+            return InventoryAsync().Result;
+        }
+        public override async Task<List<CashInventory>> InventoryAsync()
+        {
+            //отримання актуальних купюр
+            string SOAPAction = eNameSOAPAction.InventoryOperation.ToString();
+            string pData = GloryXMLData.XMLInventoryOperation(SessionID);
+            FileLogger.WriteLogMessage($"Request {SOAPAction}:  {Environment.NewLine} {pData}");
+            string XMLRespons = await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, pData);
+            FileLogger.WriteLogMessage($"ResponsGloru: {Environment.NewLine} {XMLRespons}");
+            InventoryResponse Inventory = (InventoryResponse)SoapParser.Parse(XMLRespons);
+            return FromInventoryResponse(Inventory);
+        }
+        /// <summary>
+        /// Конвертує InventoryResponse у список CashInventory
+        /// </summary>
+        public static List<CashInventory> FromInventoryResponse(InventoryResponse response)
+        {
+            if (response?.Cash == null || response.Cash.Count < 2)
+                return new List<CashInventory>();
+
+            var result = new List<CashInventory>();
+
+            var allBlock = response.Cash[0];
+            var drumBlock = response.Cash[1];
+
+            // All
+            foreach (var den in allBlock.Denominations ?? Enumerable.Empty<Denomination>())
+            {
+                result.Add(new CashInventory
+                {
+                    FaceValue = den.FaceValue,
+                    Quantity = den.Piece,
+                    TypeMoney = den.DeviceId == 1 ? eTypeMoney.Banknote : eTypeMoney.Coin,
+                    MoneyStoragePlace = eMoneyStoragePlace.All
+                });
+            }
+
+            // Drum
+            foreach (var den in drumBlock.Denominations ?? Enumerable.Empty<Denomination>())
+            {
+                result.Add(new CashInventory
+                {
+                    FaceValue = den.FaceValue,
+                    Quantity = den.Piece,
+                    TypeMoney = den.DeviceId == 1 ? eTypeMoney.Banknote : eTypeMoney.Coin,
+                    MoneyStoragePlace = eMoneyStoragePlace.Drum
+                });
+            }
+
+            // Safe = All - Drum
+            var allLookup = allBlock.Denominations?
+                .ToDictionary(d => (d.FaceValue, d.DeviceId), d => d.Piece)
+                ?? new Dictionary<(int, int), int>();
+
+            var drumLookup = drumBlock.Denominations?
+                .ToDictionary(d => (d.FaceValue, d.DeviceId), d => d.Piece)
+                ?? new Dictionary<(int, int), int>();
+
+            foreach (var key in allLookup.Keys)
+            {
+                var allQty = allLookup[key];
+                var drumQty = drumLookup.TryGetValue(key, out var d) ? d : 0;
+
+                result.Add(new CashInventory
+                {
+                    FaceValue = key.FaceValue,
+                    Quantity = allQty - drumQty,
+                    TypeMoney = key.DeviceId == 1 ? eTypeMoney.Banknote : eTypeMoney.Coin,
+                    MoneyStoragePlace = eMoneyStoragePlace.Safe
+                });
+            }
+
+            return result;
+        }
     }
 }

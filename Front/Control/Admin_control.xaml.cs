@@ -1,4 +1,5 @@
-﻿using Front.Equipments;
+﻿using Equipments.Equipments.Glory;
+using Front.Equipments;
 using Front.Models;
 using ModelMID;
 using ModelMID.DB;
@@ -108,6 +109,82 @@ namespace Front.Control
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ControlScaleWeightDouble"));
         }
 
+        public bool IsCashMachine { get; set; } = false;
+        public ObservableCollection<CashInventory> AmountMoney {  get; set; }
+        public class CashInventoryRow
+        {
+            // Для сортування (не відображається в таблиці)
+            public int FaceValue { get; set; }
+            public eTypeMoney TypeMoney { get; set; }
+
+            // Колонки таблиці
+            public string FaceValueDisplay { get; set; }
+            public int DrumQuantity { get; set; }
+            public int SafeQuantity { get; set; }
+            public int AllQuantity { get; set; }
+            public string DrumAmount { get; set; }
+            public string AllAmount { get; set; }
+        }
+        // Dependency Properties для байндингу
+        public static readonly DependencyProperty BanknoteRowsProperty =
+            DependencyProperty.Register(nameof(BanknoteRows), typeof(ObservableCollection<CashInventoryRow>),
+                typeof(Admin_control), new PropertyMetadata(null));
+
+        public static readonly DependencyProperty CoinRowsProperty =
+            DependencyProperty.Register(nameof(CoinRows), typeof(ObservableCollection<CashInventoryRow>),
+                typeof(Admin_control), new PropertyMetadata(null));
+
+        public ObservableCollection<CashInventoryRow> BanknoteRows
+        {
+            get => (ObservableCollection<CashInventoryRow>)GetValue(BanknoteRowsProperty);
+            set => SetValue(BanknoteRowsProperty, value);
+        }
+
+        public ObservableCollection<CashInventoryRow> CoinRows
+        {
+            get => (ObservableCollection<CashInventoryRow>)GetValue(CoinRowsProperty);
+            set => SetValue(CoinRowsProperty, value);
+        }
+
+        /// <summary>
+        /// Викликати після оновлення AmountMoney
+        /// </summary>
+        public void RefreshCashInventoryTables()
+        {
+            var rows = BuildCashRows(AmountMoney);
+
+            BanknoteRows = new ObservableCollection<CashInventoryRow>(
+                rows.Where(r => r.TypeMoney == eTypeMoney.Banknote).OrderBy(r => r.FaceValue));
+
+            CoinRows = new ObservableCollection<CashInventoryRow>(
+                rows.Where(r => r.TypeMoney == eTypeMoney.Coin).OrderBy(r => r.FaceValue));
+        }
+
+        private static List<CashInventoryRow> BuildCashRows(IEnumerable<CashInventory> inventory)
+        {
+            return inventory
+                .GroupBy(x => (x.TypeMoney, x.FaceValue))
+                .Select(g =>
+                {
+                    var allQty = g.FirstOrDefault(x => x.MoneyStoragePlace == eMoneyStoragePlace.All)?.Quantity ?? 0;
+                    var drumQty = g.FirstOrDefault(x => x.MoneyStoragePlace == eMoneyStoragePlace.Drum)?.Quantity ?? 0;
+                    var safeQty = g.FirstOrDefault(x => x.MoneyStoragePlace == eMoneyStoragePlace.Safe)?.Quantity ?? 0;
+                    decimal fv = g.Key.FaceValue / 100m;
+
+                    return new CashInventoryRow
+                    {
+                        FaceValue = g.Key.FaceValue,
+                        TypeMoney = g.Key.TypeMoney,
+                        FaceValueDisplay = fv.ToString("0.##"),
+                        AllQuantity = allQty,
+                        DrumQuantity = drumQty,
+                        SafeQuantity = safeQty,
+                        DrumAmount = (drumQty * fv).ToString("0.##"),
+                        AllAmount = (allQty * fv).ToString("0.##"),
+                    };
+                })
+                .ToList();
+        }
         public Admin_control()
         {
             Blf = BLF.GetBLF;
@@ -157,9 +234,9 @@ namespace Front.Control
 
         }
 
-        public void SetVisibility(bool pIsVisible) => Visibility = (pIsVisible ? Visibility.Visible : Visibility.Collapsed);        
+        public void SetVisibility(bool pIsVisible) => Visibility = (pIsVisible ? Visibility.Visible : Visibility.Collapsed);
 
-        public void Init(MainWindow pMW)
+        public async void Init(MainWindow pMW)
         {
             MW = pMW;
             ProgramVersion.Text = $"Версія КСО: {MW?.Version}";
@@ -171,7 +248,14 @@ namespace Front.Control
                 {
                     ControlScale(pWeight, pIsStable);
                 };
-            };
+                IsCashMachine = EF.CashMachine?.IsNotNull() == true;
+
+                //var result = Task.Run(() => EF.CashMachine.InventoryAsync()).Result;
+                //AmountMoney = new ObservableCollection<CashInventory>(result);
+                //RefreshCashInventoryTables();
+
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCashMachine)));
+            }
 
         }
 
@@ -364,7 +448,7 @@ namespace Front.Control
 
         private void EKKA_Z_Click(object sender, RoutedEventArgs e)
         {
-            if(!((IMW)MW).IsOpenReceipt) //(MW.curReceipt == null || MW.curReceipt.Wares == null || !MW.curReceipt.Wares.Any()) && (MW.ReceiptPostpone == null || MW.ReceiptPostpone.Wares == null || !MW.ReceiptPostpone.Wares.Any()))
+            if (!((IMW)MW).IsOpenReceipt) //(MW.curReceipt == null || MW.curReceipt.Wares == null || !MW.curReceipt.Wares.Any()) && (MW.ReceiptPostpone == null || MW.ReceiptPostpone.Wares == null || !MW.ReceiptPostpone.Wares.Any()))
             {
                 MW.CustomMessage.Show("Ви хочете зробити Z - звіт на фіскальному апараті ? ", "Увага!", eTypeMessage.Question);
                 MW.CustomMessage.Result = (bool res) =>
@@ -403,13 +487,13 @@ namespace Front.Control
             });
         }
 
-        private void EKKA_Copy_Click(object sender, RoutedEventArgs e) => EF.RroPrintCopyReceipt(SelectedCashRegister);        
+        private void EKKA_Copy_Click(object sender, RoutedEventArgs e) => EF.RroPrintCopyReceipt(SelectedCashRegister);
 
         private void WorkStart_Click(object sender, RoutedEventArgs e) => OpenShift(AdminUser);
 
         public void OpenShift(User pU)
         {
-            string res=Blf.OpenShift(pU);
+            string res = Blf.OpenShift(pU);
             Init();
             if (!string.IsNullOrEmpty(res))
                 MW.CustomMessage.Show(res, "Увага!", eTypeMessage.Warning);
@@ -423,7 +507,7 @@ namespace Front.Control
             {
                 TabAdmin.SelectedIndex = 0;
                 MW.CustomMessage.Show(res, "Увага!", eTypeMessage.Warning);
-            }            
+            }
         }
 
         private void CloseDay_Click(object sender, RoutedEventArgs e)
@@ -1172,7 +1256,7 @@ from RECEIPT r
         private void EKKA_MoveMoneyCentralCashDesk_Click(object sender, RoutedEventArgs e)
         {
             var RROs = AllEquipment.Where(x => x.Type == eTypeEquipment.RRO);
-            MoneyOutWin MOW = new (AllEquipment.Where(x => x.Type == eTypeEquipment.RRO));
+            MoneyOutWin MOW = new(AllEquipment.Where(x => x.Type == eTypeEquipment.RRO));
             MOW.Show();
         }
 
@@ -1454,6 +1538,13 @@ from RECEIPT r
                     // Код який видаляє оплату
                 }
             };
+        }
+
+        private async void RefreshCash(object sender, RoutedEventArgs e)
+        {
+            var result = await EF.CashMachine.InventoryAsync();
+            AmountMoney = new ObservableCollection<CashInventory>(result);
+            RefreshCashInventoryTables();
         }
     }
 
