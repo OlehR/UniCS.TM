@@ -46,7 +46,7 @@ namespace ModelMID
 
         public int CodePeriod { get; set; }
         public int CodeReceipt { get; set; }
-
+        [System.Text.Json.Serialization.JsonIgnore]
         public DateTime DTPeriod
         {
             get

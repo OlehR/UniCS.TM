@@ -942,11 +942,7 @@ namespace Front
             pay = CashMachine.Purchase(pSum, pSum, pIdR.IdWorkplacePay);
             pay.SumExt = pSum;
             pay.TypePay = eTypePay.CashMachine;
-
             pay.SetIdReceipt(pIdR); 
-
-
-
             return pay;
         }
 

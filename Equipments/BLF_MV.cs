@@ -156,8 +156,7 @@ namespace Front.Equipments
 
         public void AddExciseStamp(string pES)
         {
-            if (MW.CurWares == null)
-                MW.CurWares = MW.curReceipt.GetLastWares;
+            MW.CurWares ??= MW.curReceipt.GetLastWares;
             if (MW.CurWares != null)
             {
                 if (!"None".Equals(pES))
@@ -165,13 +164,10 @@ namespace Front.Equipments
                     if (Global.Settings.IsCheckExciseStamp)
                     {
                         var res = Bl.ds.CheckExciseStamp(new ExciseStamp(MW.CurWares, pES));
-                        if (res != null)
+                        if (res != null && !res.Equals(MW.CurWares)) //&& res.State >= 0
                         {
-                            if (!res.Equals(MW.CurWares)) //&& res.State >= 0
-                            {
-                                Global.Message?.Invoke($"Дана акцизна марка {pES} вже використана {res.CodePeriod} Касове місце=>{res.IdWorkplace} Чек=>{res.CodeReceipt} CodeWares=>{res.CodeWares}!", eTypeMessage.Error);
-                                return;
-                            }
+                            Global.Message?.Invoke($"Дана акцизна марка {pES} вже використана {res.CodePeriod} Касове місце=>{res.IdWorkplace} Чек=>{res.CodeReceipt} CodeWares=>{res.CodeWares}!", eTypeMessage.Error);
+                            return;
                         }
                     }
                 }
