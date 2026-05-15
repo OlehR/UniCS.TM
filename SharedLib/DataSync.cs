@@ -1,5 +1,6 @@
 ﻿using ModelMID;
 using ModelMID.DB;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -590,7 +591,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             return Res;
         }
 
-        public async Task<ExciseStamp> CheckExciseStampAsync(ExciseStamp pES, int pWait = 1000)
+        public async Task<ExciseStamp> CheckExciseStampAsync(ExciseStamp pES, int pWait = 1500)
         {
             try
             {
@@ -845,13 +846,10 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
         {
             try
             {
-                HttpClient client = new HttpClient
-                {
-                    Timeout = TimeSpan.FromMilliseconds(5000)
-                };
+                HttpClient client = new() { Timeout = TimeSpan.FromMilliseconds(5000) };
 
                 HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "GetReceipt1C");
-                string data = (new IdReceipt() { IdWorkplace = pIdWorkplace, DTPeriod = pDT }).ToJson();
+                string data = (new IdReceipt() { IdWorkplace = pIdWorkplace, CodePeriod = pDT.ToString("yyyyMMdd").ToInt()}).ToJson();
                 requestMessage.Content = new StringContent(data, Encoding.UTF8, "application/json");
                 var response = await client.SendAsync(requestMessage);
                 if (response.IsSuccessStatusCode)

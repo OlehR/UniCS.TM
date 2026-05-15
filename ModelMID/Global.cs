@@ -174,27 +174,33 @@ namespace ModelMID
             }
         }
         
-        public static int GetCodePeriod()
+        //public static int GetCodePeriod() => GetCodePeriod(DateTime.Today);
+
+        public static int GetCodePeriod(DateTime pD = default)
         {
-            return GetCodePeriod(DateTime.Today);
+            if (pD == default)
+                pD = DateTime.Today;
+            return Convert.ToInt32(pD.ToString("yyyyMMdd"));
         }
+
         /// <summary>
         /// Повертає  код періоду по даті
         /// </summary>
-        /// <param name="varD">дата поякій вернути період</param>
+        /// <param name="pD">дата поякій вернути період</param>
         /// <returns>Код періоду</returns>
-        public static int GetCodePeriod(DateTime varD)
+        public static int GetCodePeriodForNumberReceipt(DateTime pD=default)
         {
-            if (varD == null)
-                varD = DateTime.Today;
+            if (pD == default)
+                pD = DateTime.Today;
+
             switch (Global.TypePeriod)
             {
                 case ePeriod.Year:
-                    return Convert.ToInt32(varD.ToString("yyyy"));
+                    return Convert.ToInt32(pD.ToString("yyyy"));
                 case ePeriod.Month:
-                    return Convert.ToInt32(varD.ToString("yyyyMM"));
+                    return Convert.ToInt32(pD.ToString("yyyyMM"));
                 case ePeriod.Day:
-                    return Convert.ToInt32(varD.ToString("yyyyMMdd"));
+                    return Convert.ToInt32(pD.ToString("yyyyMMdd"));
             }
             return 0;
         }

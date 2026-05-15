@@ -93,6 +93,7 @@ namespace UtilNetwork
         public Result(T pD) : base() { Data = pD; }
         public Result(Exception e) : base(e) { }
         [JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public Result GetResult => new() { State=State, TextError = TextError }; 
     }
 }

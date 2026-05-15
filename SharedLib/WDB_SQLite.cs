@@ -595,20 +595,19 @@ INSERT OR ignore into GEN_WORKPLACE(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT) val
         /// <returns>
         ///Повертає код чека
         ///</returns>
-        public IdReceipt GetNewReceipt(IdReceipt pIdReceipt)
+        public IdReceipt GetNewReceipt(IdReceipt pIdR)
         {
-            NewDBRC();
-           
+            NewDBRC();           
             string SqlGetNewReceipt2 = @"insert into receipt (id_workplace, code_period, code_receipt) values (@IdWorkplace,@CodePeriod,@CodeReceipt);";
 
-            lock (GetObjectForLockByIdWorkplace(pIdReceipt.IdWorkplace))
+            lock (GetObjectForLockByIdWorkplace(pIdR.IdWorkplace))
             {
-                if (pIdReceipt.CodePeriod == 0)
-                    pIdReceipt.CodePeriod = Global.GetCodePeriod();
-                pIdReceipt.CodeReceipt = dbConfig.ExecuteScalar<IdReceipt, int>(SqlGetNewReceipt, pIdReceipt);
-                dbRC.ExecuteNonQuery<IdReceipt>(SqlGetNewReceipt2, pIdReceipt);
+                if (pIdR.CodePeriod == 0)
+                    pIdR.CodePeriod = Global.GetCodePeriod();
+                pIdR.CodeReceipt = dbConfig.ExecuteScalar<IdReceipt, int>(SqlGetNewReceipt, new IdReceipt { IdWorkplace = pIdR.IdWorkplace, CodePeriod = Global.GetCodePeriodForNumberReceipt() });
+                dbRC.ExecuteNonQuery<IdReceipt>(SqlGetNewReceipt2, pIdR);
             }
-            return pIdReceipt;
+            return pIdR;
         }
         public int GetCodeOrder()
         {

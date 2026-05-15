@@ -51,12 +51,10 @@ namespace ModelMID
         {
             get
             {
-                DateTime res;
-                if (DateTime.TryParseExact(CodePeriod.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out res))
+                if (DateTime.TryParseExact(CodePeriod.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var res))
                     return res;
                 return DateTime.Now.Date;
             }
-            set { CodePeriod = value.ToString("yyyyMMdd").ToInt(); }
         }
         public IdReceipt()
         {
@@ -105,7 +103,6 @@ namespace ModelMID
             get { return (DTPeriod.Year >= 2025 ? DTPeriod.Year.ToString() : "") + "_" + NumberReceipt1C + (IdWorkplacePay > 0 ? $"_{IdWorkplacePay}" : ""); }
         }
         public string NumberReceipt1CNew { get { return $"{Prefix}-{CodeReceipt:D6}"; } }
-
 
         public int GetNumberCashDesk
         {
