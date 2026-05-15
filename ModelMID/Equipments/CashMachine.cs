@@ -29,6 +29,11 @@ namespace Front.Equipments
         public virtual Payment Refund(decimal pAmount,  int IdWorkPlace = 0) { throw new NotImplementedException(); } //Cashout
         // public virtual InventoryResponse Inventory() { throw new NotImplementedException(); }
         //public virtual EndReplenishmentFromEntranceResponse Replenishment () { throw new NotImplementedException(); } // поповнення готівки
+        public virtual List<CashInventory> Inventory() {  throw new NotImplementedException(); }
+        public virtual Task<List<CashInventory>> InventoryAsync()
+        {
+            return Task.FromResult(Inventory());
+        }
         public virtual bool UnLockUnit() { throw new NotImplementedException(); }
         public virtual bool LockUnit() { throw new NotImplementedException(); }
 
