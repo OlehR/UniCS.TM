@@ -381,6 +381,7 @@ namespace Front.Equipments
                 case eModelEquipment.VirtualScale:
                 case eModelEquipment.ScaleCom:
                 case eModelEquipment.ZebraScale:
+                case eModelEquipment.ScaleNet:
                     return eTypeEquipment.Scale;
                 case eModelEquipment.ScaleModern:
                 case eModelEquipment.VirtualControlScale:

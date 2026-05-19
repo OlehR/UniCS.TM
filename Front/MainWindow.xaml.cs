@@ -386,7 +386,7 @@ namespace Front
             }
             SocketAnsver += (Command, WorkPlace, Ansver) =>
             {
-                FileLogger.WriteLogMessage($"SocketAnsver: {Environment.NewLine}Command: {Command} {Environment.NewLine}WorkPlaceName: {WorkPlace.Name}{Environment.NewLine}IdWorkPlace: {WorkPlace.IdWorkplace}{Environment.NewLine}Ansver: {Ansver.TextState}", eTypeLog.Full);
+                FileLogger.WriteLogMessage($"SocketAnsver: {Environment.NewLine}Command: {Command} {Environment.NewLine}WorkPlaceName: {WorkPlace?.Name}{Environment.NewLine}IdWorkPlace: {WorkPlace?.IdWorkplace}{Environment.NewLine}Ansver: {Ansver?.TextState}", eTypeLog.Full);
             };
 
             Volume = (Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout);

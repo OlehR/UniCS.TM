@@ -29,9 +29,9 @@ namespace Front.Equipments
 
         public override StatusEquipment TestDevice() { Init(); return new StatusEquipment() { State = (int)State, TextState = State.ToString(), ModelEquipment = Model, StateEquipment = State }; }
 
-        public override void StartWeight()=>Blf.SendRemoteComand<string>(new CommandAPI<string>(eCommand.StopWeightNet, IP) ,IPAddress);
+        public override void StartWeight()=>Blf.SendRemoteComand<string>(new CommandAPI<string>(eCommand.StartWeightNet, MyIP.ToString()) ,IPAddress);
 
-        public override void StopWeight()=>Blf.SendRemoteComand<string>(new CommandAPI<string>(eCommand.StopWeightNet, IP) , IPAddress);
+        public override void StopWeight()=>Blf.SendRemoteComand<string>(new CommandAPI<string>(eCommand.StopWeightNet, MyIP.ToString()) , IPAddress);
         public void Dispose()
         {
             StopWeight();
