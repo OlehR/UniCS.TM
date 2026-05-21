@@ -249,10 +249,13 @@ namespace Front.Control
                     ControlScale(pWeight, pIsStable);
                 };
                 IsCashMachine = EF.CashMachine?.IsNotNull() == true;
+                if (IsCashMachine)
+                {
+                    var result = Task.Run(() => EF.CashMachine.InventoryAsync()).Result;
+                    AmountMoney = new ObservableCollection<CashInventory>(result);
+                    RefreshCashInventoryTables();
+                }
 
-                //var result = Task.Run(() => EF.CashMachine.InventoryAsync()).Result;
-                //AmountMoney = new ObservableCollection<CashInventory>(result);
-                //RefreshCashInventoryTables();
 
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCashMachine)));
             }

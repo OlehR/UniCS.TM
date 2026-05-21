@@ -179,7 +179,7 @@ namespace Front.Equipments
                             }
                             else if (pTP == eTypePay.CashMachine)
                             {
-                                pay = EF.CashMachinePay(R, Rro.GetSumRoundCash(pSumCash) * 100m, pay);
+                                pay = EF.CashMachinePay(R, Rro.GetSumRoundCash(pSumCash) * 100m, pay, R.TypeReceipt);
                                 Bl.db.ReplacePayment(pay, true);
                             }
                             else if(pTP == eTypePay.Postpaid)

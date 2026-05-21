@@ -650,77 +650,200 @@ namespace ModelMID
 
     public enum eResultCode
     {
+        [Description("Успішно")]
         Success = 0,
+
+        [Description("Скасовано")]
         Cancel = 1,
+
+        [Description("Скинуто")]
         Reset = 2,
+
+        [Description("Зайнято іншим")]
         OccupiedByOther = 3,
+
+        [Description("Захоплення недоступне")]
         OccupationNotAvailable = 4,
+
+        [Description("Не зайнято")]
         NotOccupied = 5,
+
+        [Description("Нестача номіналів для видачі")]
         DesignationDenominationShortage = 6,
+
+        [Description("Нестача решти при скасуванні")]
         CancelChangeShortage = 9,
+
+        [Description("Нестача решти")]
         ChangeShortage = 10,
+
+        [Description("Помилка монопольного доступу")]
         ExclusiveError = 11,
+
+        [Description("Невідповідність виданої решти")]
         DispensedChangeInconsistency = 12,
+
+        [Description("Збій автовідновлення")]
         AutoRecoveryFailure = 13,
+
+        [Description("Помилка автентифікації користувача")]
         UserAuthenticationFailure = 15,
+
+        [Description("Перевищено кількість сесій")]
         NumberOfSessionOver = 16,
+
+        [Description("Зайнято поточним пристроєм")]
         OccupiedByItself = 17,
+
+        [Description("Сесія недоступна")]
         SessionNotAvailable = 20,
+
+        [Description("Недійсна сесія")]
         InvalidSession = 21,
+
+        [Description("Час сесії вичерпано")]
         SessionTimeout = 22,
+
+        [Description("Розбіжність при ручному внесенні")]
         ManualDepositDisagreement = 26,
+
+        [Description("Помилка перевірки/поповнення касети")]
         VerifyCollect_ReplenishFailed = 32,
+
+        [Description("Неприпустимий номінал касети IF")]
         IFCassetteIllegalDenomination = 33,
+
+        [Description("Нестача місця у стекері")]
         ShortageOfCapacityOfStacker = 34,
+
+        [Description("Помилка зв'язку з CI-сервером")]
         CI_ServerCommunicationError = 35,
+
+        [Description("Перевищено кількість реєстрацій")]
         NumberOfRegistrationOver = 36,
+
+        [Description("Недійсний номер касети")]
         InvalidCassetteNumber = 40,
+
+        [Description("Некоректна касета")]
         ImproperCassette = 41,
+
+        [Description("Помилка курсу обміну")]
         ExchangeRateError = 43,
+
+        [Description("Підраховано категорію 2")]
         CountedCategory2 = 44,
+
+        [Description("Дублікат транзакції")]
         DuplicateTransaction = 96,
+
+        [Description("Помилка параметру/типу")]
         ParameterError_TypeError = 98,
+
+        [Description("Внутрішня помилка програми")]
         ProgramInnerError = 99,
+
+        [Description("Помилка пристрою")]
         DeviceError = 100,
 
-
+        [Description("Невідома помилка")]
         UnknownError = 9999
     }
 
     public enum eStatusChangeEvent
     {
+        [Description("Ініціалізація")]
         Initializing = 0,
-        Idle = 1,
-        AtStartingChange = 2,
-        WaitingInsertionOfCash = 3,
-        Counting = 4,
-        Dispensing = 5,
-        WaitingRemovalOfCashInReject = 6,
-        WaitingRemovalOfCashOutReject = 7,
-        Resetting = 8,
-        CancelingOfChangeOperation = 9,
-        CalculatingChangeAmount = 10,
-        CancelingDeposit = 11,
-        Collecting = 12,
-        Error = 13,
-        UploadFirmware = 14,
-        ReadingLog = 15,
-        WaitingReplenishment = 16,
-        CountingReplenishment = 17,
-        Unlocking = 18,
-        WaitingInventory = 19,
-        FixedDepositAmount = 20,
-        FixedDispenseAmount = 21,
-        WaitingDispense = 22,
-        WaitingChangeCancel = 23,
-        CountedCategory2Note = 24,
-        WaitingDepositEnd = 25,
-        WaitingRemovalOfCOFT = 26,
-        Sealing = 27,
-        WaitingForErrorRecovery = 30,
-        ProgramBusy = 40,
-        WaitingForUpdate = 41,
 
+        [Description("Очікування")]
+        Idle = 1,
+
+        [Description("Початок операції розміну")]
+        AtStartingChange = 2,
+
+        [Description("Очікування внесення готівки")]
+        WaitingInsertionOfCash = 3,
+
+        [Description("Підрахунок")]
+        Counting = 4,
+
+        [Description("Видача")]
+        Dispensing = 5,
+
+        [Description("Очікування вилучення відхилених банкнот на вході")]
+        WaitingRemovalOfCashInReject = 6,
+
+        [Description("Очікування вилучення відхилених банкнот на виході")]
+        WaitingRemovalOfCashOutReject = 7,
+
+        [Description("Скидання до початкового стану")]
+        Resetting = 8,
+
+        [Description("Скасування операції розміну")]
+        CancelingOfChangeOperation = 9,
+
+        [Description("Розрахунок суми решти")]
+        CalculatingChangeAmount = 10,
+
+        [Description("Скасування внесення")]
+        CancelingDeposit = 11,
+
+        [Description("Інкасація")]
+        Collecting = 12,
+
+        [Description("Помилка")]
+        Error = 13,
+
+        [Description("Завантаження прошивки")]
+        UploadFirmware = 14,
+
+        [Description("Читання журналу")]
+        ReadingLog = 15,
+
+        [Description("Очікування поповнення")]
+        WaitingReplenishment = 16,
+
+        [Description("Підрахунок при поповненні")]
+        CountingReplenishment = 17,
+
+        [Description("Розблокування")]
+        Unlocking = 18,
+
+        [Description("Очікування інвентаризації")]
+        WaitingInventory = 19,
+
+        [Description("Фіксована сума внесення")]
+        FixedDepositAmount = 20,
+
+        [Description("Фіксована сума видачі")]
+        FixedDispenseAmount = 21,
+
+        [Description("Очікування видачі")]
+        WaitingDispense = 22,
+
+        [Description("Очікування скасування розміну")]
+        WaitingChangeCancel = 23,
+
+        [Description("Підраховано банкноту категорії 2")]
+        CountedCategory2Note = 24,
+
+        [Description("Очікування завершення внесення")]
+        WaitingDepositEnd = 25,
+
+        [Description("Очікування вилучення COFT")]
+        WaitingRemovalOfCOFT = 26,
+
+        [Description("Запечатування")]
+        Sealing = 27,
+
+        [Description("Очікування відновлення після помилки")]
+        WaitingForErrorRecovery = 30,
+
+        [Description("Програма зайнята")]
+        ProgramBusy = 40,
+
+        [Description("Очікування оновлення")]
+        WaitingForUpdate = 41,
     }
 
     public enum eTypeUnit
