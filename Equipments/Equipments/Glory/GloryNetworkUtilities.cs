@@ -1,4 +1,6 @@
-﻿using ModelMID.DB;
+﻿using Front.Equipments;
+using ModelMID;
+using ModelMID.DB;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,7 +56,7 @@ namespace Equipments.Equipments.Glory
 
         }
 
-        public static void GloryStartListening(bool IsListening,string IP , int IpPort)
+        public static void GloryStartListening(bool IsListening,string IP , int IpPort, Action<StatusEquipment> pAction )
         {
             TcpListener tcpListener = (TcpListener)null;
             int num = 0;
@@ -93,12 +95,11 @@ namespace Equipments.Equipments.Glory
 
                                 var ser = new XmlSerializer(typeof(BbxEventRequest));
                                 using var sr = new StringReader(str2);
-                                var evt = (BbxEventRequest)ser.Deserialize(sr);
+                                var evt = (BbxEventRequest) ser.Deserialize(sr);
                                 // str2 - строка з XML який прийшов з кеш-машини
                                 // evt - розпаршений клас відповіді
 
-
-
+                                pAction?.Invoke(new CashMachineStatus() {  Status = eStatusChangeEvent.Initializing, Sum=100 } );
 
                             }
                             else

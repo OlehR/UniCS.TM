@@ -62,16 +62,14 @@ namespace Front.Equipments
 
 
             //початок прослуховування глорі
-            GloryNetworkUtilities.GloryStartListening(IsListening, IP, IpPort);
+            GloryNetworkUtilities.GloryStartListening(IsListening, IP, IpPort, OnStatus);
 
         }
 
-        public override Payment Purchase(decimal pAmount, decimal pCash = 0, int IdWorkPlace = 0)
-        {
-            return PurchaseAsync(pAmount, pCash, IdWorkPlace).Result;
-        }
+        public override Payment Purchase(decimal pAmount, int IdWorkPlace = 0) => AsyncHelper.RunSync(async() => await PurchaseAsync(pAmount,  IdWorkPlace));
+        
 
-        public async Task<Payment> PurchaseAsync(decimal pAmount, decimal pCash = 0, int IdWorkPlace = 0)
+        public async Task<Payment> PurchaseAsync(decimal pAmount,  int IdWorkPlace = 0)
         {
             string SOAPAction = eNameSOAPAction.ChangeOperation.ToString();
             string pData = GloryXMLData.XMLChangeOperation(SessionID, pAmount);

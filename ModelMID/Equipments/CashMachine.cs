@@ -25,7 +25,7 @@ namespace Front.Equipments
         }
        
 
-        public  virtual Payment Purchase(decimal pAmount, decimal pCash = 0, int IdWorkPlace = 0) { throw new NotImplementedException(); }//StartCashin
+        public  virtual Payment Purchase(decimal pAmount, int IdWorkPlace = 0) { throw new NotImplementedException(); }//StartCashin
         public virtual Payment Refund(decimal pAmount,  int IdWorkPlace = 0) { throw new NotImplementedException(); } //Cashout
         // public virtual InventoryResponse Inventory() { throw new NotImplementedException(); }
         //public virtual EndReplenishmentFromEntranceResponse Replenishment () { throw new NotImplementedException(); } // поповнення готівки

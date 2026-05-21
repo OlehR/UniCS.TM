@@ -62,15 +62,20 @@ namespace Front
                 }
                 var r = Dispatcher.BeginInvoke(new ThreadStart(() =>
                 {
-                    PosStatus PS = info as PosStatus;
-                    ChangePaymentWindows();
-                    if (PS != null)
+                    if (info is PosStatus PS)
+                    {
+                        ChangePaymentWindows();
                         EquipmentInfo = PS.Status.GetDescription();
+                    }
                     else
                     {
-                        RroStatus rroStatus = info as RroStatus;
-                        if (rroStatus != null)
+                        if (info is RroStatus rroStatus)
                             EquipmentInfo = rroStatus.Status.GetDescription();
+                        else
+                        {
+                            if (info is CashMachineStatus cashMachineStatus)
+                                EquipmentInfo = cashMachineStatus.Status.GetDescription();
+                        }
                     }
 
                     // if (EquipmentInfo != null)  

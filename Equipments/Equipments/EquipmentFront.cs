@@ -326,10 +326,10 @@ namespace Front
                         switch (ElEquipment.Model)
                         {
                             case eModelEquipment.GloryCash:
-                                CashMachine = new GloryCash(ElEquipment, config, LF);
+                                CashMachine = new GloryCash(ElEquipment, config, LF, CashMachineStatus);
                                 break;
                             default:
-                                CashMachine = new GloryCash(ElEquipment, config);
+                                CashMachine = new GloryCash(ElEquipment, config, LF, CashMachineStatus);
                                 break;
                         }
                         NewListEquipment.Add(CashMachine);
@@ -934,17 +934,28 @@ namespace Front
         {
             return Printer?.PrintReceipt(pR) ?? true;
         }
+        #region CashMachine
 
-
-        public Payment CashMachinePay(IdReceipt pIdR, decimal pSum, Payment pP = null)
+        public Payment CashMachinePay(IdReceipt pIdR, decimal pSum, Payment pP = null, eTypeReceipt pTypeREceipt = eTypeReceipt.Sale )
         {
             Payment pay = null;
-            pay = CashMachine.Purchase(pSum, pSum, pIdR.IdWorkplacePay);
+            pay = pTypeREceipt == eTypeReceipt.Sale? CashMachine.Purchase(pSum, pIdR.IdWorkplacePay): CashMachine.Refund(pSum, pIdR.IdWorkplacePay);
             pay.SumExt = pSum;
             pay.TypePay = eTypePay.CashMachine;
             pay.SetIdReceipt(pIdR); 
             return pay;
         }
+
+
+        void CashMachineStatus(StatusEquipment ww)
+        {
+            if (ww is CashMachineStatus status)
+            {
+                SetStatus?.Invoke(ww /*new StatusEquipment(Terminal.Model, status.Status.GetStateEquipment(), $"{status.TextState} {status.Status.GetDescription}")*/);
+                FileLogger.WriteLogMessage($"EquipmentFront.CashMachineStatus {Terminal.Model} {status.TextState} {status.Status}");
+            }
+        }
+        #endregion
 
         #region POS        
 

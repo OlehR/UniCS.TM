@@ -23,6 +23,7 @@ namespace Front.Equipments
     }
     public class CashMachineStatus : StatusEquipment
     {
+        public decimal Sum { get; set; }
         public CashMachineStatus() : base() { }
         public eStatusChangeEvent Status { get; set; }
     }
