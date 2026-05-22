@@ -67,10 +67,10 @@ namespace Front.Equipments
         {
             GloryNetworkUtilities.GloryStartListening(IP, IpPort, OnStatus);
         }
-        public override Payment Purchase(decimal pAmount, int IdWorkPlace = 0) => AsyncHelper.RunSync(async() => await PurchaseAsync(pAmount,  IdWorkPlace));
-        
+        public override Payment Purchase(decimal pAmount, int IdWorkPlace = 0) => AsyncHelper.RunSync(async () => await PurchaseAsync(pAmount, IdWorkPlace));
 
-        public async Task<Payment> PurchaseAsync(decimal pAmount,  int IdWorkPlace = 0)
+
+        public async Task<Payment> PurchaseAsync(decimal pAmount, int IdWorkPlace = 0)
         {
             try
             {
@@ -114,13 +114,14 @@ namespace Front.Equipments
                     };
                 }
 
-                
+
             }
             catch (Exception ex)
             {
                 FileLogger.WriteLogMessage($"Error pay: {Environment.NewLine} {ex}");
             }
-            finally {
+            finally
+            {
                 GloryNetworkUtilities.IsListening = false;
             }
             return new Payment() { IsSuccess = false };
@@ -175,40 +176,39 @@ namespace Front.Equipments
 
         override public string GetDeviceInfo()
         {
-            var getInfo = AsyncHelper.RunSync(async () => await GetStatus());
-
-            var result = Enum.IsDefined(typeof(eResultCode), getInfo.Result)
-                ? (eResultCode)getInfo.Result
-                : eResultCode.UnknownError;
-
-            var statusCode = Enum.IsDefined(typeof(eStatusChangeEvent), getInfo.Status.Code)
-                ? (eStatusChangeEvent)getInfo.Status.Code
-                : eStatusChangeEvent.Initializing;
-
-            var devices = string.Join(Environment.NewLine, getInfo.Status.Devices
-                .Select(d => $"  DevId={d.DevId}, Val={d.Value}, St={d.Status}"));
+            var getInfo = AsyncHelper.RunSync(async () => await GetStatusAsync());
 
             return $"SessionID: {SessionID}{Environment.NewLine}" +
-                   $"Result={result.GetDescription()}, Code={statusCode.GetDescription()}, " +
-                   $"Id={getInfo.Id}, SeqNo={getInfo.SeqNo}, User={getInfo.User}" +
-                   $"{Environment.NewLine}{devices}";
+                   $"Стан кеш-машини: {getInfo.Status.GetDescription()}, Відповідь на запит: {getInfo.ResultCode.GetDescription()}, ";
         }
-        public async Task<StatusResponse> GetStatus()
+        public override CashMachineStatus GetStatus()
         {
-            string SOAPAction = eNameSOAPAction.GetStatus.ToString();
-            string pData = GloryXMLData.XMLGetStatus(SessionID);
-            FileLogger.WriteLogMessage($"Request XMLGetStatus: {SOAPAction} {Environment.NewLine} {pData}");
-            string XMLRespons =
-                await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, pData);
-            FileLogger.WriteLogMessage($"Respons: {Environment.NewLine} {XMLRespons}");
-            var msg = SoapParser.Parse(XMLRespons);
-            string res = "";
-            if (msg is StatusResponse s)
+            return AsyncHelper.RunSync(async () => await GetStatusAsync());
+        }
+        public async Task<CashMachineStatus> GetStatusAsync()
+        {
+            var soapAction = eNameSOAPAction.GetStatus.ToString();
+            var requestData = GloryXMLData.XMLGetStatus(SessionID);
+
+            FileLogger.WriteLogMessage($"Request XMLGetStatus: {soapAction}{Environment.NewLine}{requestData}");
+
+            var xmlResponse = await GloryNetworkUtilities.HTTPRequestAsync(Url, soapAction, requestData);
+
+            FileLogger.WriteLogMessage($"Response:{Environment.NewLine}{xmlResponse}");
+
+            if (SoapParser.Parse(xmlResponse) is not StatusResponse res)
+                return new();
+
+            return new CashMachineStatus
             {
-                return s;
-            }
-            else
-                return new ();
+                ResultCode = Enum.IsDefined(typeof(eResultCode), res.Result)
+                    ? (eResultCode)res.Result
+                    : eResultCode.UnknownError,
+
+                Status = Enum.IsDefined(typeof(eStatusChangeEvent), res.Status.Code)
+                    ? (eStatusChangeEvent)res.Status.Code
+                    : eStatusChangeEvent.Initializing
+            };
         }
 
         public override List<CashInventory> Inventory()
@@ -288,5 +288,81 @@ namespace Front.Equipments
 
             return result;
         }
+        public override CashMachineStatus StartReplenishment()
+        {
+           return AsyncHelper.RunSync(async () => await StartReplenishmentAsync());
+        }
+        public override CashMachineStatus EndReplenishment()
+        {
+            return AsyncHelper.RunSync(async () => await EndReplenishmentAsync());
+        }
+        public async Task<CashMachineStatus>  StartReplenishmentAsync()
+        {
+            var soapAction = eNameSOAPAction.StartReplenishmentFromEntranceOperation.ToString();
+            var requestData = GloryXMLData.XMLStartReplenishmentFromEntrance(SessionID);
+
+            FileLogger.WriteLogMessage($"Request XMLGetStatus: {soapAction}{Environment.NewLine}{requestData}");
+
+            var xmlResponse = await GloryNetworkUtilities.HTTPRequestAsync(Url, soapAction, requestData);
+
+            FileLogger.WriteLogMessage($"Response:{Environment.NewLine}{xmlResponse}");
+            var msg = SoapParser.Parse(xmlResponse);
+            if (msg is StartReplenishmentFromEntranceResponse resp)
+            {
+                Console.WriteLine($"Result={resp.Result}, Id={resp.Id}, SeqNo={resp.SeqNo}, User='{resp.User}'");
+                if (resp.Result != (int)eResultCode.Success)
+                {
+                    MessageBox.Show(GetErrorText(resp.Result));
+                   
+                }
+            }
+            if (SoapParser.Parse(xmlResponse) is not StartReplenishmentFromEntranceResponse res)
+                return new();
+
+            return new CashMachineStatus
+            {
+                ResultCode = Enum.IsDefined(typeof(eResultCode), res.Result)
+                    ? (eResultCode)res.Result
+                    : eResultCode.UnknownError,
+            };
+        }
+        public async Task<CashMachineStatus> EndReplenishmentAsync()
+        {
+            var soapAction = eNameSOAPAction.EndReplenishmentFromEntranceOperation.ToString();
+            var requestData = GloryXMLData.XMLEndReplenishmentFromEntranceOperation(SessionID);
+
+            FileLogger.WriteLogMessage($"Request XMLGetStatus: {soapAction}{Environment.NewLine}{requestData}");
+
+            var xmlResponse = await GloryNetworkUtilities.HTTPRequestAsync(Url, soapAction, requestData);
+
+            FileLogger.WriteLogMessage($"Response:{Environment.NewLine}{xmlResponse}");
+            var msg = SoapParser.Parse(xmlResponse);
+            if (msg is EndReplenishmentFromEntranceResponse resp)
+            {
+                Console.WriteLine($"Result={resp.Result}, Id={resp.Id}, SeqNo={resp.SeqNo}, User='{resp.User}', ManualDeposit={resp.ManualDeposit}");
+                foreach (var cash in resp.Cash ?? new List<CashBlock>())
+                {
+                    Console.WriteLine($"Cash type={cash.Type}");
+                    foreach (var d in cash.Denominations ?? new List<Denomination>())
+                        Console.WriteLine($"  {d.CurrencyCode} {d.FaceValue}: piece={d.Piece}, status={d.Status}, devid={d.DeviceId}");
+                }
+                if (resp.Result != (int)eResultCode.Success)
+                {
+                    MessageBox.Show(GetErrorText(resp.Result));
+                }
+            }
+
+
+            if (SoapParser.Parse(xmlResponse) is not EndReplenishmentFromEntranceResponse res)
+                return new();
+
+            return new CashMachineStatus
+            {
+                ResultCode = Enum.IsDefined(typeof(eResultCode), res.Result)
+                    ? (eResultCode)res.Result
+                    : eResultCode.UnknownError,
+            };
+        }
+
     }
 }

@@ -57,7 +57,7 @@ namespace Equipments.Equipments.Glory
         }
 
         public static bool IsListening { get; set; } = false;
-        public static void GloryStartListening( string IP, int IpPort, Action<StatusEquipment> pAction)
+        public static void GloryStartListening(string IP, int IpPort, Action<StatusEquipment> pAction)
         {
             TcpListener tcpListener = (TcpListener)null;
             int num = 0;
@@ -100,9 +100,12 @@ namespace Equipments.Equipments.Glory
                                     var evt = (BbxEventRequest)ser.Deserialize(sr);
                                     // str2 - строка з XML який прийшов з кеш-машини
                                     // evt - розпаршений клас відповіді
-                                    if (evt?.StatusChangeEvent?.Status.In(3, 4) == true)
+                                    if (evt?.StatusChangeEvent?.Status.In(1, 2, 3, 4, 5, 6, 7) == true)
                                     {
-                                        pAction?.Invoke(new CashMachineStatus() { Status = eStatusChangeEvent.Initializing, Sum = evt?.StatusChangeEvent?.Amount / 100m ?? 0 });
+                                        eStatusChangeEvent state = Enum.IsDefined(typeof(eStatusChangeEvent), evt.StatusChangeEvent.Status)
+                                                            ? (eStatusChangeEvent)evt.StatusChangeEvent.Status
+                                                            : eStatusChangeEvent.Initializing;
+                                        pAction?.Invoke(new CashMachineStatus() { Status = state, Sum = evt?.StatusChangeEvent?.Amount / 100m ?? 0 });
                                     }
                                 }
                                 catch (Exception ex)

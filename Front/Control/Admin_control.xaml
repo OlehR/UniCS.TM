@@ -752,6 +752,11 @@
                                                                     <DataTrigger Binding="{Binding Type}" Value="RRO">
                                                                         <Setter Property="Source" Value="\icons\RRO.png" />
                                                                     </DataTrigger>
+                                                                    <!--Якщо Кеш-машина-->
+                                                                    <DataTrigger Binding="{Binding Type}" Value="CashMachine">
+                                                                        <Setter Property="Source" Value="\icons\cashMachine.png" />
+                                                                    </DataTrigger>
+
                                                                 </Style.Triggers>
                                                             </Style>
                                                         </Image.Style>
@@ -2095,6 +2100,8 @@
                     </Grid>
 
                 </TabItem>
+
+
                 <TabItem Header="Кеш-машина">
                     <TabItem.Style>
                         <Style TargetType="{x:Type TabItem}">
@@ -2113,11 +2120,23 @@
 
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel Margin="10">
-
-                            <Button Click="RefreshCash" Content="Оновити"
+                            <StackPanel Orientation="Horizontal">
+                                <Button Click="RefreshCash" Content="Оновити"
                 Style="{StaticResource Default}"
                 Width="150" Height="50"
-                HorizontalAlignment="Left" Margin="0,0,0,10"/>
+                HorizontalAlignment="Left" Margin="0"/>
+
+                                <Button Click="StartReplenishment_btn" Content="Почати внесення готівки"
+                            Style="{StaticResource Default}"
+                            MinWidth="150" Height="50"
+                            HorizontalAlignment="Left" Margin="0"/>
+                                <Button Click="EndReplenishment_btn" Content="Завершити внесення готівки"
+Style="{StaticResource Default}"
+MinWidth="150" Height="50"
+HorizontalAlignment="Left" Margin="0"/>
+
+                            </StackPanel>
+
 
                             <!-- КУПЮРИ -->
                             <TextBlock Text="Купюри" FontSize="20" FontWeight="Bold" Margin="0,0,0,5"/>

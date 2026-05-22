@@ -32,6 +32,7 @@
     <None Remove="icons\backArrow.png" />
     <None Remove="icons\BankTerminal.png" />
     <None Remove="icons\Cash.png" />
+    <None Remove="icons\cashMachine.png" />
     <None Remove="icons\check-mark.png" />
     <None Remove="icons\checkout.png" />
     <None Remove="icons\ClientBonus.png" />
@@ -93,6 +94,9 @@
     <Resource Include="icons\backArrow.png" />
     <Resource Include="icons\BankTerminal.png" />
     <Resource Include="icons\Cash.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="icons\cashMachine.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="icons\check-mark.png">

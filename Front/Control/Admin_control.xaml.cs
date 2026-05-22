@@ -1549,6 +1549,16 @@ from RECEIPT r
             AmountMoney = new ObservableCollection<CashInventory>(result);
             RefreshCashInventoryTables();
         }
+
+        private void StartReplenishment_btn(object sender, RoutedEventArgs e)
+        {
+           var res =  EF.CashMachine.StartReplenishment();
+        }
+
+        private void EndReplenishment_btn(object sender, RoutedEventArgs e)
+        {
+            var res = EF.CashMachine.EndReplenishment();
+        }
     }
 
     public class APIRadiobuton

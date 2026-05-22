@@ -936,14 +936,22 @@ namespace Front
         }
         #region CashMachine
 
-        public Payment CashMachinePay(IdReceipt pIdR, decimal pSum, Payment pP = null, eTypeReceipt pTypeREceipt = eTypeReceipt.Sale )
+        public Payment CashMachinePay(IdReceipt pIdR, decimal pSum, Payment pP = null, eTypeReceipt pTypeReceipt = eTypeReceipt.Sale )
         {
-            Payment pay = null;
-            pay = pTypeREceipt == eTypeReceipt.Sale? CashMachine.Purchase(pSum, pIdR.IdWorkplacePay): CashMachine.Refund(pSum, pIdR.IdWorkplacePay);
+            if (CashMachine.GetStatus().Status != eStatusChangeEvent.Idle)
+                return new() { IsSuccess = false };
+
+            var pay = pTypeReceipt == eTypeReceipt.Sale
+                ? CashMachine.Purchase(pSum, pIdR.IdWorkplacePay)
+                : CashMachine.Refund(pSum, pIdR.IdWorkplacePay);
+
             pay.SumExt = pSum;
             pay.TypePay = eTypePay.CashMachine;
-            pay.SetIdReceipt(pIdR); 
+            pay.IsSuccess = true;
+            pay.SetIdReceipt(pIdR);
+
             return pay;
+
         }
 
 
