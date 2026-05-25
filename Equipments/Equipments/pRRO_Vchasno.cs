@@ -512,7 +512,6 @@ namespace Front.Equipments.Implementation.ModelVchasno
                         purchase_receipt_fisn = e.NumberReceipt;
                         purchase_rro_fisn = pRro.SerialNumber;
                     }
-
                 }
             }
         }

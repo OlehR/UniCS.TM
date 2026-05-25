@@ -411,6 +411,8 @@ namespace ModelMID
 
     public enum eBank
     {
+        [Description("Термінал")]
+        Terminal = -1,
         [Description("НеВизначено")]
         NotDefine = 0,
         [Description("Приват")]

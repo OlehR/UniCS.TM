@@ -80,12 +80,11 @@ namespace Front
         /// Для віртуальної ваги куди йде подія.
         /// </summary>
         public bool IsControlScale = true;
-        public IEnumerable<Equipment> GetBankTerminal { get { return ListEquipment.Where(e => e.Type == eTypeEquipment.BankTerminal && e.State == eStateEquipment.On); } }
+        public IEnumerable<BankTerminal> GetBankTerminal { get { return ListEquipment.Where(e => e.Type == eTypeEquipment.BankTerminal && e.State == eStateEquipment.On).Cast<BankTerminal>(); } }
         public void SetBankTerminal(BankTerminal pBT) { Terminal = pBT; }
         public int CountTerminal { get { return GetBankTerminal.Count(); } }
-        public BankTerminal BankTerminal1 { get { return GetBankTerminal?.FirstOrDefault() as BankTerminal; } }
-        public BankTerminal BankTerminal2 { get { return GetBankTerminal?.Skip(1).FirstOrDefault() as BankTerminal; } }
-
+        public BankTerminal BankTerminal1 { get { return Global.IsAutoChoiceTerminal?  new BankTerminal() { Model= eModelEquipment.VirtualBankPOS,CodeBank=eBank.Terminal, State = eStateEquipment.On } : GetBankTerminal?.FirstOrDefault(); } }
+        public BankTerminal BankTerminal2 { get { return Global.IsAutoChoiceTerminal ? null: GetBankTerminal?.Skip(1)?.FirstOrDefault(); } }
         public void ControlWeight(double pWeight, bool pIsStable) => OnControlWeight?.Invoke(pWeight, pIsStable);
         public void Weight(double pWeight, bool pIsStable)
         {
@@ -967,6 +966,18 @@ namespace Front
         /// <returns></returns>
         public Payment PosPay(IdReceipt pIdR, decimal pSum, string pRNN, Payment pP = null, decimal pIssuingCash = 0, bool pIsCashBack = false)
         {
+            if(Global.IsAutoChoiceTerminal)
+            {
+                foreach( var el in GetBankTerminal)
+                {
+                    int MechantId = el.GetMechantIdByIdWorkPlace(pIdR.IdWorkplacePay);
+                    if (MechantId > 0)
+                    {
+                        Terminal = el;
+                        break;
+                    }
+                }
+            }
             Payment r = null;
             try
             {

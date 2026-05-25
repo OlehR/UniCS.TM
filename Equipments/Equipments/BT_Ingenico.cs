@@ -100,7 +100,7 @@ namespace Front.Equipments
             try
             {
                 OnDeviceWarning?.Invoke(new PosDeviceLog() { Category = TerminalLogCategory.All, Message = "[Ingenico] - Start Initialization" });
-                if (!this.StartBPOS())
+                if (!StartBPOS())
                 {
                     OnDeviceWarning?.Invoke(new PosDeviceLog() { Category = TerminalLogCategory.Critical, Message = "Device not connected" });
                     StopBPOS();
@@ -116,7 +116,7 @@ namespace Front.Equipments
             }
             catch (Exception ex)
             {
-                ILogger<BT_Ingenico> logger = this.Logger;
+                ILogger<BT_Ingenico> logger = Logger;
                 if (logger != null)
                     LoggerExtensions.LogError((ILogger)logger, ex, ex.Message, Array.Empty<object>());
                 OnDeviceWarning?.Invoke(new PosDeviceLog() { Category = TerminalLogCategory.Critical, Message = "Device not connected" });
@@ -124,9 +124,9 @@ namespace Front.Equipments
             }
         }
 
-        public eDeviceConnectionStatus GetDeviceStatusSync() => this.TestDeviceSync();
+        public eDeviceConnectionStatus GetDeviceStatusSync() => TestDeviceSync();
 
-        public Task<eDeviceConnectionStatus> GetDeviceStatus() => Task.Run<eDeviceConnectionStatus>((Func<eDeviceConnectionStatus>)(() => this.GetDeviceStatusSync()));
+        public Task<eDeviceConnectionStatus> GetDeviceStatus() => Task.Run<eDeviceConnectionStatus>((Func<eDeviceConnectionStatus>)(() => GetDeviceStatusSync()));
 
         public override StatusEquipment TestDevice()
         {
@@ -140,7 +140,7 @@ namespace Front.Equipments
         public eDeviceConnectionStatus TestDeviceSync()
         {
             eDeviceConnectionStatus connectionStatus = eDeviceConnectionStatus.NotConnected;
-            if (!this.StartBPOS())
+            if (!StartBPOS())
             {
                 OnDeviceWarning?.Invoke(new PosDeviceLog() { Category = TerminalLogCategory.Critical, Message = "Device not connected" });
                 return connectionStatus;
@@ -170,7 +170,7 @@ namespace Front.Equipments
             return connectionStatus;
         }
 
-        public Task<eDeviceConnectionStatus> TestDeviceAsync() => Task.Run<eDeviceConnectionStatus>((Func<eDeviceConnectionStatus>)(() => this.TestDeviceSync()));
+        public Task<eDeviceConnectionStatus> TestDeviceAsync() => Task.Run<eDeviceConnectionStatus>((Func<eDeviceConnectionStatus>)(() => TestDeviceSync()));
 
         eBank GetBank()
         {
@@ -234,7 +234,7 @@ namespace Front.Equipments
             }
         }
 
-        //public Task<string> GetInfoAsync() => Task.Run<string>((Func<string>)(() => this.GetInfoSync()));
+        //public Task<string> GetInfoAsync() => Task.Run<string>((Func<string>)(() => GetInfoSync()));
         public Payment WaitPosRespone(int pTime = 120, bool pIsCashBack=false, uint pSum = 0)
         {
             bool Is11=false;
@@ -253,7 +253,7 @@ namespace Front.Equipments
                 Thread.Sleep(500);
                 pTime--;
                 if (Logger != null)
-                    LoggerExtensions.LogDebug((ILogger)Logger, string.Format("[Ingenico] LastStatMsgCode = {0}\n", (object)BPOS.LastStatMsgCode) + "[Ingenico] Description = " + this.GetString(BPOS.LastStatMsgDescription) + "\n[Ingenico] LastErrorDescription = " + this.GetString(BPOS.LastErrorDescription) + "\n" + string.Format("[Ingenico] LastResult = {0}\n", (object)BPOS.LastResult) + string.Format("[Ingenico] LastErrorCode = {0}", (object)BPOS.LastErrorCode), Array.Empty<object>());
+                    LoggerExtensions.LogDebug((ILogger)Logger, string.Format("[Ingenico] LastStatMsgCode = {0}\n", (object)BPOS.LastStatMsgCode) + "[Ingenico] Description = " + GetString(BPOS.LastStatMsgDescription) + "\n[Ingenico] LastErrorDescription = " + GetString(BPOS.LastErrorDescription) + "\n" + string.Format("[Ingenico] LastResult = {0}\n", (object)BPOS.LastResult) + string.Format("[Ingenico] LastErrorCode = {0}", (object)BPOS.LastErrorCode), Array.Empty<object>());
                 if (BPOS == null)
                 {
                     OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.TransactionCanceledByUser });
@@ -296,7 +296,7 @@ namespace Front.Equipments
 
             if (Logger != null)
             {
-                LoggerExtensions.LogDebug((ILogger)Logger, string.Format("[Ingenico] LastStatMsgCode = {0}\n", (object)BPOS.LastStatMsgCode) + "[Ingenico] Description = " + this.GetString(BPOS.LastStatMsgDescription) + "\n[Ingenico] LastErrorDescription = " + this.GetString(BPOS.LastErrorDescription) + "\n" + string.Format("[Ingenico] LastResult = {0}\n", (object)BPOS.LastResult) + string.Format("[Ingenico] LastErrorCode = {0}", (object)BPOS.LastErrorCode), Array.Empty<object>());
+                LoggerExtensions.LogDebug((ILogger)Logger, string.Format("[Ingenico] LastStatMsgCode = {0}\n", (object)BPOS.LastStatMsgCode) + "[Ingenico] Description = " + GetString(BPOS.LastStatMsgDescription) + "\n[Ingenico] LastErrorDescription = " + GetString(BPOS.LastErrorDescription) + "\n" + string.Format("[Ingenico] LastResult = {0}\n", (object)BPOS.LastResult) + string.Format("[Ingenico] LastErrorCode = {0}", (object)BPOS.LastErrorCode), Array.Empty<object>());
             }
             if (BPOS.LastResult == (byte)0 && BPOS.LastErrorCode == (byte)0)
             {
@@ -309,19 +309,19 @@ namespace Front.Equipments
                     NumberCard = BPOS.PAN,
                     DateCreate = string.IsNullOrWhiteSpace(BPOS.DateTime) ? DateTime.Now : DateTime.ParseExact(BPOS.DateTime, "yyMMddHHmmss", (IFormatProvider)null),
                     CodeAuthorization = BPOS.RRN,
-                    TransactionStatus = this.GetString(BPOS.LastErrorDescription),
-                    NumberSlip = this.GetString(BPOS.AuthCode),
-                    NumberTerminal = this.GetString(BPOS.TerminalID),
+                    TransactionStatus = GetString(BPOS.LastErrorDescription),
+                    NumberSlip = GetString(BPOS.AuthCode),
+                    NumberTerminal = GetString(BPOS.TerminalID),
                     SumPay = Math.Round(Convert.ToDecimal(BPOS.Amount) / 100M, 2, MidpointRounding.AwayFromZero),
                     PosAddAmount = Math.Round(Convert.ToDecimal(BPOS.AddAmount) / 100M, 2, MidpointRounding.AwayFromZero),
                     NumberReceipt = (long)BPOS.InvoiceNum,
-                    CardHolder = this.GetString(BPOS.CardHolder),
-                    IssuerName = this.GetString(BPOS.IssuerName),
-                    Bank = this.GetString(BPOS.ECRDataTM),
-                    CodeBank = this.CodeBank,
+                    CardHolder = GetString(BPOS.CardHolder),
+                    IssuerName = GetString(BPOS.IssuerName),
+                    Bank = GetString(BPOS.ECRDataTM),
+                    CodeBank = CodeBank,
                     MerchantID = BPOS.MerchantID,                    
                     IsCashBack = pIsCashBack
-                    //Receipt= this.ParseReceipt(BPOS.Receipt)
+                    //Receipt= ParseReceipt(BPOS.Receipt)
                 };
             }
 
@@ -345,7 +345,7 @@ namespace Front.Equipments
                         //State = eStateEquipment.Error;
                         break;
                     case 4:
-                        this.InvokeResponseCode(BPOS.ResponseCode);
+                        InvokeResponseCode(BPOS.ResponseCode);
                         break;
                 }
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"LastResult=>{BPOS.LastResult} LastErrorCode={BPOS.LastErrorCode} ResponseCode=>{BPOS.ResponseCode}", eTypeLog.Error);
@@ -590,10 +590,10 @@ namespace Front.Equipments
 
         public void Settlement(byte pMerchantId = 0)
         {
-            if (!this.StartBPOS())
+            if (!StartBPOS())
                 return;
             BPOS.Settlement(pMerchantId);
-            this.WaitResponse();
+            WaitResponse();
             StopBPOS();
         }
 
@@ -612,13 +612,13 @@ namespace Front.Equipments
         public async Task<BatchTotals> GetXZ(bool IsX = true, int pIdWorkPlace = 0)
         {
             byte MerchantId = GetMechantIdByIdWorkPlace(pIdWorkPlace);
-            if (!this.StartBPOS())
+            if (!StartBPOS())
                 return (BatchTotals)null;
             if (IsX)
                 BPOS.PrintBatchTotals(MerchantId);
             else
                 BPOS.Settlement(MerchantId);
-            this.WaitResponse();
+            WaitResponse();
             BatchTotals batchTotals = new BatchTotals()
             {
                 DebitCount = BPOS.TotalsDebitNum,
@@ -635,10 +635,10 @@ namespace Front.Equipments
 
         public void PrintBatchTotals(byte pMerchantId = 0)
         {
-            if (!this.StartBPOS())
+            if (!StartBPOS())
                 return;
             BPOS.PrintBatchTotals(pMerchantId);
-            this.WaitResponse();
+            WaitResponse();
             StopBPOS();
         }
 
@@ -653,10 +653,10 @@ namespace Front.Equipments
 
         public async Task<BatchTotals> GetBatchTotals(byte pMerchantId = 0)
         {
-            if (!this.StartBPOS())
+            if (!StartBPOS())
                 return (BatchTotals)null;
             BPOS.GetBatchTotals(pMerchantId);
-            this.WaitResponse();
+            WaitResponse();
             BatchTotals batchTotals = new BatchTotals()
             {
                 DebitCount = BPOS.TotalsDebitNum,
@@ -673,7 +673,7 @@ namespace Front.Equipments
 
         public void PrintBatchJournal(byte pMerchantId = 0)
         {
-            if (!this.StartBPOS())
+            if (!StartBPOS())
                 return;
             BPOS.PrintBatchJournal(pMerchantId);
             StopBPOS();
@@ -681,16 +681,14 @@ namespace Front.Equipments
 
         public void PrintLastSettleCopy(byte pMerchantId = 0)
         {
-            if (!this.StartBPOS())
+            if (!StartBPOS())
                 return;
             BPOS.PrintLastSettleCopy(pMerchantId);
             StopBPOS();
         }
 
-        public override Payment Purchase(decimal pAmount, decimal pCash = 0, int IdWorkPlace = 0, bool pIsCashBack = false)
-        {
-            return PurchaseAsync(pAmount, pCash, IdWorkPlace, pIsCashBack).Result;
-        }
+        public override Payment Purchase(decimal pAmount, decimal pCash = 0, int IdWorkPlace = 0, bool pIsCashBack = false) 
+            => AsyncHelper.RunSync(async()=> await PurchaseAsync(pAmount, pCash, IdWorkPlace, pIsCashBack));
 
         public Task<Payment> PurchaseAsync(decimal amount, decimal pCash, int pIdWorkPlace = 0,bool pIsCashBack=false)
         {
@@ -698,7 +696,7 @@ namespace Front.Equipments
             try
             {
                 byte MechantId = GetMechantIdByIdWorkPlace(pIdWorkPlace, pIsCashBack);
-                if (!this.StartBPOS())
+                if (!StartBPOS())
                     return Task.FromResult<Payment>(new Payment() { IsSuccess = false });
                 CancelRequested = false;
                 if (SumCash > 0)
@@ -733,7 +731,7 @@ namespace Front.Equipments
             }
             catch (Exception ex)
             {
-                LoggerExtensions.LogError((ILogger)this.Logger, ex, "[Ingenico] " + ex.Message);
+                LoggerExtensions.LogError((ILogger)Logger, ex, "[Ingenico] " + ex.Message);
                 return Task.FromResult<Payment>(new Payment() { IsSuccess = false });
             }
             finally
@@ -747,23 +745,23 @@ namespace Front.Equipments
         public List<string> GetLastReceipt(bool IsStart = true)
         {
             if (IsStart)
-                if (!this.StartBPOS())
+                if (!StartBPOS())
                     return (List<string>)null;
             BPOS.ReqCurrReceipt();
-            this.WaitResponse();
+            WaitResponse();
             string receipt = BPOS.Receipt;
             if (IsStart)
                 StopBPOS();
-            return this.ParseReceipt(receipt);
+            return ParseReceipt(receipt);
         }
 
-        private string GetString(string input) => string.IsNullOrWhiteSpace(input) || !ConfigurationBinder.GetValue<bool>(this.Configuration, $"{KeyPrefix}Use1252Encoder", false) ? input : Encoding.UTF8.GetString(Encoding.Convert(this.Encoding1251, Encoding.UTF8, this.Encoding1252.GetBytes(input)));
+        private string GetString(string input) => string.IsNullOrWhiteSpace(input) || !ConfigurationBinder.GetValue<bool>(Configuration, $"{KeyPrefix}Use1252Encoder", false) ? input : Encoding.UTF8.GetString(Encoding.Convert(Encoding1251, Encoding.UTF8, Encoding1252.GetBytes(input)));
 
         private List<string> ParseReceipt(string res)
         {
             if (string.IsNullOrEmpty(res))
                 return (List<string>)null;
-            res = this.GetString(res);
+            res = GetString(res);
             List<string> list = ((IEnumerable<string>)res.Replace("\t", string.Empty).Replace("\r", string.Empty).Split('\n')).ToList<string>();
             for (int index = 0; index < list.Count; ++index)
             {
@@ -810,7 +808,7 @@ namespace Front.Equipments
 
     public class PosDeviceLog : DeviceLog
     {
-        public PosDeviceLog() => this.DeviceType = DeviceType.PosTerminal;
+        public PosDeviceLog() => DeviceType = DeviceType.PosTerminal;
     }
 
     public interface IPosResponse
@@ -823,7 +821,7 @@ namespace Front.Equipments
 
         public List<string> Errors { get; set; }
 
-        public PayPosResponse() => this.Errors = new List<string>();
+        public PayPosResponse() => Errors = new List<string>();
     }
 
 }

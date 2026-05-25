@@ -19,6 +19,7 @@ namespace Front.Equipments
 
         protected byte MerchantId;
         List<Merchants> Merchants = [];
+        public BankTerminal() { }
         public BankTerminal(Equipment pEquipment, IConfiguration pConfiguration, eModelEquipment pModelEquipment = eModelEquipment.NotDefine, ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null) : 
             base(pEquipment, pConfiguration, pModelEquipment, pLoggerFactory) 
         {
@@ -54,11 +55,11 @@ namespace Front.Equipments
                     if (r != null)
                         return r.MerchantId;
                 }
-                var res=Merchants.Where(el=> el.IdWorkplace== pIdWorkPlace).FirstOrDefault();
+                var res=Merchants.Where(el=> el.IdWorkplace == pIdWorkPlace).FirstOrDefault();
                 if (res != null)
                     return res.MerchantId;
             }
-            return this.MerchantId;
+            return MerchantId;
         }
 
         protected void InvokeLastStatusMsg(byte LastStatMsgCode)

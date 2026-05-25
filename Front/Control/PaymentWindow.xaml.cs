@@ -121,13 +121,13 @@ namespace Front.Control
             else
             {
                 BankTerminal bank1, bank2;
-                bank1 = MW.EF?.BankTerminal1 as BankTerminal;
+                bank1 = MW.EF?.BankTerminal1;
 
                 if (MW.curReceipt.Payment.First().CodeBank == bank1.CodeBank)
                     TypeReturn = "FirstTerminal";
                 if (MW.EF?.BankTerminal2 != null)
                 {
-                    bank2 = MW.EF?.BankTerminal2 as BankTerminal;
+                    bank2 = MW.EF?.BankTerminal2;
                     if (MW.curReceipt.Payment.First().CodeBank == bank2.CodeBank)
                         TypeReturn = "SecondTerminal";
                 }

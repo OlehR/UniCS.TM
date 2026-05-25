@@ -155,7 +155,9 @@ namespace ModelMID
         public static bool IsOldInterface = true;
 
         public static bool IsSkyNex = false;
-       
+
+        public static bool IsAutoChoiceTerminal = false;
+
         /// <summary>
         ///  час Першого помилкового запита до сервера 
         /// </summary>
