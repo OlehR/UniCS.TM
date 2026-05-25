@@ -56,7 +56,8 @@ namespace Equipments.Equipments.Glory
 
         }
 
-        public static void GloryStartListening(bool IsListening,string IP , int IpPort, Action<StatusEquipment> pAction )
+        public static bool IsListening { get; set; } = false;
+        public static void GloryStartListening(string IP, int IpPort, Action<StatusEquipment> pAction)
         {
             TcpListener tcpListener = (TcpListener)null;
             int num = 0;
@@ -67,7 +68,7 @@ namespace Equipments.Equipments.Glory
                 {
                     tcpListener = new TcpListener(IPAddress.Parse(IP), IpPort);
                     tcpListener.Start();
-                    FileLogger.WriteLogMessage( "Glory live listener: Waiting for a connection... ");
+                    FileLogger.WriteLogMessage("Glory live listener: Waiting for a connection... ");
                     TcpClient tcpClient = tcpListener.AcceptTcpClient();
                     FileLogger.WriteLogMessage("Glory live listener: Connected!");
                     string str1 = (string)null;
@@ -92,14 +93,27 @@ namespace Equipments.Equipments.Glory
                                 //    LogEvent_ScrollViewer.ScrollToEnd();
 
                                 //}));
+                                try
+                                {
+                                    var ser = new XmlSerializer(typeof(BbxEventRequest));
+                                    using var sr = new StringReader(str2);
+                                    var evt = (BbxEventRequest)ser.Deserialize(sr);
+                                    // str2 - строка з XML який прийшов з кеш-машини
+                                    // evt - розпаршений клас відповіді
+                                    if (evt?.StatusChangeEvent?.Status.In(1, 2, 3, 4, 5, 6, 7) == true)
+                                    {
+                                        eStatusChangeEvent state = Enum.IsDefined(typeof(eStatusChangeEvent), evt.StatusChangeEvent.Status)
+                                                            ? (eStatusChangeEvent)evt.StatusChangeEvent.Status
+                                                            : eStatusChangeEvent.Initializing;
+                                        pAction?.Invoke(new CashMachineStatus() { Status = state, Sum = evt?.StatusChangeEvent?.Amount / 100m ?? 0 });
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    FileLogger.WriteLogMessage($"Error parser XML: Exception: {ex}");
+                                }
 
-                                var ser = new XmlSerializer(typeof(BbxEventRequest));
-                                using var sr = new StringReader(str2);
-                                var evt = (BbxEventRequest) ser.Deserialize(sr);
-                                // str2 - строка з XML який прийшов з кеш-машини
-                                // evt - розпаршений клас відповіді
 
-                                pAction?.Invoke(new CashMachineStatus() {  Status = eStatusChangeEvent.Initializing, Sum=100 } );
 
                             }
                             else
@@ -119,7 +133,7 @@ namespace Equipments.Equipments.Glory
                 {
                     ++num;
                     if (10 > num)
-                        FileLogger.WriteLogMessage( $"Glory live listener: SocketException: {ex}");
+                        FileLogger.WriteLogMessage($"Glory live listener: SocketException: {ex}");
                     else if (10 == num)
                         FileLogger.WriteLogMessage("Glory live listener: SocketException: LogWriteCounterOver");
                 }
@@ -127,7 +141,7 @@ namespace Equipments.Equipments.Glory
                 {
                     ++num;
                     if (10 > num)
-                        FileLogger.WriteLogMessage( $"Glory live listener: Exception: {ex}");
+                        FileLogger.WriteLogMessage($"Glory live listener: Exception: {ex}");
                     else if (10 == num)
                         FileLogger.WriteLogMessage("Glory live listener: Exception: LogWriteCounterOver");
                 }

@@ -1,4 +1,5 @@
 ﻿using ModelMID;
+using ModelMID.DB;
 using UtilNetwork;
 
 namespace Front.Equipments
@@ -23,9 +24,11 @@ namespace Front.Equipments
     }
     public class CashMachineStatus : StatusEquipment
     {
-        public decimal Sum { get; set; }
+        public decimal Sum { get; set; } =0;
         public CashMachineStatus() : base() { }
         public eStatusChangeEvent Status { get; set; }
+        public eResultCode ResultCode { get; set; }
+        public CashInventory  Cash {  get; set; }
     }
     public class RroStatus : StatusEquipment
     {

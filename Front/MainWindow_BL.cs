@@ -74,7 +74,7 @@ namespace Front
                         else
                         {
                             if (info is CashMachineStatus cashMachineStatus)
-                                EquipmentInfo = cashMachineStatus.Status.GetDescription();
+                                EquipmentInfo = $"{cashMachineStatus.Status.GetDescription()}{Environment.NewLine}Внесено готівки: {cashMachineStatus.Sum.ToString("F2")}";
                         }
                     }
 

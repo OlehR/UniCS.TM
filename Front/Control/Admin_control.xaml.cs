@@ -249,10 +249,13 @@ namespace Front.Control
                     ControlScale(pWeight, pIsStable);
                 };
                 IsCashMachine = EF.CashMachine?.IsNotNull() == true;
+                if (IsCashMachine)
+                {
+                    var result = Task.Run(() => EF.CashMachine.InventoryAsync()).Result;
+                    AmountMoney = new ObservableCollection<CashInventory>(result);
+                    RefreshCashInventoryTables();
+                }
 
-                //var result = Task.Run(() => EF.CashMachine.InventoryAsync()).Result;
-                //AmountMoney = new ObservableCollection<CashInventory>(result);
-                //RefreshCashInventoryTables();
 
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCashMachine)));
             }
@@ -1545,6 +1548,16 @@ from RECEIPT r
             var result = await EF.CashMachine.InventoryAsync();
             AmountMoney = new ObservableCollection<CashInventory>(result);
             RefreshCashInventoryTables();
+        }
+
+        private void StartReplenishment_btn(object sender, RoutedEventArgs e)
+        {
+           var res =  EF.CashMachine.StartReplenishment();
+        }
+
+        private void EndReplenishment_btn(object sender, RoutedEventArgs e)
+        {
+            var res = EF.CashMachine.EndReplenishment();
         }
     }
 

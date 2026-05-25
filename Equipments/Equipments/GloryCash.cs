@@ -7,6 +7,7 @@ using ModelMID;
 using ModelMID.DB;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -24,7 +25,6 @@ namespace Front.Equipments
         private string Url = string.Empty;
         private string UserLogin = string.Empty;
         private string UserPassword = string.Empty;
-        public bool IsListening = false;
 
         public GloryCash(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null,
             Action<StatusEquipment> pActionStatus = null) :
@@ -34,7 +34,6 @@ namespace Front.Equipments
             Url = Configuration[$"{KeyPrefix}Url"];
             UserLogin = Configuration[$"{KeyPrefix}UserLogin"];
             UserPassword = Configuration[$"{KeyPrefix}UserPassword"];
-            IsListening = true;
             Init();
 
 
@@ -61,48 +60,70 @@ namespace Front.Equipments
             else State = eStateEquipment.Error;
 
 
-            //початок прослуховування глорі
-            GloryNetworkUtilities.GloryStartListening(IsListening, IP, IpPort, OnStatus);
+
 
         }
-
-        public override Payment Purchase(decimal pAmount, int IdWorkPlace = 0) => AsyncHelper.RunSync(async() => await PurchaseAsync(pAmount,  IdWorkPlace));
-        
-
-        public async Task<Payment> PurchaseAsync(decimal pAmount,  int IdWorkPlace = 0)
+        public void startListening()
         {
-            string SOAPAction = eNameSOAPAction.ChangeOperation.ToString();
-            string pData = GloryXMLData.XMLChangeOperation(SessionID, pAmount);
-            FileLogger.WriteLogMessage($"Request OpenOperation: {SOAPAction} {Environment.NewLine} {pData}");
-            string XMLRespons =
-                await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, pData,
-                    200); // збільшений тайм-аут для оплати
-            FileLogger.WriteLogMessage($"Respons: {Environment.NewLine} {XMLRespons}");
-            var msg = SoapParser.Parse(XMLRespons);
+            GloryNetworkUtilities.GloryStartListening(IP, IpPort, OnStatus);
+        }
+        public override Payment Purchase(decimal pAmount, int IdWorkPlace = 0) => AsyncHelper.RunSync(async () => await PurchaseAsync(pAmount, IdWorkPlace));
 
-            if (msg is ChangeResponse resp)
+
+        public async Task<Payment> PurchaseAsync(decimal pAmount, int IdWorkPlace = 0)
+        {
+            try
             {
-                //Console.WriteLine($"Result={resp.Result}, Amount={resp.Amount}, ManualDeposit={resp.ManualDeposit}");
-                //Console.WriteLine($"Status.Code={resp.Status?.Code}");
-                //foreach (var d in resp.Status?.Devices ?? new List<DevStatus>())
-                //    Console.WriteLine($"Dev {d.DevId}: val={d.Value}, st={d.Status}");
 
-                //foreach (var cash in resp.Cash ?? new List<CashBlock>())
-                //{
-                //    Console.WriteLine($"Cash type={cash.Type}");
-                //    foreach (var den in cash.Denominations ?? new List<Denomination>())
-                //        Console.WriteLine($"  {den.CurrencyCode} {den.FaceValue}: piece={den.Piece}, status={den.Status}, devid={den.DeviceId}");
-                //}
-                return new Payment()
+                //початок прослуховування глорі
+                GloryNetworkUtilities.IsListening = true;
+                new Thread(new ThreadStart(this.startListening))
                 {
-                    IsSuccess = true,
-                    //TransactionId = string.Format("{0}", (object)BPOS.TrnBatchNum), //приходить лише в онлайн лістенері
-                    DateCreate = DateTime.Now,
-                    TransactionStatus = GetErrorText(resp.Result),
-                    SumPay = Math.Round(Convert.ToDecimal(resp.Amount) / 100M, 2, MidpointRounding.AwayFromZero)
-                };
-            }
+                    IsBackground = true
+                }.Start();
 
+                string SOAPAction = eNameSOAPAction.ChangeOperation.ToString();
+                string pData = GloryXMLData.XMLChangeOperation(SessionID, pAmount);
+                FileLogger.WriteLogMessage($"Request OpenOperation: {SOAPAction} {Environment.NewLine} {pData}");
+                string XMLRespons =
+                    await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, pData,
+                        200); // збільшений тайм-аут для оплати
+                FileLogger.WriteLogMessage($"Respons pay: {Environment.NewLine} {XMLRespons}");
+                var msg = SoapParser.Parse(XMLRespons);
+
+                if (msg is ChangeResponse resp)
+                {
+                    //Console.WriteLine($"Result={resp.Result}, Amount={resp.Amount}, ManualDeposit={resp.ManualDeposit}");
+                    //Console.WriteLine($"Status.Code={resp.Status?.Code}");
+                    //foreach (var d in resp.Status?.Devices ?? new List<DevStatus>())
+                    //    Console.WriteLine($"Dev {d.DevId}: val={d.Value}, st={d.Status}");
+
+                    //foreach (var cash in resp.Cash ?? new List<CashBlock>())
+                    //{
+                    //    Console.WriteLine($"Cash type={cash.Type}");
+                    //    foreach (var den in cash.Denominations ?? new List<Denomination>())
+                    //        Console.WriteLine($"  {den.CurrencyCode} {den.FaceValue}: piece={den.Piece}, status={den.Status}, devid={den.DeviceId}");
+                    //}
+                    return new Payment()
+                    {
+                        IsSuccess = true,
+                        //TransactionId = string.Format("{0}", (object)BPOS.TrnBatchNum), //приходить лише в онлайн лістенері
+                        DateCreate = DateTime.Now,
+                        TransactionStatus = GetErrorText(resp.Result),
+                        SumPay = Math.Round(Convert.ToDecimal(resp.Amount) / 100M, 2, MidpointRounding.AwayFromZero)
+                    };
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                FileLogger.WriteLogMessage($"Error pay: {Environment.NewLine} {ex}");
+            }
+            finally
+            {
+                GloryNetworkUtilities.IsListening = false;
+            }
             return new Payment() { IsSuccess = false };
         }
 
@@ -111,11 +132,8 @@ namespace Front.Equipments
             base.Cancel();
         }
 
-        public override Payment Refund(decimal pAmount, int IdWorkPlace = 0)
-        {
+        public override Payment Refund(decimal pAmount, int IdWorkPlace = 0) => AsyncHelper.RunSync(async () => await RefundAsync(pAmount, IdWorkPlace));
 
-            return RefundAsync(pAmount, IdWorkPlace).Result;
-        }
 
         public async Task<Payment> RefundAsync(decimal pAmount, int IdWorkPlace = 0)
         {
@@ -158,7 +176,39 @@ namespace Front.Equipments
 
         override public string GetDeviceInfo()
         {
-            return $"SessionID: {SessionID}";
+            var getInfo = AsyncHelper.RunSync(async () => await GetStatusAsync());
+
+            return $"SessionID: {SessionID}{Environment.NewLine}" +
+                   $"Стан кеш-машини: {getInfo.Status.GetDescription()}, Відповідь на запит: {getInfo.ResultCode.GetDescription()}, ";
+        }
+        public override CashMachineStatus GetStatus()
+        {
+            return AsyncHelper.RunSync(async () => await GetStatusAsync());
+        }
+        public async Task<CashMachineStatus> GetStatusAsync()
+        {
+            var soapAction = eNameSOAPAction.GetStatus.ToString();
+            var requestData = GloryXMLData.XMLGetStatus(SessionID);
+
+            FileLogger.WriteLogMessage($"Request XMLGetStatus: {soapAction}{Environment.NewLine}{requestData}");
+
+            var xmlResponse = await GloryNetworkUtilities.HTTPRequestAsync(Url, soapAction, requestData);
+
+            FileLogger.WriteLogMessage($"Response:{Environment.NewLine}{xmlResponse}");
+
+            if (SoapParser.Parse(xmlResponse) is not StatusResponse res)
+                return new();
+
+            return new CashMachineStatus
+            {
+                ResultCode = Enum.IsDefined(typeof(eResultCode), res.Result)
+                    ? (eResultCode)res.Result
+                    : eResultCode.UnknownError,
+
+                Status = Enum.IsDefined(typeof(eStatusChangeEvent), res.Status.Code)
+                    ? (eStatusChangeEvent)res.Status.Code
+                    : eStatusChangeEvent.Initializing
+            };
         }
 
         public override List<CashInventory> Inventory()
@@ -238,5 +288,81 @@ namespace Front.Equipments
 
             return result;
         }
+        public override CashMachineStatus StartReplenishment()
+        {
+           return AsyncHelper.RunSync(async () => await StartReplenishmentAsync());
+        }
+        public override CashMachineStatus EndReplenishment()
+        {
+            return AsyncHelper.RunSync(async () => await EndReplenishmentAsync());
+        }
+        public async Task<CashMachineStatus>  StartReplenishmentAsync()
+        {
+            var soapAction = eNameSOAPAction.StartReplenishmentFromEntranceOperation.ToString();
+            var requestData = GloryXMLData.XMLStartReplenishmentFromEntrance(SessionID);
+
+            FileLogger.WriteLogMessage($"Request XMLGetStatus: {soapAction}{Environment.NewLine}{requestData}");
+
+            var xmlResponse = await GloryNetworkUtilities.HTTPRequestAsync(Url, soapAction, requestData);
+
+            FileLogger.WriteLogMessage($"Response:{Environment.NewLine}{xmlResponse}");
+            var msg = SoapParser.Parse(xmlResponse);
+            if (msg is StartReplenishmentFromEntranceResponse resp)
+            {
+                Console.WriteLine($"Result={resp.Result}, Id={resp.Id}, SeqNo={resp.SeqNo}, User='{resp.User}'");
+                if (resp.Result != (int)eResultCode.Success)
+                {
+                    MessageBox.Show(GetErrorText(resp.Result));
+                   
+                }
+            }
+            if (SoapParser.Parse(xmlResponse) is not StartReplenishmentFromEntranceResponse res)
+                return new();
+
+            return new CashMachineStatus
+            {
+                ResultCode = Enum.IsDefined(typeof(eResultCode), res.Result)
+                    ? (eResultCode)res.Result
+                    : eResultCode.UnknownError,
+            };
+        }
+        public async Task<CashMachineStatus> EndReplenishmentAsync()
+        {
+            var soapAction = eNameSOAPAction.EndReplenishmentFromEntranceOperation.ToString();
+            var requestData = GloryXMLData.XMLEndReplenishmentFromEntranceOperation(SessionID);
+
+            FileLogger.WriteLogMessage($"Request XMLGetStatus: {soapAction}{Environment.NewLine}{requestData}");
+
+            var xmlResponse = await GloryNetworkUtilities.HTTPRequestAsync(Url, soapAction, requestData);
+
+            FileLogger.WriteLogMessage($"Response:{Environment.NewLine}{xmlResponse}");
+            var msg = SoapParser.Parse(xmlResponse);
+            if (msg is EndReplenishmentFromEntranceResponse resp)
+            {
+                Console.WriteLine($"Result={resp.Result}, Id={resp.Id}, SeqNo={resp.SeqNo}, User='{resp.User}', ManualDeposit={resp.ManualDeposit}");
+                foreach (var cash in resp.Cash ?? new List<CashBlock>())
+                {
+                    Console.WriteLine($"Cash type={cash.Type}");
+                    foreach (var d in cash.Denominations ?? new List<Denomination>())
+                        Console.WriteLine($"  {d.CurrencyCode} {d.FaceValue}: piece={d.Piece}, status={d.Status}, devid={d.DeviceId}");
+                }
+                if (resp.Result != (int)eResultCode.Success)
+                {
+                    MessageBox.Show(GetErrorText(resp.Result));
+                }
+            }
+
+
+            if (SoapParser.Parse(xmlResponse) is not EndReplenishmentFromEntranceResponse res)
+                return new();
+
+            return new CashMachineStatus
+            {
+                ResultCode = Enum.IsDefined(typeof(eResultCode), res.Result)
+                    ? (eResultCode)res.Result
+                    : eResultCode.UnknownError,
+            };
+        }
+
     }
 }
