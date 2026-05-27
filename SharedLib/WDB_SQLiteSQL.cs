@@ -1031,22 +1031,23 @@ ps.NAME_PS as NamePS, Number_Group as NumberGroup, BarCode_2_Category as  BarCod
 select wrh.id_workplace IdWorkplace, wrh.code_period CodePeriod, wrh.code_receipt CodeReceipt, r.date_receipt Date, wrh.id_workplace NumberCashDesk, r.USER_CREATE as BarCodeCashier,
 --Sort as Order,
 Code_wares as CodeWares,
-wrh.DATE_CREATE as DateCreate, wrh.QUANTITY as Quantity, wrh.QUANTITY_OLD as QuantityOld
-
+wrh.DATE_CREATE as DateCreate, wrh.QUANTITY as Quantity, wrh.QUANTITY_OLD as QuantityOld,
+case when CODE_OPERATION=-1 then 2
+     when QUANTITY<QUANTITY_OLD then 3
+     when QUANTITY>QUANTITY_OLD then 4 else 0 end as TypeAuditReceipt
 from WARES_RECEIPT_HISTORY wrh
 left join RECEIPT r on (r.ID_WORKPLACE = wrh.Id_Workplace    and r.CODE_PERIOD = wrh.Code_Period    and r.CODE_RECEIPT = wrh.Code_Receipt)
-where (CODE_OPERATION=-1 or QUANTITY<QUANTITY_OLD)
--- and wrh.DATE_CREATE>=beginDate and   wrh.DATE_CREATE<EndDate
-union all
+where (CODE_OPERATION=-1 or QUANTITY<QUANTITY_OLD or QUANTITY>QUANTITY_OLD)
 
+union all
 select  wrh.id_workplace IdWorkplace, wrh.code_period CodePeriod, wrh.code_receipt CodeReceipt, r.date_receipt Date, wrh.id_workplace NumberCashDesk, r.USER_CREATE as BarCodeCashier,
 --Sort as Order,
 Code_wares as CodeWares,
-wrh.DATE_CREATE as DateCreate,0 as Quantity, wrh.QUANTITY as QuantityOld
+wrh.DATE_CREATE as DateCreate,0 as Quantity, wrh.QUANTITY as QuantityOld,
+1 as TypeAuditReceipt
 from WARES_RECEIPT wrh
 left join RECEIPT r on (r.ID_WORKPLACE =wrh.Id_Workplace and r.CODE_PERIOD = wrh.Code_Period and r.CODE_RECEIPT = wrh.Code_Receipt)
-where r.STATE_RECEIPT=-1
- --and r.DATE_RECEIPT>=BeginDate and   wrh.DATE_CREATE<EndDate";
+where r.STATE_RECEIPT=-1";
 
         private readonly string SqlReplaceOneTime = @"replace into ReceiptOneTime(IdWorkplace, CodePeriod, CodeReceipt, CodePS, TypeData, CodeData) 
             values (@IdWorkplace, @CodePeriod, @CodeReceipt, @CodePS, @TypeData, @CodeData )";

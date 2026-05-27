@@ -854,4 +854,17 @@ namespace ModelMID
         RCW_100 = 2,
         RBW_200 = 3 //не наш варіант але може бути в майбутньому 
     }
+    public enum eTypeAuditReceipt
+    {
+        [Description("Не визначено")]
+        NotDefine = 0,
+        [Description("Видалення чека")]
+        DelReceipt = 1,
+        [Description("Видалення товару")]
+        DelWares = 2,
+        [Description("Зменшення кількості")]
+        DecreaseQuantity = 3,
+        [Description("Збільшення кількості")]
+        IncreaseQuantity = 4
+    }
 }

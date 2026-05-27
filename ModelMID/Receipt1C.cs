@@ -178,6 +178,7 @@ namespace ModelMID
 
     public class ReceiptWaresDeleted1C : IdReceipt
     {
+        public eTypeAuditReceipt TypeAuditReceipt { get; set; }
         /// <summary>
         /// Дата чека
         /// </summary>
