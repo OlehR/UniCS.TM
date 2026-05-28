@@ -227,7 +227,7 @@ namespace Front.Control
                         });
                     }
                 }
-                //ComboBoxChooseTypeCheckout.ItemsSource = ListTypeWorkplace;
+                ComboBoxChooseTypeCheckout.ItemsSource = ListTypeWorkplace;
                 RefreshJournal();
             }
             catch (Exception ex) { FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex); }
@@ -1522,13 +1522,13 @@ from RECEIPT r
 
         private void ChooseTypeCheckoutComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //if (ComboBoxChooseTypeCheckout.SelectedItem is CurentTypeWorkplace SelTypeCheckout)
-            //{
-            //    Global.TypeWorkplaceCurrent = SelTypeCheckout.TypeWorkplace_;
-            //    MW.SetWorkPlace();
-            //    Access.Init(MW.AdminSSC);
-            //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCashRegister)));
-            //}
+            if (ComboBoxChooseTypeCheckout.SelectedItem is CurentTypeWorkplace SelTypeCheckout)
+            {
+                Global.TypeWorkplaceCurrent = SelTypeCheckout.TypeWorkplace_;
+                MW.SetWorkPlace();
+                Access.Init(MW.AdminSSC);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCashRegister)));
+            }
         }
 
         private void RemovePayment(object sender, RoutedEventArgs e)

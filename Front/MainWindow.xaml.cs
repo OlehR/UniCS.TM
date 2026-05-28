@@ -643,7 +643,7 @@ namespace Front
         public async void PlayNextVideo(LibVLCSharp.Shared.MediaPlayer Player, bool IsFirstStart = false)
         {
             IsBild = false;
-            if (_videoFiles.Length == 0) return;
+            if (_videoFiles.Length == 0 || LibVLC==null) return;
 
             // Зупиняємо відтворення перед зміною відео
             // MediaPlayer.Stop();
