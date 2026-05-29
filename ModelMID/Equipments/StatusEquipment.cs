@@ -1,5 +1,6 @@
 ﻿using ModelMID;
 using ModelMID.DB;
+using System.Collections.Generic;
 using UtilNetwork;
 
 namespace Front.Equipments
@@ -28,7 +29,7 @@ namespace Front.Equipments
         public CashMachineStatus() : base() { }
         public eStatusChangeEvent Status { get; set; }
         public eResultCode ResultCode { get; set; }
-        public CashInventory  Cash {  get; set; }
+        public List<CashInventory>  Cash {  get; set; }
     }
     public class RroStatus : StatusEquipment
     {

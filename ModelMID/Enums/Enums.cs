@@ -846,6 +846,9 @@ namespace ModelMID
 
         [Description("Очікування оновлення")]
         WaitingForUpdate = 41,
+
+        [Description("Скасовано користувачем")]
+        CanceledByUser =100,
     }
 
     public enum eTypeUnit

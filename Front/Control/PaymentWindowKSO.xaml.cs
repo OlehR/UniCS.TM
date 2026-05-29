@@ -40,7 +40,8 @@ namespace Front.Control
 
         private void CancelPayment(object sender, RoutedEventArgs e)
         {
-            MW.EF.PosCancel();
+            MW.EF.PosCancel(); 
+            MW.EF.CashMachineCancel();
         }
     }
 }

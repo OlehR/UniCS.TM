@@ -110,7 +110,7 @@ namespace Front.Control
         }
 
         public bool IsCashMachine { get; set; } = false;
-        public ObservableCollection<CashInventory> AmountMoney {  get; set; }
+        public ObservableCollection<CashInventory> AmountMoney { get; set; }
         public class CashInventoryRow
         {
             // Для сортування (не відображається в таблиці)
@@ -1552,12 +1552,51 @@ from RECEIPT r
 
         private void StartReplenishment_btn(object sender, RoutedEventArgs e)
         {
-           var res =  EF.CashMachine.StartReplenishment();
+            CashMachineStatus res = EF.CashMachine.StartReplenishment();
+            if (res.ResultCode == eResultCode.Success)
+                MW.CustomMessage.Show($"Починайте внесення коштів після чого натисніть \"Завершення внесення\"", "Увага!", eTypeMessage.Information);
+            else
+                MW.CustomMessage.Show($"Помилка! {res.ResultCode.GetDescription()}", "Помилка!", eTypeMessage.Information);
+
         }
 
         private void EndReplenishment_btn(object sender, RoutedEventArgs e)
         {
             var res = EF.CashMachine.EndReplenishment();
+            if (res.ResultCode == eResultCode.Success)
+            {
+                MW.CustomMessage.Show($"{ToReplenishmentMessage(res.Cash)}", "Увага!", eTypeMessage.Information);
+
+            }
+            else
+                MW.CustomMessage.Show($"Помилка! {res.ResultCode.GetDescription()}", "Помилка!", eTypeMessage.Information);
+        }
+        public static string ToReplenishmentMessage(List<CashInventory> inventory)
+        {
+            var items = inventory
+                .Where(x => x.MoneyStoragePlace == eMoneyStoragePlace.All)
+                .OrderBy(x => x.TypeMoney)
+                .ThenBy(x => x.FaceValue);
+
+            var sb = new StringBuilder();
+
+            foreach (var item in items)
+            {
+                string typeName = item.TypeMoney == eTypeMoney.Banknote ? "Купюра" : "Монета";
+                decimal faceGrn = item.FaceValue / 100m;
+                decimal totalGrn = faceGrn * item.Quantity;
+
+                sb.AppendLine($"{typeName} {faceGrn:0.##} грн — {item.Quantity} шт. = {totalGrn:0.##} грн");
+            }
+
+            decimal grandTotal = inventory
+                .Where(x => x.MoneyStoragePlace == eMoneyStoragePlace.All)
+                .Sum(x => (x.FaceValue / 100m) * x.Quantity);
+
+            sb.AppendLine($"─────────────────────────");
+            sb.AppendLine($"Загальна сума: {grandTotal:0.##} грн");
+
+            return sb.ToString();
         }
     }
 
