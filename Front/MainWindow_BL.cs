@@ -74,7 +74,14 @@ namespace Front
                         else
                         {
                             if (info is CashMachineStatus cashMachineStatus)
-                                EquipmentInfo = $"{cashMachineStatus.Status.GetDescription()}{Environment.NewLine}Внесено готівки: {cashMachineStatus.Sum.ToString("F2")}";
+                            {
+                                if (cashMachineStatus.Status == eStatusChangeEvent.CanceledByUser)
+                                {
+                                    EquipmentInfo = $"{cashMachineStatus.Status.GetDescription()}{Environment.NewLine}{cashMachineStatus.TextError}";
+                                }
+                                else
+                                    EquipmentInfo = $"{cashMachineStatus.Status.GetDescription()}{Environment.NewLine}Внесено готівки: {cashMachineStatus.Sum.ToString("F2")}";
+                            }
                         }
                     }
 
@@ -360,18 +367,18 @@ namespace Front
             return true;
         }*/
 
-        
+
 
         public void ShowWeightWares(GW pGV = null)
         {
             if (pGV != null)
             {
                 CurW = pGV;
-                WeightWaresUC.Init(pGV);                
+                WeightWaresUC.Init(pGV);
                 SetStateView(eStateMainWindows.WaitWeight);
                 return;
             }
         }
-        
+
     }
 }

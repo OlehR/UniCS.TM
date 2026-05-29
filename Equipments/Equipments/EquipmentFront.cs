@@ -946,7 +946,6 @@ namespace Front
 
             pay.SumExt = pSum;
             pay.TypePay = eTypePay.CashMachine;
-            pay.IsSuccess = true;
             pay.SetIdReceipt(pIdR);
 
             return pay;
@@ -962,6 +961,8 @@ namespace Front
                 FileLogger.WriteLogMessage($"EquipmentFront.CashMachineStatus {Terminal.Model} {status.TextState} {status.Status}");
             }
         }
+        public void CashMachineCancel() { CashMachine?.Cancel(); }
+        
         #endregion
 
         #region POS        

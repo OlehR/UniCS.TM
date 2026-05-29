@@ -15,6 +15,7 @@ using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using Utils;
+using static System.Windows.Forms.AxHost;
 
 
 namespace Front.Equipments
@@ -104,6 +105,17 @@ namespace Front.Equipments
                     //    foreach (var den in cash.Denominations ?? new List<Denomination>())
                     //        Console.WriteLine($"  {den.CurrencyCode} {den.FaceValue}: piece={den.Piece}, status={den.Status}, devid={den.DeviceId}");
                     //}
+                    if (resp.Result != (int)eResultCode.Success)
+                    {
+                        //State = eStateEquipment.Error;
+                        OnStatus?.Invoke(new CashMachineStatus() { Status = eStatusChangeEvent.CanceledByUser, TextError = "Скасування оплати користувачем!"});
+                        return new Payment()
+                        {
+                            IsSuccess = false,
+                            DateCreate = DateTime.Now,
+                            TransactionStatus = GetErrorText(resp.Result)
+                        };
+                    }
                     return new Payment()
                     {
                         IsSuccess = true,
@@ -127,9 +139,26 @@ namespace Front.Equipments
             return new Payment() { IsSuccess = false };
         }
 
-        public override void Cancel()
+        public override void Cancel() => AsyncHelper.RunSync(async () => await CancelAsync());
+        private async Task CancelAsync()
         {
-            base.Cancel();
+            string SOAPAction = eNameSOAPAction.ChangeCancelOperation.ToString();
+            string XMLText = GloryXMLData.XMLChangeCancelOperation(SessionID);
+            FileLogger.WriteLogMessage($"Request {SOAPAction}:  {Environment.NewLine} {XMLText}");
+            string XMLRespons = await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, XMLText);
+            FileLogger.WriteLogMessage($"ResponsGloru: {Environment.NewLine} {XMLRespons}");
+            var msg = SoapParser.Parse(XMLRespons);
+            if (msg is ChangeCancelResponse resp)
+            {
+                //Console.WriteLine($"Result={resp.Result}, Id={resp.Id}, SeqNo={resp.SeqNo}, User={resp.User}");
+                if (resp.Result != (int)eResultCode.Success)
+                {
+                    State = eStateEquipment.Error;
+                    //MessageBox.Show(GetErrorText(resp.Result));
+                }
+                else
+                    State = eStateEquipment.On;
+            }
         }
 
         public override Payment Refund(decimal pAmount, int IdWorkPlace = 0) => AsyncHelper.RunSync(async () => await RefundAsync(pAmount, IdWorkPlace));
@@ -169,10 +198,6 @@ namespace Front.Equipments
             return Enum.GetName(typeof(eResultCode), pCodeError) ?? $"Unknown({pCodeError})";
         }
 
-        override public StatusEquipment TestDevice()
-        {
-            return new StatusEquipment(eModelEquipment.GloryCash, State);
-        }
 
         override public string GetDeviceInfo()
         {
@@ -210,6 +235,21 @@ namespace Front.Equipments
                     : eStatusChangeEvent.Initializing
             };
         }
+        public override StatusEquipment TestDevice()
+        {
+            var getInfo = AsyncHelper.RunSync(async () => await GetStatusAsync());
+            if (getInfo.Status == eStatusChangeEvent.Idle)
+            {
+                State = eStateEquipment.On;
+            }
+            else
+            {
+                State = eStateEquipment.Error;
+            }
+            
+            return new StatusEquipment(eModelEquipment.GloryCash, State, getInfo.Status.GetDescription());
+        }
+
 
         public override List<CashInventory> Inventory()
         {
@@ -230,14 +270,40 @@ namespace Front.Equipments
         /// Конвертує InventoryResponse у список CashInventory
         /// </summary>
         public static List<CashInventory> FromInventoryResponse(InventoryResponse response)
+            => FromCashBlocks(response?.Cash);
+        /// <summary>
+        /// Конвертує EndReplenishmentFromEntranceResponse у список CashInventory
+        /// </summary>
+        public static List<CashInventory> FromEndReplenishmentResponse(EndReplenishmentFromEntranceResponse response)
+            => FromCashBlocks(response?.Cash, singleBlock: true);
+
+        private static List<CashInventory> FromCashBlocks(List<CashBlock> cash, bool singleBlock = false)
         {
-            if (response?.Cash == null || response.Cash.Count < 2)
+            if (cash == null || cash.Count == 0)
+                return new List<CashInventory>();
+
+            if (singleBlock)
+            {
+                // Тільки All — один масив
+                return cash[0].Denominations?
+                    .Select(den => new CashInventory
+                    {
+                        FaceValue = den.FaceValue,
+                        Quantity = den.Piece,
+                        TypeMoney = den.DeviceId == 1 ? eTypeMoney.Banknote : eTypeMoney.Coin,
+                        MoneyStoragePlace = eMoneyStoragePlace.All
+                    })
+                    .ToList()
+                    ?? new List<CashInventory>();
+            }
+
+            if (cash.Count < 2)
                 return new List<CashInventory>();
 
             var result = new List<CashInventory>();
 
-            var allBlock = response.Cash[0];
-            var drumBlock = response.Cash[1];
+            var allBlock = cash[0];
+            var drumBlock = cash[1];
 
             // All
             foreach (var den in allBlock.Denominations ?? Enumerable.Empty<Denomination>())
@@ -290,13 +356,13 @@ namespace Front.Equipments
         }
         public override CashMachineStatus StartReplenishment()
         {
-           return AsyncHelper.RunSync(async () => await StartReplenishmentAsync());
+            return AsyncHelper.RunSync(async () => await StartReplenishmentAsync());
         }
         public override CashMachineStatus EndReplenishment()
         {
             return AsyncHelper.RunSync(async () => await EndReplenishmentAsync());
         }
-        public async Task<CashMachineStatus>  StartReplenishmentAsync()
+        public async Task<CashMachineStatus> StartReplenishmentAsync()
         {
             var soapAction = eNameSOAPAction.StartReplenishmentFromEntranceOperation.ToString();
             var requestData = GloryXMLData.XMLStartReplenishmentFromEntrance(SessionID);
@@ -307,15 +373,15 @@ namespace Front.Equipments
 
             FileLogger.WriteLogMessage($"Response:{Environment.NewLine}{xmlResponse}");
             var msg = SoapParser.Parse(xmlResponse);
-            if (msg is StartReplenishmentFromEntranceResponse resp)
-            {
-                Console.WriteLine($"Result={resp.Result}, Id={resp.Id}, SeqNo={resp.SeqNo}, User='{resp.User}'");
-                if (resp.Result != (int)eResultCode.Success)
-                {
-                    MessageBox.Show(GetErrorText(resp.Result));
-                   
-                }
-            }
+            //if (msg is StartReplenishmentFromEntranceResponse resp)
+            //{
+            //    Console.WriteLine($"Result={resp.Result}, Id={resp.Id}, SeqNo={resp.SeqNo}, User='{resp.User}'");
+            //    if (resp.Result != (int)eResultCode.Success)
+            //    {
+            //        MessageBox.Show(GetErrorText(resp.Result));
+
+            //    }
+            //}
             if (SoapParser.Parse(xmlResponse) is not StartReplenishmentFromEntranceResponse res)
                 return new();
 
@@ -361,6 +427,7 @@ namespace Front.Equipments
                 ResultCode = Enum.IsDefined(typeof(eResultCode), res.Result)
                     ? (eResultCode)res.Result
                     : eResultCode.UnknownError,
+                Cash = FromEndReplenishmentResponse(res)
             };
         }
 
