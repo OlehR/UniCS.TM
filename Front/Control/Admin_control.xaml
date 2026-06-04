@@ -2042,7 +2042,7 @@
                                                   />
                                     </StackPanel>
                                 </GroupBox>
-                                <GroupBox Grid.Column="1" Grid.Row="1" Header="Вибір типу каси"> 
+                                <GroupBox Grid.Column="1" Grid.Row="1" Header="Вибір типу каси">
                                     <GroupBox.Style>
                                         <Style TargetType="GroupBox">
                                             <Setter Property="Visibility" Value="Collapsed" />
@@ -2070,13 +2070,6 @@
                             </StackPanel>
                         </ScrollViewer>
 
-                        <StackPanel Grid.Column="1" VerticalAlignment="Top">
-
-
-                        </StackPanel>
-                        <StackPanel Grid.Column="1" VerticalAlignment="Top">
-
-                        </StackPanel>
 
                         <Grid Grid.Column="1" Background="Green" Margin="0,50,0,50" />
 
@@ -2105,7 +2098,7 @@
                 <TabItem Header="Кеш-машина">
                     <TabItem.Style>
                         <Style TargetType="{x:Type TabItem}">
-                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Setter Property="Visibility" Value="Visible" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsCashMachine, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=UserControl}}" Value="True">
@@ -2119,25 +2112,32 @@
                     <!--місце для відображення таблиць з кількістю купюр в кеш-машині-->
 
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <Grid>
                         <StackPanel Margin="10">
-                            <StackPanel Orientation="Horizontal">
-                                <Button Click="RefreshCash" Content="Оновити"
-                Style="{StaticResource Default}"
-                Width="150" Height="50"
-                HorizontalAlignment="Left" Margin="0"/>
 
+
+                            <StackPanel Orientation="Horizontal">
                                 <Button Click="StartReplenishment_btn" Content="Почати внесення готівки"
                             Style="{StaticResource Default}"
                             MinWidth="150" Height="50"
                             HorizontalAlignment="Left" Margin="0"/>
-                                <Button Click="EndReplenishment_btn" Content="Завершити внесення готівки"
-Style="{StaticResource Default}"
-MinWidth="150" Height="50"
-HorizontalAlignment="Left" Margin="0"/>
 
+                                <Button Click="EndReplenishment_btn" Content="Завершити внесення готівки"
+                                    Style="{StaticResource Default}"
+                                    MinWidth="150" Height="50"
+                                    HorizontalAlignment="Left" Margin="0"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Click="Cashout_btn" Content="Видача готівки"
+                                        Style="{StaticResource Default}"
+                                        MinWidth="150" Height="50"
+                                        HorizontalAlignment="Left" Margin="0"/>
                             </StackPanel>
 
-
+                            <Button Click="RefreshCash" Content="Оновити"
+                Style="{StaticResource Default}"
+                Width="150" Height="50"
+                HorizontalAlignment="Left" Margin="0"/>
                             <!-- КУПЮРИ -->
                             <TextBlock Text="Купюри" FontSize="20" FontWeight="Bold" Margin="0,0,0,5"/>
                             <ListView x:Name="BanknoteGrid"
@@ -2400,6 +2400,12 @@ HorizontalAlignment="Left" Margin="0"/>
                             </ListView>
 
                         </StackPanel>
+
+                            <!--ФОН-->
+                            <Border Background="GhostWhite"  BorderBrush="Gainsboro" BorderThickness="1"
+                 Name="BackgroundCashMachine" Visibility="Collapsed" Grid.ZIndex="2" 
+                Opacity="0.9"/>
+                        </Grid>
                     </ScrollViewer>
                 </TabItem>
 

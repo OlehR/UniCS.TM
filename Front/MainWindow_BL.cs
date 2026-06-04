@@ -73,14 +73,22 @@ namespace Front
                             EquipmentInfo = rroStatus.Status.GetDescription();
                         else
                         {
-                            if (info is CashMachineStatus cashMachineStatus)
+                            if (info is CashMachineStatus s)
                             {
-                                if (cashMachineStatus.Status == eStatusChangeEvent.CanceledByUser)
+                                EquipmentInfo = s.Status switch
                                 {
-                                    EquipmentInfo = $"{cashMachineStatus.Status.GetDescription()}{Environment.NewLine}{cashMachineStatus.TextError}";
-                                }
-                                else
-                                    EquipmentInfo = $"{cashMachineStatus.Status.GetDescription()}{Environment.NewLine}Внесено готівки: {cashMachineStatus.Sum.ToString("F2")}";
+                                    eStatusChangeEvent.CanceledByUser =>
+                                        $"{s.Status.GetDescription()}{Environment.NewLine}{s.TextError}",
+
+                                    eStatusChangeEvent.WaitingRemovalOfCashOutReject =>
+                                        "Заберіть решту",
+
+                                    eStatusChangeEvent.Dispensing =>
+                                        $"{s.Status.GetDescription()}{Environment.NewLine}Ваша решта: {s.Sum:F2}",
+
+                                    _ =>
+                                        $"{s.Status.GetDescription()}{Environment.NewLine}Внесено готівки: {s.Sum:F2}"
+                                };
                             }
                         }
                     }

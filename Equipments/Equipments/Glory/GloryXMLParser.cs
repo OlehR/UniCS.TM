@@ -479,6 +479,22 @@ namespace Equipments.Equipments.Glory
         [XmlElement("Cash", Namespace = "")]
         public List<CashBlock> Cash { get; set; }
     }
+    [XmlRoot("CollectResponse", Namespace = Ns.Bruebox)]
+    public class CollectResponse : BrueboxResponse
+    {
+        [XmlElement("Id")]
+        public int Id { get; set; }
+
+        [XmlElement("SeqNo")]
+        public int SeqNo { get; set; }
+
+        [XmlElement("User")]
+        public string User { get; set; }
+
+        // <Cash n:type="..."> елементи у порожньому просторі назв (може бути 0..n)
+        [XmlElement("Cash", Namespace = "")]
+        public List<CashBlock> Cash { get; set; }
+    }
     [XmlRoot("StartReplenishmentFromEntranceResponse", Namespace = Ns.Bruebox)]
     public class StartReplenishmentFromEntranceResponse : BrueboxResponse
     {

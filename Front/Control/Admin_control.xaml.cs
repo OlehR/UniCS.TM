@@ -1598,6 +1598,37 @@ from RECEIPT r
 
             return sb.ToString();
         }
+
+        private void Cashout_btn(object sender, RoutedEventArgs e)
+        {
+            AdminUC_NumericPad.Desciption = "Введіть суму видачі!";
+            AdminUC_NumericPad.ValidationMask = "";
+            AdminUC_NumericPad.Result = "";
+            AdminUC_NumericPad.IsEnableComma = true;
+            AdminUC_NumericPad.CallBackResult = (string SumCash) =>
+            {
+                Admin_NumericPad.Visibility = Visibility.Collapsed;
+                BackgroundCashMachine.Visibility = Visibility.Collapsed;
+                // метод видачі грошей
+                if (!string.IsNullOrEmpty(SumCash))
+                {
+                    decimal pSumCashout = SumCash.ToDecimal() * 100;
+                    var res = EF.CashMachine.Cashout(pSumCashout);
+                    if (res.ResultCode == eResultCode.Success)
+                    {
+                        MW.CustomMessage.Show($"{ToReplenishmentMessage(res.Cash)}", "Успішно!", eTypeMessage.Information);
+
+                    }
+                    else
+                        MW.CustomMessage.Show($"Помилка! {res.ResultCode.GetDescription()}", "Помилка!", eTypeMessage.Information);
+                }
+
+
+                
+            };
+            Admin_NumericPad.Visibility = Visibility.Visible;
+            BackgroundCashMachine.Visibility = Visibility.Visible;
+        }
     }
 
     public class APIRadiobuton

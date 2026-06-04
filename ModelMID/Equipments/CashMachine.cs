@@ -27,6 +27,7 @@ namespace Front.Equipments
 
         public  virtual Payment Purchase(decimal pAmount, int IdWorkPlace = 0) { throw new NotImplementedException(); }//StartCashin
         public virtual Payment Refund(decimal pAmount,  int IdWorkPlace = 0) { throw new NotImplementedException(); } //Cashout
+        public virtual CashMachineStatus Cashout(decimal pAmount) { throw new NotImplementedException(); }
         public virtual List<CashInventory> Inventory() {  throw new NotImplementedException(); }
         public virtual Task<List<CashInventory>> InventoryAsync()
         {
