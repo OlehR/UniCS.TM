@@ -853,9 +853,20 @@ namespace ModelMID
 
     public enum eTypeUnit
     {
-        RBW_100 = 1,
-        RCW_100 = 2,
+        [Description("Машина для банкнот")]
+        RBW_100 = 1, // купюрна машина
+        [Description("Машина для монет")]
+        RCW_100 = 2, // монетна машина
         RBW_200 = 3 //не наш варіант але може бути в майбутньому 
+    }
+    public enum eTypeCollectMoney
+    {
+        [Description("Вилучення готівки в касету")]
+        Cassette =0,
+        //collect to the exit slot (only coin) = 1
+        //collect to the exit slot (only note)  = 2
+        [Description("Вилучення готівки в слот для решти")]
+        ExitSlot = 3,
     }
     public enum eTypeAuditReceipt
     {

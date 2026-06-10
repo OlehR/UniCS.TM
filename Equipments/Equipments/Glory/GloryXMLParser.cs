@@ -487,6 +487,13 @@ namespace Equipments.Equipments.Glory
 
         [XmlElement("SeqNo")]
         public int SeqNo { get; set; }
+        [XmlElement("Amount")]
+        public int Amount { get; set; }
+        [XmlElement("ManualDeposit")]
+        public int ManualDeposit { get; set; }
+        // <Status> без простору назв
+        [XmlElement("Status", Namespace = "")]
+        public StatusBlockEvent Status { get; set; }
 
         [XmlElement("User")]
         public string User { get; set; }

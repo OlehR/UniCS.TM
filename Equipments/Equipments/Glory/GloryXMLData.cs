@@ -1,6 +1,8 @@
 ﻿using ModelMID;
+using ModelMID.DB;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -421,6 +423,17 @@ namespace Equipments.Equipments.Glory
             return res;
 
         }
+        private static int GetCountBanknotes(List<CashInventory> pCashInventories, int pBill)
+        {
+            foreach (var c in pCashInventories)
+            {
+                if (c.FaceValue== pBill)
+                {
+                    return c.Quantity;
+                }
+            }
+            return 0;
+        }
 
         public static string XMLStartReplenishmentFromEntrance(string SessionID)
         {
@@ -493,7 +506,7 @@ namespace Equipments.Equipments.Glory
    </soapenv:Body>
 </soapenv:Envelope>";
         }
-        public static string XMLCollectOperation(string SessionID, int pAmount)
+        public static string XMLCollectOperation(string SessionID, List<CashInventory> pCashInventories, eTypeCollectMoney pTypeCollectMoney)
         {
             //Option type - 0 collect to the cassette,  1 collect to the exit slot (only coin), 2 collect to the exit slot (only note), 3 collect to the exit slot (both note and coin) 
             //<Option bru:type=""0""/> 0 - в касету, 3 на видачу
@@ -506,46 +519,46 @@ namespace Equipments.Equipments.Glory
          <bru:Id>{ID}</bru:Id>
          <bru:SeqNo>{SeqNo}</bru:SeqNo>
          <bru:SessionID>{SessionID}</bru:SessionID>
-         <Option bru:type=""0""/>
+         <Option bru:type=""{(int)pTypeCollectMoney}""/>
          <Mix bru:type=""0""/>
          <IFCassette bru:type=""0""/>
          <RequireVerification bru:type=""0""/>
          <Partial bru:type=""0""/>
          <Cash bru:type=""5"" bru:note_destination="""" bru:coin_destination="""">
       <Denomination bru:cc=""UAH"" bru:fv=""10000"" bru:rev=""0"" bru:devid=""1"">
-         <bru:Piece>{GetCountBanknotes(ref pAmount, 10000)}</bru:Piece>
+         <bru:Piece>{GetCountBanknotes(pCashInventories, 10000)}</bru:Piece>
          <bru:Status>0</bru:Status>
       </Denomination>
       <Denomination bru:cc=""UAH"" bru:fv=""5000"" bru:rev=""0"" bru:devid=""1"">
-         <bru:Piece>{GetCountBanknotes(ref pAmount, 5000)}</bru:Piece>
+         <bru:Piece>{GetCountBanknotes(pCashInventories, 5000)}</bru:Piece>
          <bru:Status>0</bru:Status>
       </Denomination>
       <Denomination bru:cc=""UAH"" bru:fv=""2000"" bru:rev=""0"" bru:devid=""1"">
-         <bru:Piece>{GetCountBanknotes(ref pAmount, 2000)}</bru:Piece>
+         <bru:Piece>{GetCountBanknotes(pCashInventories, 2000)}</bru:Piece>
          <bru:Status>0</bru:Status>
       </Denomination>
       <Denomination bru:cc=""UAH"" bru:fv=""1000"" bru:rev=""0"" bru:devid=""2"">
-         <bru:Piece>{GetCountBanknotes(ref pAmount, 1000)}</bru:Piece>
+         <bru:Piece>{GetCountBanknotes(pCashInventories, 1000)}</bru:Piece>
          <bru:Status>0</bru:Status>
       </Denomination>
       <Denomination bru:cc=""UAH"" bru:fv=""500"" bru:rev=""0"" bru:devid=""2"">
-         <bru:Piece>{GetCountBanknotes(ref pAmount, 500)}</bru:Piece>
+         <bru:Piece>{GetCountBanknotes(pCashInventories, 500)}</bru:Piece>
          <bru:Status>0</bru:Status>
       </Denomination>
       <Denomination bru:cc=""UAH"" bru:fv=""200"" bru:rev=""0"" bru:devid=""2"">
-         <bru:Piece>{GetCountBanknotes(ref pAmount, 200)}</bru:Piece>
+         <bru:Piece>{GetCountBanknotes(pCashInventories, 200)}</bru:Piece>
          <bru:Status>0</bru:Status>
       </Denomination>
       <Denomination bru:cc=""UAH"" bru:fv=""100"" bru:rev=""0"" bru:devid=""2"">
-         <bru:Piece>{GetCountBanknotes(ref pAmount, 100)}</bru:Piece>
+         <bru:Piece>{GetCountBanknotes(pCashInventories, 100)}</bru:Piece>
          <bru:Status>0</bru:Status>
       </Denomination>
       <Denomination bru:cc=""UAH"" bru:fv=""50"" bru:rev=""0"" bru:devid=""2"">
-         <bru:Piece>{GetCountBanknotes(ref pAmount, 50)}</bru:Piece>
+         <bru:Piece>{GetCountBanknotes(pCashInventories, 50)}</bru:Piece>
          <bru:Status>0</bru:Status>
       </Denomination>
       <Denomination bru:cc=""UAH"" bru:fv=""10"" bru:rev=""0"" bru:devid=""2"">
-         <bru:Piece>{GetCountBanknotes(ref pAmount, 10)}</bru:Piece>
+         <bru:Piece>{GetCountBanknotes(pCashInventories, 10)}</bru:Piece>
          <bru:Status>0</bru:Status>
       </Denomination>
          </Cash>

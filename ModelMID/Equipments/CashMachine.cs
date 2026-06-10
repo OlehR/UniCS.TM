@@ -34,10 +34,11 @@ namespace Front.Equipments
             return Task.FromResult(Inventory());
         }
         public virtual CashMachineStatus GetStatus() { throw new NotImplementedException(); }
-        public virtual bool UnLockUnit() { throw new NotImplementedException(); }
-        public virtual bool LockUnit() { throw new NotImplementedException(); }
+        public virtual bool UnLockUnit(eTypeUnit pTypeUnit) { throw new NotImplementedException(); }
+        public virtual bool LockUnit(eTypeUnit pTypeUnit) { throw new NotImplementedException(); }
         public virtual CashMachineStatus StartReplenishment() {  throw new NotImplementedException(); }
         public virtual CashMachineStatus EndReplenishment() { throw new NotImplementedException(); }
+        public virtual CashMachineStatus Collect(List<CashInventory> pCashInventories, eTypeCollectMoney pTypeCollectMoney) {  throw new NotImplementedException(); }
 
         public virtual void Cancel() { CancelRequested = true; }     
 
