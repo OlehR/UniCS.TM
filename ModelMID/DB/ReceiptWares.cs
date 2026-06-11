@@ -91,13 +91,8 @@ namespace ModelMID
         /// <summary>
         /// Знижка для Касового апарата та для Модерна
         /// </summary>
-        public decimal SumDiscountEKKA
-        {
-            get
-            {
-                return SumTotalDiscount + SumEKKA - Sum;
-            }
-        }
+        public decimal SumDiscountEKKA => SumTotalDiscount + SumEKKA - Sum;            
+        
         //SumBonus + SumDiscount + SumWallet + 
         // (PriceEKKA < Math.Round(PriceDealer, 2, MidpointRounding.AwayFromZero) ? (Math.Round(PriceDealer, 2, MidpointRounding.AwayFromZero)-PriceEKKA) : 0); 
 
