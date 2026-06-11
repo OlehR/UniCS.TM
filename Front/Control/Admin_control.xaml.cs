@@ -12,6 +12,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
+using System.Runtime.Intrinsics.X86;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,6 +41,7 @@ namespace Front.Control
         ObservableCollection<LogRRO> SourcesListJournal;
         ObservableCollection<Equipment> AllEquipment = new ObservableCollection<Equipment>();
         ObservableCollection<Banknote> Banknotes = new ObservableCollection<Banknote>();
+        ObservableCollection<Banknote> BanknotesCashMachine = new ObservableCollection<Banknote>();
 
         public double TotalMoneyCounting
         {
@@ -47,6 +49,18 @@ namespace Front.Control
             {
                 double sum = 0d;
                 foreach (var item in Banknotes)
+                {
+                    sum += item.MonetarySum;
+                }
+                return sum;
+            }
+        }
+        public double TotalMoneyCollect
+        {
+            get
+            {
+                double sum = 0d;
+                foreach (var item in BanknotesCashMachine)
                 {
                     sum += item.MonetarySum;
                 }
@@ -85,6 +99,7 @@ namespace Front.Control
         public string KasaNumber { get { return Global.GetWorkPlaceByIdWorkplace(Global.IdWorkPlace).Name; } }
         public ObservableCollection<APIRadiobuton> TypeMessageRadiobuton { get; set; }
         public bool IsShortPeriodZ { get; set; } = true;
+        public bool IsTypeCollectMoney { get; set; } = true;
         public bool IsPrintCoffeQR { get; set; } = false;
         public bool IsСurReceipt { get; set; } = false;
         public bool IsDeferredReceipt { get; set; } = false;
@@ -1361,6 +1376,8 @@ from RECEIPT r
             new Banknote() {MonetaryValue = 0.50,MonetaryAmount = 0},
             new Banknote() {MonetaryValue = 0.10,MonetaryAmount = 0},
             };
+
+
             ListBanknotes.ItemsSource = Banknotes;
         }
 
@@ -1372,6 +1389,8 @@ from RECEIPT r
         private void MoneyCountingCancel(object sender, RoutedEventArgs e)
         {
             MoneyCounting.Visibility = Visibility.Collapsed;
+            CollectMoneyCashMachine.Visibility= Visibility.Collapsed;
+            BackgroundCashMachine.Visibility = Visibility.Collapsed;
         }
 
         private void ClearMoneyCounting(object sender, RoutedEventArgs e)
@@ -1380,7 +1399,12 @@ from RECEIPT r
             {
                 item.MonetaryAmount = 0;
             }
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("TotalMoneyCounting"));
+            foreach (var item in BanknotesCashMachine)
+            {
+                item.MonetaryAmount = 0;
+            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TotalMoneyCounting)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TotalMoneyCollect)));
         }
 
         private void MoneyCounting_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1598,6 +1622,175 @@ from RECEIPT r
 
             return sb.ToString();
         }
+
+        private void Cashout_btn(object sender, RoutedEventArgs e)
+        {
+            AdminUC_NumericPad.Desciption = "Введіть суму видачі!";
+            AdminUC_NumericPad.ValidationMask = "";
+            AdminUC_NumericPad.Result = "";
+            AdminUC_NumericPad.IsEnableComma = true;
+            AdminUC_NumericPad.CallBackResult = (string SumCash) =>
+            {
+                Admin_NumericPad.Visibility = Visibility.Collapsed;
+                BackgroundCashMachine.Visibility = Visibility.Collapsed;
+                // метод видачі грошей
+                if (!string.IsNullOrEmpty(SumCash))
+                {
+                    decimal pSumCashout = SumCash.ToDecimal() * 100;
+                    var res = EF.CashMachine.Cashout(pSumCashout);
+                    if (res.ResultCode == eResultCode.Success)
+                    {
+                        MW.CustomMessage.Show($"{ToReplenishmentMessage(res.Cash)}", "Успішно!", eTypeMessage.Information);
+
+                    }
+                    else
+                        MW.CustomMessage.Show($"Помилка! {res.ResultCode.GetDescription()}", "Помилка!", eTypeMessage.Information);
+                }
+
+
+                
+            };
+            Admin_NumericPad.Visibility = Visibility.Visible;
+            BackgroundCashMachine.Visibility = Visibility.Visible;
+        }
+
+        private void UnLockNoteUnit_btn(object sender, RoutedEventArgs e)
+        {
+            UnLockCashMachineUnit(eTypeUnit.RBW_100);
+        }
+
+        private void LockNoteUnit_btn(object sender, RoutedEventArgs e)
+        {
+            LockCashMachineUnit(eTypeUnit.RBW_100);
+        }
+
+        private void UnLockCoinUnit_btn(object sender, RoutedEventArgs e)
+        {
+            UnLockCashMachineUnit(eTypeUnit.RCW_100);
+
+        }
+
+        private void LockCoinUnit_btn(object sender, RoutedEventArgs e)
+        {
+            LockCashMachineUnit(eTypeUnit.RCW_100);
+        }
+
+        private void UnLockCashMachineUnit(eTypeUnit pTypeUnit)
+        {
+            
+            if (EF.CashMachine.UnLockUnit(pTypeUnit))
+            {
+                MW.CustomMessage.Show($"Сейф для \"{pTypeUnit.GetDescription()}\" відкрито", "Успішно!", eTypeMessage.Information);
+
+            }
+            else
+                MW.CustomMessage.Show($"Помилка! перевірте статус машини!", "Помилка!", eTypeMessage.Information);
+        }
+        private void LockCashMachineUnit(eTypeUnit pTypeUnit)
+        {
+
+            if (EF.CashMachine.LockUnit(pTypeUnit))
+            {
+                MW.CustomMessage.Show($"Сейф для \"{pTypeUnit.GetDescription()}\" закрито", "Успішно!", eTypeMessage.Information);
+
+            }
+            else
+                MW.CustomMessage.Show($"Помилка! перевірте статус машини!", "Помилка!", eTypeMessage.Information);
+        }
+
+        private async void Collect_btn(object sender, RoutedEventArgs e)
+        {
+            CollectMoneyCashMachine.Visibility=Visibility.Visible;
+            BackgroundCashMachine.Visibility = Visibility.Visible;
+            List<CashInventory> result = await EF.CashMachine.InventoryAsync();
+            //свторення списку банкнот для відображення
+            BanknotesCashMachine = new ObservableCollection<Banknote> {
+            new Banknote() {MonetaryValue = 100,MonetaryAmount = 0},
+            new Banknote() {MonetaryValue = 50,MonetaryAmount = 0},
+            new Banknote() {MonetaryValue = 20,MonetaryAmount = 0},
+            new Banknote() {MonetaryValue = 10,MonetaryAmount = 0},
+            new Banknote() {MonetaryValue = 5,MonetaryAmount = 0},
+            new Banknote() {MonetaryValue = 2,MonetaryAmount = 0},
+            new Banknote() {MonetaryValue = 1,MonetaryAmount = 0},
+            new Banknote() {MonetaryValue = 0.50,MonetaryAmount = 0},
+            new Banknote() {MonetaryValue = 0.10,MonetaryAmount = 0},
+            };
+
+
+            foreach (var banknote in BanknotesCashMachine)
+            {
+                var match = result.FirstOrDefault(x =>
+                    x.MoneyStoragePlace == eMoneyStoragePlace.Drum &&
+                    (int)(banknote.MonetaryValue * 100) == x.FaceValue);
+
+                banknote.MonetaryAmountCashMachine = match?.Quantity ?? 0;
+            }
+            ListDenomination.ItemsSource = BanknotesCashMachine;
+
+        }
+
+        private void CollectMoney_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            SelectedBanknote = ListDenomination.SelectedItem as Banknote;
+            NumericPadCollectMoneyCashMachine.Visibility = Visibility.Visible;
+            CollectMoneyCashMachine_NumericPad.Visibility = Visibility.Visible;
+
+            CollectMoneyCashMachine_NumericPad.Desciption = $"Введіть кількість {SelectedBanknote.MonetaryValue}₴";
+            CollectMoneyCashMachine_NumericPad.ValidationMask = "^[0-9]{1,4}$";
+            CollectMoneyCashMachine_NumericPad.Result = $"";
+            CollectMoneyCashMachine_NumericPad.IsEnableComma = false;
+            CollectMoneyCashMachine_NumericPad.CallBackResult = (string res) =>
+            {
+                if (!string.IsNullOrEmpty(res))
+                {
+                    int countBanknotes = Convert.ToInt32(res) > SelectedBanknote.MonetaryAmountCashMachine ? SelectedBanknote.MonetaryAmountCashMachine : Convert.ToInt32(res);
+                    SelectedBanknote.MonetaryAmount = countBanknotes;
+                }
+                    
+                else
+                    SelectedBanknote.MonetaryAmount = 0;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TotalMoneyCollect)));
+
+                if (ListDenomination.Items.Count > 0 && ListDenomination.SelectedIndex != ListDenomination.Items.Count - 1)
+                    ListDenomination.SelectedIndex++;
+                NumericPadCollectMoneyCashMachine.Visibility = Visibility.Visible;
+                CollectMoneyCashMachine_NumericPad.Visibility = Visibility.Visible;
+            };
+
+        }
+
+        private void CollectMoneyCashMachine_btn(object sender, RoutedEventArgs e)
+        {
+            List<CashInventory> listMoneyForIssue = new List<CashInventory>();
+            foreach (var item in BanknotesCashMachine)
+            {
+                listMoneyForIssue.Add(new()
+                {
+                    FaceValue = Convert.ToInt32(item.MonetaryValue * 100),
+                    MoneyStoragePlace = eMoneyStoragePlace.Drum,
+                    Quantity = Convert.ToInt32(item.MonetaryAmount)
+                });
+            }
+            eTypeCollectMoney TypeCollectMoney = IsTypeCollectMoney ? eTypeCollectMoney.Cassette : eTypeCollectMoney.ExitSlot;
+            var collect = EF.CashMachine.Collect(listMoneyForIssue, TypeCollectMoney);
+            if (collect.ResultCode == eResultCode.Success)
+            {
+                MW.CustomMessage.Show($"Успішно!", "Успішно!", eTypeMessage.Information);
+
+            }
+            else
+                MW.CustomMessage.Show($"Помилка! {collect.ResultCode.GetDescription()}", "Помилка!", eTypeMessage.Information);
+
+            CollectMoneyCashMachine.Visibility = Visibility.Collapsed;
+            BackgroundCashMachine.Visibility = Visibility.Collapsed;
+
+        }
+
+        private void IsTypeCollectMoneyClick(object sender, RoutedEventArgs e)
+        {
+            IsTypeCollectMoney = (bool)TypeCollectMoneyCheckBox.IsChecked;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsTypeCollectMoney)));
+        }
     }
 
     public class APIRadiobuton
@@ -1610,6 +1803,7 @@ from RECEIPT r
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public double MonetaryValue { get; set; }
+        public int MonetaryAmountCashMachine { get; set; } = 0;
         private double _MonetaryAmount = 0;
         public double MonetaryAmount
         {

@@ -1,17 +1,21 @@
 ﻿using ECRCommXLib;
 using Equipments.Equipments.Glory;
+using Front.Equipments.Implementation.ModelVchasno;
 using Front.Equipments.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ModelMID;
 using ModelMID.DB;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using Utils;
@@ -105,10 +109,22 @@ namespace Front.Equipments
                     //    foreach (var den in cash.Denominations ?? new List<Denomination>())
                     //        Console.WriteLine($"  {den.CurrencyCode} {den.FaceValue}: piece={den.Piece}, status={den.Status}, devid={den.DeviceId}");
                     //}
-                    if (resp.Result != (int)eResultCode.Success)
+                    if (resp.Result == (int)eResultCode.Success || resp.Result == (int)eResultCode.DesignationDenominationShortage) //якогось хрена коли є решта і він має чим її віддати всеодно вертає помилку
+                    {
+                        return new Payment()
+                        {
+                            IsSuccess = true,
+                            //TransactionId = string.Format("{0}", (object)BPOS.TrnBatchNum), //приходить лише в онлайн лістенері
+                            DateCreate = DateTime.Now,
+                            TransactionStatus = GetErrorText(resp.Result),
+                            SumPay = Math.Round(Convert.ToDecimal(resp.Amount) / 100M, 2, MidpointRounding.AwayFromZero)
+                        };
+
+                    }
+                    else
                     {
                         //State = eStateEquipment.Error;
-                        OnStatus?.Invoke(new CashMachineStatus() { Status = eStatusChangeEvent.CanceledByUser, TextError = "Скасування оплати користувачем!"});
+                        OnStatus?.Invoke(new CashMachineStatus() { Status = eStatusChangeEvent.CanceledByUser, TextError = GetErrorText(resp.Result) });
                         return new Payment()
                         {
                             IsSuccess = false,
@@ -116,14 +132,7 @@ namespace Front.Equipments
                             TransactionStatus = GetErrorText(resp.Result)
                         };
                     }
-                    return new Payment()
-                    {
-                        IsSuccess = true,
-                        //TransactionId = string.Format("{0}", (object)BPOS.TrnBatchNum), //приходить лише в онлайн лістенері
-                        DateCreate = DateTime.Now,
-                        TransactionStatus = GetErrorText(resp.Result),
-                        SumPay = Math.Round(Convert.ToDecimal(resp.Amount) / 100M, 2, MidpointRounding.AwayFromZero)
-                    };
+
                 }
 
 
@@ -161,10 +170,12 @@ namespace Front.Equipments
             }
         }
 
-        public override Payment Refund(decimal pAmount, int IdWorkPlace = 0) => AsyncHelper.RunSync(async () => await RefundAsync(pAmount, IdWorkPlace));
+        public override Payment Refund(decimal pAmount, int IdWorkPlace = 0) => AsyncHelper.RunSync(async () => await CashoutAsync(pAmount)).ResultCode == eResultCode.Success ? new Payment() { IsSuccess = true } : new Payment() { IsSuccess = false };
+        public override CashMachineStatus Cashout(decimal pAmount) => AsyncHelper.RunSync(async () => await CashoutAsync(pAmount));
 
 
-        public async Task<Payment> RefundAsync(decimal pAmount, int IdWorkPlace = 0)
+
+        public async Task<CashMachineStatus> CashoutAsync(decimal pAmount)
         {
             string SOAPAction = eNameSOAPAction.CashoutOperation.ToString();
             string pData = GloryXMLData.XMLCashoutOperation(SessionID, Decimal.ToInt32(pAmount));
@@ -173,19 +184,18 @@ namespace Front.Equipments
                 await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, pData,
                     200); // збільшений тайм-аут для оплати
             FileLogger.WriteLogMessage($"Respons: {Environment.NewLine} {XMLRespons}");
-            var msg = SoapParser.Parse(XMLRespons);
-            if (msg is CashoutResponse resp)
-            {
-                //Console.WriteLine($"Result={resp.Result}, Id={resp.Id}, SeqNo={resp.SeqNo}, User={resp.User}");
-                //foreach (var c in resp.Cash ?? new List<CashBlock>())
-                //    Console.WriteLine($"Cash type={c.Type}, denoms={c.Denominations?.Count ?? 0}");
-                if (resp.Result == (int)eResultCode.Success)
-                {
-                    return new Payment() { IsSuccess = true };
-                }
-            }
 
-            return new Payment() { IsSuccess = false };
+            if (SoapParser.Parse(XMLRespons) is not CashoutResponse res)
+                return new();
+
+            return new CashMachineStatus
+            {
+                ResultCode = Enum.IsDefined(typeof(eResultCode), res.Result)
+                    ? (eResultCode)res.Result
+                    : eResultCode.UnknownError,
+                Cash = FromCashBlocks(res?.Cash, singleBlock: true)
+            };
+
         }
 
         public void Dispose()
@@ -195,7 +205,9 @@ namespace Front.Equipments
 
         public string GetErrorText(int? pCodeError = 9999)
         {
-            return Enum.GetName(typeof(eResultCode), pCodeError) ?? $"Unknown({pCodeError})";
+            return (Enum.IsDefined(typeof(eResultCode), pCodeError)
+                    ? (eResultCode)pCodeError
+                    : eResultCode.UnknownError).GetDescription();
         }
 
 
@@ -246,7 +258,7 @@ namespace Front.Equipments
             {
                 State = eStateEquipment.Error;
             }
-            
+
             return new StatusEquipment(eModelEquipment.GloryCash, State, getInfo.Status.GetDescription());
         }
 
@@ -403,20 +415,20 @@ namespace Front.Equipments
 
             FileLogger.WriteLogMessage($"Response:{Environment.NewLine}{xmlResponse}");
             var msg = SoapParser.Parse(xmlResponse);
-            if (msg is EndReplenishmentFromEntranceResponse resp)
-            {
-                Console.WriteLine($"Result={resp.Result}, Id={resp.Id}, SeqNo={resp.SeqNo}, User='{resp.User}', ManualDeposit={resp.ManualDeposit}");
-                foreach (var cash in resp.Cash ?? new List<CashBlock>())
-                {
-                    Console.WriteLine($"Cash type={cash.Type}");
-                    foreach (var d in cash.Denominations ?? new List<Denomination>())
-                        Console.WriteLine($"  {d.CurrencyCode} {d.FaceValue}: piece={d.Piece}, status={d.Status}, devid={d.DeviceId}");
-                }
-                if (resp.Result != (int)eResultCode.Success)
-                {
-                    MessageBox.Show(GetErrorText(resp.Result));
-                }
-            }
+            //if (msg is EndReplenishmentFromEntranceResponse resp)
+            //{
+            //    Console.WriteLine($"Result={resp.Result}, Id={resp.Id}, SeqNo={resp.SeqNo}, User='{resp.User}', ManualDeposit={resp.ManualDeposit}");
+            //    foreach (var cash in resp.Cash ?? new List<CashBlock>())
+            //    {
+            //        Console.WriteLine($"Cash type={cash.Type}");
+            //        foreach (var d in cash.Denominations ?? new List<Denomination>())
+            //            Console.WriteLine($"  {d.CurrencyCode} {d.FaceValue}: piece={d.Piece}, status={d.Status}, devid={d.DeviceId}");
+            //    }
+            //    if (resp.Result != (int)eResultCode.Success)
+            //    {
+            //        MessageBox.Show(GetErrorText(resp.Result));
+            //    }
+            //}
 
 
             if (SoapParser.Parse(xmlResponse) is not EndReplenishmentFromEntranceResponse res)
@@ -431,5 +443,64 @@ namespace Front.Equipments
             };
         }
 
+        public override bool UnLockUnit(eTypeUnit pTypeUnit) => AsyncHelper.RunSync(async () => await UnLockUnitAsync(pTypeUnit));
+        public override bool LockUnit(eTypeUnit pTypeUnit) => AsyncHelper.RunSync(async () => await LockUnitAsync(pTypeUnit));
+
+        public async Task<bool> UnLockUnitAsync(eTypeUnit pTypeUnit)
+        {
+            string SOAPAction = eNameSOAPAction.UnLockUnitOperation.ToString();
+            string XMLText = GloryXMLData.XMLUnLockUnitOperation(SessionID, pTypeUnit);
+            FileLogger.WriteLogMessage($"Request {SOAPAction}:  {Environment.NewLine} {XMLText}");
+            string XMLRespons = await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, XMLText);
+            FileLogger.WriteLogMessage($"ResponsGloru: {Environment.NewLine} {XMLRespons}");
+
+
+            if (SoapParser.Parse(XMLRespons) is not StartReplenishmentFromEntranceResponse res)
+                return false;
+
+            return Enum.IsDefined(typeof(eResultCode), res.Result);
+
+        }
+
+        public async Task<bool> LockUnitAsync(eTypeUnit pTypeUnit)
+        {
+            string SOAPAction = eNameSOAPAction.LockUnitOperation.ToString();
+            string XMLText = GloryXMLData.XMLLockUnitOperation(SessionID, pTypeUnit);
+            FileLogger.WriteLogMessage($"Request {SOAPAction}:  {Environment.NewLine} {XMLText}");
+            string XMLRespons = await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, XMLText);
+            FileLogger.WriteLogMessage($"ResponsGloru: {Environment.NewLine} {XMLRespons}");
+
+
+            if (SoapParser.Parse(XMLRespons) is not StartReplenishmentFromEntranceResponse res)
+                return false;
+
+            return Enum.IsDefined(typeof(eResultCode), res.Result);
+
+        }
+
+        public override CashMachineStatus Collect(List<CashInventory> pCashInventories, eTypeCollectMoney pTypeCollectMoney)
+            => AsyncHelper.RunSync(async () => await CollectAsync(pCashInventories, pTypeCollectMoney));
+        public async Task<CashMachineStatus> CollectAsync(List<CashInventory> pCashInventories, eTypeCollectMoney pTypeCollectMoney)
+        {
+            string SOAPAction = eNameSOAPAction.CollectOperation.ToString();
+            string XMLText = GloryXMLData.XMLCollectOperation(SessionID, pCashInventories, pTypeCollectMoney);
+            FileLogger.WriteLogMessage($"Request {SOAPAction}:  {Environment.NewLine} {XMLText}");
+            string XMLRespons = await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, XMLText);
+            FileLogger.WriteLogMessage($"ResponsGloru: {Environment.NewLine} {XMLRespons}");
+            //var msg = SoapParser.Parse(XMLRespons);
+            //if (msg is CollectResponse resp)
+            //{
+            //    var a = resp.SeqNo;
+            //}
+            if (SoapParser.Parse(XMLRespons) is not CollectResponse res)
+                return new();
+
+            return new CashMachineStatus
+            {
+                ResultCode = Enum.IsDefined(typeof(eResultCode), res.Result)
+                    ? (eResultCode)res.Result
+                    : eResultCode.UnknownError,
+            };
+        }
     }
 }
