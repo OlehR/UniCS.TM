@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Equipments\Equipments.csproj" />
     <ProjectReference Include="..\ModelMID\ModelMID.csproj" />
     <ProjectReference Include="..\SharedLib\SharedLib.csproj" />
   </ItemGroup>

@@ -334,10 +334,10 @@ namespace Front.Equipments.Implementation
 
             TextReport.Add(PrintTwoColums("Сума", pR.SumCash.ToString("F2")));
             decimal sumReceiptFiscal = SumReceiptFiscal(pR);
-            if (sumReceiptFiscal<0.01m)
+            if (sumReceiptFiscal<0.5m)
             {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка при розрахунку чеку! Округлення не може бути більше 10 копійок!");
-                throw new Exception(Environment.NewLine + "Помилка при розрахунку чеку! Округлення не може бути більше 10 копійок!" + Environment.NewLine + StrError);
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка при розрахунку чеку! Округлення не може бути більше 50 копійок!");
+                throw new Exception(Environment.NewLine + "Помилка при розрахунку чеку! Округлення не може бути більше 50 копійок!" + Environment.NewLine + StrError);
             }
             decimal roundFiscal = pR.SumCash - sumReceiptFiscal;
 
