@@ -331,8 +331,7 @@ namespace Front.Equipments.Implementation
             }
             TextReport.Add(PrintCenter($"------------------------"));
 
-
-            TextReport.Add(PrintTwoColums("Сума", pR.SumCash.ToString("F2")));
+            TextReport.Add(PrintTwoColums("Сума", (pR.SumCash+pR.SumCreditCard).ToString("F2")));
             decimal sumReceiptFiscal = SumReceiptFiscal(pR);
             if (sumReceiptFiscal<0.5m)
             {
@@ -342,7 +341,7 @@ namespace Front.Equipments.Implementation
             decimal roundFiscal = pR.SumCash - sumReceiptFiscal;
 
 
-            if (roundFiscal != 0)
+            if (pR.SumCreditCard==0 && roundFiscal != 0)
                 TextReport.Add(PrintTwoColums("Заокруглення", roundFiscal.ToString("F2")));
             if (pR.Fiscal?.Taxes?.Count() > 0)
             {
@@ -352,7 +351,6 @@ namespace Front.Equipments.Implementation
                 }
             }
             TextReport.Add(PrintCenter($"------------------------"));
-
 
             //інформація про банк
             if (pR.Payment.Count() > 0)
