@@ -124,7 +124,7 @@ namespace Front.Equipments.Implementation
             {
                 if (item.Contains("QR=>"))
                 {
-                    position = PrintQR(e, position, item);
+                    position = PrintQR(e, position, item,false);
                 }
                 else position = PrintLine(e, item, position, maxChar, SecondFont);
             }
@@ -195,7 +195,7 @@ namespace Front.Equipments.Implementation
         bool IsFiscalCode = false;
         int CountFiscalCode = 0;
 
-        private int PrintQR(PrintPageEventArgs e, int position, string line)
+        private int PrintQR(PrintPageEventArgs e, int position, string line, bool pIsFiscalCode=true)
         {
             string QRInfo = line.Replace("QR=>", string.Empty);
             var qrCodeData = qrGenerator.CreateQrCode(QRInfo, QRCodeGenerator.ECCLevel.L);
@@ -212,7 +212,7 @@ namespace Front.Equipments.Implementation
                 logoWidth,
                 logoHeight);
             position += 15;
-            IsFiscalCode = true;
+            IsFiscalCode = pIsFiscalCode;
             return position;
         }
         private int PrintImage(PrintPageEventArgs e, int position, string line)
@@ -457,8 +457,6 @@ namespace Front.Equipments.Implementation
                     CountFiscalCode = 0;
                     topPosition += 35;
                 }
-                
-
             }
             return topPosition;
         }
