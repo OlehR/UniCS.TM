@@ -450,11 +450,7 @@ namespace Front.Control
                 MW.SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.UseBonus, null);
         }
 
-        private void OpenMoneyBoxButton(object sender, RoutedEventArgs e)
-        {
-            MW.StartOpenMoneyBox();
-
-        }
+        private void OpenMoneyBoxButton(object sender, RoutedEventArgs e)=>MW.StartOpenMoneyBox();
 
         private void _ButtonPaymentCashBack(object sender, RoutedEventArgs e)
         {
@@ -474,7 +470,11 @@ namespace Front.Control
         private void ButtonManagementCard(object sender, RoutedEventArgs e)
         {
             MW.Bl.ReplaceWorkplaceId(MW.curReceipt);
-            _ButtonPaymentBank(null, null);
+            Rounding();
+            var r = MW.Bl.GetReceiptHead(MW.curReceipt, true);
+
+            var task = Task.Run(() => MW.Blf.PrintAndCloseReceipt(r, eTypePay.Card, 0, SumCashDisbursement));
+            MW.GiveRest = 0;
         }
 
         private void ButtonPostpaid(object sender, RoutedEventArgs e)

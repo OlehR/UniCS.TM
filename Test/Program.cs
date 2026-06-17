@@ -80,7 +80,7 @@ namespace Test
                         }
                         catch { }
                         var ResN = Con.Query<ResReceipt>($@"select Id_Workplace as IdWorkplace, Code_Period as CodePeriod, Code_Receipt as CodeReceipt, TextReceiptQR as TextReceipt 
-from  Log_RRO lr where TextReceiptQR is not null");
+from  Log_RRO lr where TextReceiptQR is not null and Type_RRO=""RRO""");
                         foreach (var el in ResN)
                         {
                             i++;
@@ -166,7 +166,7 @@ where wr.QUANTITY =1 and Excise_Stamp is not null and  lr.Id_Workplace_pay=  lr.
                                                 {
                                                     TextReceipt = TextReceipt.Insert(r + 1, $"{ExciseStamp}\r\n");
                                                     File.WriteAllText("d:/receipt.txt", TextReceipt);
-                                                    Con.Execute(@"update Log_RRO  set  TextReceipt = @TextReceipt where  Code_Period = @CodePeriod and Code_Receipt = @CodeReceipt and Id_Workplace = @IdWorkplace", new { el.IdWorkplace, el.CodePeriod, el.CodeReceipt, TextReceipt });
+                                                    Con.Execute(@"update Log_RRO  set  TextReceipt = @TextReceipt where  Code_Period = @CodePeriod and Code_Receipt = @CodeReceipt and Id_Workplace = @IdWorkplace and Type_RRO=""RRO""", new { el.IdWorkplace, el.CodePeriod, el.CodeReceipt, TextReceipt });
                                                     Console.WriteLine($"{f} {el.IdWorkplace} {el.CodePeriod} {el.CodeReceipt} {el.CodeWares} {el.ExciseStamp}");
                                                 }
                                             }
@@ -270,7 +270,7 @@ from  Log_RRO lr where TextReceipt is not null");
                                         ZZ.RemoveAt(0);
                                     string Receipt = string.Join("\r\n", ZZ);
 
-                                    Con.Execute(@"update Log_RRO  set  TextReceiptQR = @TextReceipt where  Code_Period = @CodePeriod and Code_Receipt = @CodeReceipt and Id_Workplace = @IdWorkplace", new { el.IdWorkplace, el.CodePeriod, el.CodeReceipt, TextReceipt = Receipt });
+                                    Con.Execute(@"update Log_RRO  set  TextReceiptQR = @TextReceipt where  Code_Period = @CodePeriod and Code_Receipt = @CodeReceipt and Id_Workplace = @IdWorkplace and Type_RRO=""RRO""", new { el.IdWorkplace, el.CodePeriod, el.CodeReceipt, TextReceipt = Receipt });
                                     Console.WriteLine($"{f} {el.IdWorkplace} {el.CodePeriod} {el.CodeReceipt} QR=>{QR}");
 
                                 }

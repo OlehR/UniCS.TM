@@ -331,7 +331,7 @@ namespace Front.Equipments.Implementation
             }
             TextReport.Add(PrintCenter($"------------------------"));
 
-            TextReport.Add(PrintTwoColums("Сума", (pR.SumCash+pR.SumCreditCard).ToString("F2")));
+            TextReport.Add(PrintTwoColums("Сума", (pR.SumCreditCard>0? pR.SumCreditCard:pR.SumCash).ToString("F2")));
             decimal sumReceiptFiscal = SumReceiptFiscal(pR);
             if (sumReceiptFiscal<0.5m)
             {

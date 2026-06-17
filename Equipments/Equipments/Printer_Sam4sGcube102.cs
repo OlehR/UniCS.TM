@@ -217,7 +217,7 @@ namespace Front.Equipments.Implementation
         }
         private int PrintImage(PrintPageEventArgs e, int position, string line)
         {
-            System.Drawing.Image logo = System.Drawing.Image.FromFile("d:ExellioLogo.png");
+            System.Drawing.Image logo = System.Drawing.Image.FromFile( Path.Combine( Global.PathPictures, "ExellioLogo.png"));
 
             int logoWidth = 75;  // потрібна ширина
             int logoHeight = (int)(logo.Height * (logoWidth / (float)logo.Width)); // зберігаємо пропорції
