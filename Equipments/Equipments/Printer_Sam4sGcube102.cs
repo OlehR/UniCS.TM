@@ -1,19 +1,19 @@
-﻿using Microsoft.Extensions.FileSystemGlobbing;
+﻿using Front.Equipments.Utils;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.FileSystemGlobbing;
 using ModelMID;
+using QRCoder;
+using SharedLib;
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Drawing;
 using System.Drawing.Printing;
+using System.Globalization;
 using System.Linq;
-using QRCoder;
 using System.Windows.Forms;
 using static System.Net.Mime.MediaTypeNames;
-using Microsoft.Extensions.Configuration;
-
-using System.CodeDom.Compiler;
-using System.Diagnostics.Metrics;
-using Front.Equipments.Utils;
-using System.Globalization;
 
 namespace Front.Equipments.Implementation
 {
@@ -170,6 +170,7 @@ namespace Front.Equipments.Implementation
                 //position = PrintLine(e, item, position, maxChar, CustomFont2);
             }
         }
+        
         private void PrintArrayStrings(object sender, PrintPageEventArgs e)
         {
             int position = 0;
@@ -183,18 +184,51 @@ namespace Front.Equipments.Implementation
                 {
                     position = PrintQR(e, position, item);
                 }
+                else if (item.Contains("*** [ФIСКАЛЬНИЙ ЛОГОТИП] ***"))
+                {
+                    position = PrintImage(e, position, item);
+                }
                 else
                     position = PrintLine(e, ClearStr(item), position, maxChar, MainFont);
             }
         }
+        bool IsFiscalCode = false;
+        int CountFiscalCode = 0;
+
         private int PrintQR(PrintPageEventArgs e, int position, string line)
         {
             string QRInfo = line.Replace("QR=>", string.Empty);
-            var qrCodeData = qrGenerator.CreateQrCode(QRInfo, QRCodeGenerator.ECCLevel.Q);
+            var qrCodeData = qrGenerator.CreateQrCode(QRInfo, QRCodeGenerator.ECCLevel.L);
             var qrCode = new QRCode(qrCodeData);
-            var QRImage = qrCode.GetGraphic(2);
-            e.Graphics.DrawImage(QRImage, (int)((WIDTHPAGE - QRImage.Width) * 0.85 / 2), position += 10);
-            position += QRImage.Height;
+            var QRImage = qrCode.GetGraphic(4);
+            //e.Graphics.DrawImage(QRImage, (int)((WIDTHPAGE - QRImage.Width) * 0.85 / 2), position += 10);
+
+            int logoWidth = 75;  // потрібна ширина
+            int logoHeight = (int)(QRImage.Height * (logoWidth / (float)QRImage.Width)); // зберігаємо пропорції
+
+            e.Graphics.DrawImage(QRImage,
+                0,
+                position += 10,
+                logoWidth,
+                logoHeight);
+            position += 15;
+            IsFiscalCode = true;
+            return position;
+        }
+        private int PrintImage(PrintPageEventArgs e, int position, string line)
+        {
+            System.Drawing.Image logo = System.Drawing.Image.FromFile("d:ExellioLogo.png");
+
+            int logoWidth = 75;  // потрібна ширина
+            int logoHeight = (int)(logo.Height * (logoWidth / (float)logo.Width)); // зберігаємо пропорції
+
+            e.Graphics.DrawImage(logo,
+                (int)((WIDTHPAGE - logoWidth) / 2),
+                position += 10,
+                logoWidth,
+                logoHeight);
+
+            position += logoHeight;
             return position;
         }
         private void PrintPageReceipt(object sender, PrintPageEventArgs e)
@@ -404,14 +438,27 @@ namespace Front.Equipments.Implementation
             if (string.IsNullOrEmpty(str)) return topPosition;
             string tmpVar = str;
             int maxCharProdukts = maxChar;
+            int leftPosition = IsFiscalCode ? 25 : 0;
 
             while (str.Length > 0)
             {
                 str = tmpVar.Length > maxCharProdukts ? tmpVar.Substring(0, maxCharProdukts) : tmpVar;
                 if (!string.IsNullOrEmpty(str))
-                    e.Graphics.DrawString(str, font, Brushes.Black, 0, topPosition += TopIndent);
+                    e.Graphics.DrawString(str, font, Brushes.Black, leftPosition, topPosition += TopIndent);
                 tmpVar = tmpVar.Length > maxCharProdukts ? tmpVar = tmpVar.Substring(maxCharProdukts) : "";
                 str = tmpVar;
+            }
+            if (IsFiscalCode)
+            {
+                CountFiscalCode++;
+                if (CountFiscalCode>=2)
+                {
+                    IsFiscalCode = false;
+                    CountFiscalCode = 0;
+                    topPosition += 35;
+                }
+                
+
             }
             return topPosition;
         }
