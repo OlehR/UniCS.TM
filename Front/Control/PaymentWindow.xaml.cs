@@ -28,9 +28,10 @@ namespace Front.Control
         public decimal SumCashDisbursement { get; set; } = 0;
         public decimal SumMaxWallet { get; set; } = 0;
         public bool IsPaymentBonuses { get; set; } = true;
-        public bool IsManagement { get { return Global.Settings.IsManagement;}}
-        public bool IsPostpaid { get { return Global.Settings.IsPostpaid;  } }
-        public bool IsUseСertificate { get => MW?.Client?.IsСertificate == true; }
+        public bool IsManagement => Global.Settings.IsManagement;
+        public bool IsManagementCard => Global.Settings.IsManagementCard;
+        public bool IsPostpaid => Global.Settings.IsPostpaid;
+        public bool IsUseСertificate => MW?.Client?.IsСertificate == true;
         public bool EnteringPriceManually { get; set; } = false;
         decimal _SumUseWallet = 0;
         public string TypeReturn { get; set; }
