@@ -730,9 +730,9 @@ namespace Front.Control
             curReceipt.StateReceipt = eStateReceipt.Pay;
             curReceipt.CodeCreditCard = pPay.NumberCard;
             curReceipt.NumberReceiptPOS = pPay.NumberReceipt;
-            curReceipt.SumCreditCard = pPay.SumPay;
+            //curReceipt.SumCreditCard = pPay.SumPay;
             Bl.db.ReplaceReceipt(curReceipt);
-            curReceipt.Payment = new List<Payment>() { pPay };
+            curReceipt.Payment = [pPay];
 
             //для оновлення сторінки
             FindChecksByDate(null, null);

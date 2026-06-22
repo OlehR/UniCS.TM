@@ -106,8 +106,6 @@ namespace Front.Equipments.Implementation
                         printDialog.PrinterSettings.PrinterName = NamePrinter;
                         printDialog.Document.Print(); // печатаем
                     }
-
-
                     return true;
                 }
                 else return false;

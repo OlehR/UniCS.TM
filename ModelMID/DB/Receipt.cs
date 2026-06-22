@@ -80,38 +80,32 @@ namespace ModelMID
         public decimal SumRest { get; set; }
         public decimal SumTotal { get { return SumReceipt - SumDiscount - SumBonus - SumWallet; } }
         IEnumerable<string> _BankName;
-        public IEnumerable<string> BankName
+        /*public IEnumerable<string> BankName
         {
             get { return Payment != null && Payment.Any(el => el.TypePay == eTypePay.Card) ? Payment.Select(el=>el.CodeBank.ToString()) : new List<string>(); }
             set{ _BankName = value;}
-        }
+        }*/
       
 
-        decimal _SumCash;
+        //decimal _SumCash;
         /// <summary>
         /// Оплачено Готівкою
         /// </summary>
-        public decimal SumCash
-        {
-            get { return (Payment != null && Payment.Any(el => el.TypePay == eTypePay.Cash) ? Payment.Where(el => el.TypePay == eTypePay.Cash).Sum(el => el.SumPay) : _SumCash); }
-            set { _SumCash = value; }
-        }
+        public decimal SumCash=> Payment?.Where(el => el.TypePay == eTypePay.Cash).Sum(el => el.SumPay) ?? 0; 
 
-        decimal _SumWallet = 0;
+        //decimal _SumWallet = 0;
         /// <summary>
         /// Списані/нараховані гроші скарбничка
         /// </summary>
-        public decimal SumWallet { get { return Payment?.Any() == true ? Payment.Where(el => el.TypePay == eTypePay.Wallet)?.Sum(el => el.SumPay) ?? 0 : _SumWallet; } set { _SumWallet = value; } }
+        public decimal SumWallet => Payment?.Where(el => el.TypePay == eTypePay.Wallet)?.Sum(el => el.SumPay) ?? 0;
 
-        decimal _SumCreditCard;
+        //decimal _SumCreditCard;
         /// <summary>
         /// Сума оплачена Кредиткою
         /// </summary>
-        public decimal SumCreditCard
-        {
-            get { return (Payment != null && Payment.Any(el => el.TypePay == eTypePay.Card) ? Payment.Where(el => el.TypePay == eTypePay.Card).Sum(el => el.SumPay) : _SumCreditCard); }
-            set { _SumCreditCard = value; }
-        }
+        public decimal SumCreditCard => Payment?.Where(el => el.TypePay == eTypePay.Card).Sum(el => el.SumPay) ?? 0;
+           // set { _SumCreditCard = value; }
+        
 
         decimal _SumBonus = 0m;
         /// <summary>
@@ -260,8 +254,8 @@ namespace ModelMID
             CodePattern = 0;
             SumReceipt = 0;
             VatReceipt = 0;
-            SumCash = 0;
-            SumCreditCard = 0;
+            //SumCash = 0;
+            //SumCreditCard = 0;
             CodeCreditCard = null;
             SumBonus = 0;
             NumberSlip = null;
@@ -388,7 +382,7 @@ namespace ModelMID
         //public string FiscalReceipt { get { return LogRROs?.Where(el => el.IdWorkplacePay == IdWorkplacePay && el.TypeOperation == eTypeOperation.Sale)?.FirstOrDefault()?.FiscalNumber ?? NumberReceipt; } }
         public bool ReCalcWallet()
         {
-            SumWallet = Payment?.Where(r => r.TypePay == eTypePay.Wallet).Sum(r => r.SumPay) ?? 0;
+            //SumWallet = Payment?.Where(r => r.TypePay == eTypePay.Wallet).Sum(r => r.SumPay) ?? 0;
             if (SumWallet > 0)
             {
                 var OrdinaryWares = Wares.Where(el => el.TypeWares == eTypeWares.Ordinary);

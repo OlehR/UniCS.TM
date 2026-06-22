@@ -228,7 +228,7 @@ namespace Front.Equipments
                                 R.CodeCreditCard = pay.NumberCard;
                                 R.NumberReceiptPOS = pay.NumberReceipt;
                                 //R.Client = null;
-                                R.SumCreditCard = pay.SumPay;
+                                //R.SumCreditCard = pay.SumPay;
                                 Bl.db.ReplaceReceipt(R);
                                 R.Payment = Bl.GetPayment(R);
                             }
