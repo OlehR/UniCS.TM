@@ -338,8 +338,9 @@ namespace Front
                 {
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name + "\\Кеш-машина", e);
                 }
-                //RRO               
-                foreach (var el in ListEquipment.Where(e => e.Type == eTypeEquipment.RRO))
+                //RRO
+                var Rros = ListEquipment.Where(e => e.Type == eTypeEquipment.RRO);
+                foreach (var el in Rros )
                 {
                     try
                     {
@@ -367,6 +368,9 @@ namespace Front
                                 break;
                             case eModelEquipment.pRRO_Vchasno:
                                 RRO = new pRRO_Vchasno(el, config, LF);
+                                break;
+                            case eModelEquipment.RRO_DoubleReceipt:
+                                RRO = new RRO_DoubleReceipt(el, config, LF,null,RROs.Values);
                                 break;
                             default:
                                 RRO = new Rro(el, config);

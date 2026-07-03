@@ -133,9 +133,9 @@ namespace ModelMID
         public long CodeWares { get; set; }
     }
 
-    public class ParameterPromotion:IdReceipt
+    public class ParameterPromotion:IdReceiptWares
     {
-        public ParameterPromotion(IdReceipt pIR):base(pIR){ }
+        public ParameterPromotion(IdReceiptWares pIR):base(pIR){ }
         public ParameterPromotion() : base() { }
         public int CodeWarehouse { get; set; }
         public int TypeCard { get; set; }

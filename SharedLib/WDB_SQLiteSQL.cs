@@ -911,14 +911,16 @@ select PSf.CODE_PS,0 as priority, PSD.TYPE_DISCOUNT as Type_discont, p.PRICE_DEA
  union all
  select count(*) from  PROMOTION_SALE_GIFT psg  where psg.Code_wares= @CodeWares);";
 
-        readonly string SqlGetPricePromotionKit = @"
-        with wk as 
+        string SqlGetPricePromotionKit => SqlGetPriceFilter+ @" --with
+          ,wk as 
 (select psd.CODE_PS ,psd.DATA as Quantity_For_Gift ,psfw.code_data as code_wares ,psd.Number_group
 from
  PROMOTION_SALE_Data psd
  join PROMOTION_SALE_FILTER psf on psf.Code_ps=psd.Code_ps and psf.TYPE_GROUP_FILTER=51 and psf.CODE_DATA= @CodeWarehouse
  join  PROMOTION_SALE_FILTER psfw on psfw.Code_ps= psd.Code_ps and psfw.TYPE_GROUP_FILTER= 11  and psfw.Code_Group_Filter= psd.Number_group
-where psd.TYPE_DISCOUNT= 41)
+ left join ExeptionPS  EPS on psd.CODE_PS=EPS.CODE_PS
+where psd.TYPE_DISCOUNT= 41 and EPS.code_ps  is null
+)
 select pr.Code_PS as CodePS, pr.Number_group as NumberGroup , wr.code_wares as CodeWares, pr.Quantity, psg.TYPE_DISCOUNT as TypeDiscount, psg.Data as DataDiscount, 0 as Coefficient 
 from
 (select wk.CODE_PS, wk.Number_group, wr.id_workplace, wr.code_period, wr.code_receipt, cast(sum(wr.QUANTITY)/wk.Quantity_For_Gift as int) as Quantity

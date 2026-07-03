@@ -41,7 +41,7 @@ namespace ModelMID
         /// <summary>
         /// Код товару скарбнички
         /// </summary>
-        public int CodeWaresWallet { get; set; } = 163516;
+        public long CodeWaresWallet { get; set; } = 163516;
         /// <summary>
         /// Код пакету який пропунує додати в чек
         /// </summary>
