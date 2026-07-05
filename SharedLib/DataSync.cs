@@ -175,10 +175,10 @@ namespace SharedLib
                     {
                         db.SetConfig<DateTime>("Load_Full", DateTime.Now.Date.AddDays(-1).Date);
                         db.SetConfig<DateTime>("Load_Update", DateTime.Now.Date.AddDays(-1).Date);
-
+                        db.Close(true);
                         Exception Ex = null;
                         if (File.Exists(varMidFile))
-                        {
+                        {                            
                             Thread.Sleep(200);
                             FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Try Delete file {varMidFile}");
                             try
@@ -951,7 +951,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
         {
             try
             {
-                HttpClient client = new() {  Timeout = TimeSpan.FromMilliseconds(90000)};
+                HttpClient client = new() {  Timeout = TimeSpan.FromMilliseconds(120000)};
                 HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "CashRegister/LoadData")
                                                         { Content = new StringContent(pData.ToJson(), Encoding.UTF8, "application/json") };
                 var response = await client.SendAsync(requestMessage);

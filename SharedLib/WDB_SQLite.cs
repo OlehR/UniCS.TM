@@ -309,7 +309,7 @@ namespace SharedLib
         public T GetConfig<T>(string pStr, SQL pDB = null)
         {
             string SqlConfig = "SELECT Data_Var  FROM CONFIG  WHERE UPPER(Name_Var) = UPPER(trim(@NameVar));";
-            if (pDB == null) pDB = db;
+            pDB ??= dbConfig;
             return pDB.ExecuteScalar<object, T>(SqlConfig, new { NameVar = pStr });
         }
 
