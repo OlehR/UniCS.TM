@@ -571,6 +571,7 @@ namespace ModelMID
 
             var ExciseStamp = el.GetExciseStamp.Where(e => !e.Equals("None")).ToArray();
             decimal Quantity = el.Quantity;
+            if (ExciseStamp.Count() == 1) return [el];            
 
             if (ExciseStamp.Count() > 1)
             {

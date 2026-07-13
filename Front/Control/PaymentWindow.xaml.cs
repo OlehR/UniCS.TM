@@ -28,9 +28,10 @@ namespace Front.Control
         public decimal SumCashDisbursement { get; set; } = 0;
         public decimal SumMaxWallet { get; set; } = 0;
         public bool IsPaymentBonuses { get; set; } = true;
-        public bool IsManagement { get { return Global.Settings.IsManagement;}}
-        public bool IsPostpaid { get { return Global.Settings.IsPostpaid;  } }
-        public bool IsUseСertificate { get => MW?.Client?.IsСertificate == true; }
+        public bool IsManagement => Global.Settings.IsManagement;
+        public bool IsManagementCard => Global.Settings.IsManagementCard;
+        public bool IsPostpaid => Global.Settings.IsPostpaid;
+        public bool IsUseСertificate => MW?.Client?.IsСertificate == true;
         public bool EnteringPriceManually { get; set; } = false;
         decimal _SumUseWallet = 0;
         public string TypeReturn { get; set; }
@@ -234,9 +235,9 @@ namespace Front.Control
             curReceipt.StateReceipt = eStateReceipt.Pay;
             curReceipt.CodeCreditCard = pPay.NumberCard;
             curReceipt.NumberReceiptPOS = pPay.NumberReceipt;
-            curReceipt.SumCreditCard = pPay.SumPay;
+            //curReceipt.SumCreditCard = pPay.SumPay;
             MW?.Bl.db.ReplaceReceipt(curReceipt);
-            curReceipt.Payment = new List<Payment>() { pPay };
+            curReceipt.Payment = [pPay];
         }
 
         private void _Cancel(object sender, RoutedEventArgs e)
@@ -449,11 +450,7 @@ namespace Front.Control
                 MW.SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.UseBonus, null);
         }
 
-        private void OpenMoneyBoxButton(object sender, RoutedEventArgs e)
-        {
-            MW.StartOpenMoneyBox();
-
-        }
+        private void OpenMoneyBoxButton(object sender, RoutedEventArgs e)=>MW.StartOpenMoneyBox();
 
         private void _ButtonPaymentCashBack(object sender, RoutedEventArgs e)
         {
@@ -473,7 +470,11 @@ namespace Front.Control
         private void ButtonManagementCard(object sender, RoutedEventArgs e)
         {
             MW.Bl.ReplaceWorkplaceId(MW.curReceipt);
-            _ButtonPaymentBank(null, null);
+            Rounding();
+            var r = MW.Bl.GetReceiptHead(MW.curReceipt, true);
+
+            var task = Task.Run(() => MW.Blf.PrintAndCloseReceipt(r, eTypePay.Card, 0, SumCashDisbursement));
+            MW.GiveRest = 0;
         }
 
         private void ButtonPostpaid(object sender, RoutedEventArgs e)

@@ -41,7 +41,7 @@ namespace ModelMID
         /// <summary>
         /// Код товару скарбнички
         /// </summary>
-        public int CodeWaresWallet { get; set; } = 163516;
+        public long CodeWaresWallet { get; set; } = 163516;
         /// <summary>
         /// Код пакету який пропунує додати в чек
         /// </summary>
@@ -105,6 +105,10 @@ namespace ModelMID
         /// Чи є "Управлінські" чеки
         /// </summary>
         public bool IsManagement { get; set; }
+        /// <summary>
+        /// Чи є "Управлінські" чеки
+        /// </summary>
+        public bool IsManagementCard { get; set; }
         /// <summary>
         /// В який IdWorkPlace конвертуємо "Управлінські" чеки.
         /// </summary>

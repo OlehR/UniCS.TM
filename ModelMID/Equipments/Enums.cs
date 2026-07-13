@@ -341,6 +341,8 @@ namespace Front.Equipments
         pRRo_WebCheck,
         [Description("пФР Vchasno")]
         pRRO_Vchasno,
+        [Description("ФР з подвійним чеком")]
+        RRO_DoubleReceipt,
         [Description("Друкарка Sam4s Gcube102")]
         Printer_Sam4sGcube102,
         [Description("Віртуальний ФР")]
@@ -400,6 +402,7 @@ namespace Front.Equipments
                 case eModelEquipment.VirtualRRO:
                 case eModelEquipment.RRO_FP700:
                 case eModelEquipment.pRRO_Vchasno:
+                case eModelEquipment.RRO_DoubleReceipt:
                     return eTypeEquipment.RRO;
                 case eModelEquipment.Printer_Sam4sGcube102:
                     return eTypeEquipment.Printer;

@@ -154,11 +154,11 @@
                         <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
                             <Setter Property="Visibility" Value="Collapsed"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsManagement, RelativeSource={RelativeSource 
+                                <DataTrigger Binding="{Binding IsManagementCard, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=UserControl}}" Value="True">
                                     <Setter Property="Visibility" Value="Visible" />
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding IsManagement, RelativeSource={RelativeSource 
+                                <DataTrigger Binding="{Binding IsManagementCard, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=UserControl}}" Value="False">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>

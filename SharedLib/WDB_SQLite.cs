@@ -309,7 +309,7 @@ namespace SharedLib
         public T GetConfig<T>(string pStr, SQL pDB = null)
         {
             string SqlConfig = "SELECT Data_Var  FROM CONFIG  WHERE UPPER(Name_Var) = UPPER(trim(@NameVar));";
-            if (pDB == null) pDB = db;
+            pDB ??= dbConfig;
             return pDB.ExecuteScalar<object, T>(SqlConfig, new { NameVar = pStr });
         }
 
@@ -405,7 +405,7 @@ namespace SharedLib
 
                         ReplaceWaresReceipt(RW);
                     }
-                    GetPricePromotionKit(pIdReceiptWares, pIdReceiptWares.CodeWares);
+                    GetPricePromotionKit(par);
                     RecalcHeadReceipt(pIdReceiptWares);
                     startTime.Stop();
                     Console.WriteLine($"RecalcPrice=>{startTime.Elapsed}  {r?.Count()}");
@@ -427,18 +427,18 @@ namespace SharedLib
         /// </summary>
         /// <param name="parIdReceipt"></param>
         /// <returns></returns>
-        public bool GetPricePromotionKit(IdReceipt parIdReceipt, long parCodeWares)
+        public bool GetPricePromotionKit(ParameterPromotion pPar)
         {
-            if (parCodeWares > 0 && !IsWaresInPromotionKit(parCodeWares))
+            if (pPar.CodeWares > 0 && !IsWaresInPromotionKit(pPar.CodeWares))
                 return true;
 
             var varRes = new List<WaresReceiptPromotion>();
-            var par = new ParamPricePromotionKit(parIdReceipt, ModelMID.Global.CodeWarehouse);
-            var r = db.Execute<ParamPricePromotionKit, PromotionWaresKit>(SqlGetPricePromotionKit, par);
+            //var par = new ParamPricePromotionKit(parIdReceipt, ModelMID.Global.CodeWarehouse);
+            var r = db.Execute<ParameterPromotion, PromotionWaresKit>(SqlGetPricePromotionKit, pPar);
             int NumberGroup = 0;
             decimal Quantity = 0, AddQuantity = 0;
             Int64 CodePS = 0;
-            var RW = ViewReceiptWares(parIdReceipt);
+            var RW = ViewReceiptWares(new IdReceipt(pPar));
             foreach (var el in r)//цикл по Можливим позиціям з знижкою.
             {
                 if (el.CodePS != CodePS || el.NumberGroup != NumberGroup)
@@ -470,7 +470,7 @@ namespace SharedLib
                             var Price = RW.Where(e => e.CodeWares == el.CodeWares).Sum(e => e.Price);
                             vPrice = Price * (100 - el.DataDiscount) / 100m;
                         }
-                        var RWP = new WaresReceiptPromotion(parIdReceipt) { CodeWares = el.CodeWares, Quantity = AddQuantity, Price = vPrice, CodePS = el.CodePS, NumberGroup = el.NumberGroup, Coefficient = el.Coefficient };
+                        var RWP = new WaresReceiptPromotion(pPar) { CodeWares = el.CodeWares, Quantity = AddQuantity, Price = vPrice, CodePS = el.CodePS, NumberGroup = el.NumberGroup, Coefficient = el.Coefficient };
                         varRes.Add(RWP);
                         ReceiptWares? rw = RW.FirstOrDefault(e => e.CodeWares == el.CodeWares);
                         if (rw != null)
@@ -484,7 +484,7 @@ namespace SharedLib
                     }
                 }
             }
-            DeleteWaresReceiptPromotion(parIdReceipt);
+            DeleteWaresReceiptPromotion(pPar);
             if (varRes.Count > 0)
                 ReplaceWaresReceiptPromotion(varRes);
 
@@ -1218,7 +1218,7 @@ from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWare
 
         public bool ReplaceOneTime(OneTime pRC) => dbRC.ExecuteNonQuery<OneTime>(SqlReplaceOneTime, pRC) > 0;
 
-        public ParameterPromotion GetParameterPromotion(IdReceipt pIdR, bool pIsPricePromotion = true)
+        public ParameterPromotion GetParameterPromotion(IdReceiptWares pIdR, bool pIsPricePromotion = true)
         {
             ParameterPromotion par;
             var InfoClient = GetInfoClientByReceipt(pIdR);
@@ -1238,7 +1238,7 @@ from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWare
         public IEnumerable<PricePromotion> GetNoPricePromorion(Receipt pR)
         {
             List<PricePromotion> Res = new List<PricePromotion>();
-            ParameterPromotion par = GetParameterPromotion(pR, false);
+            ParameterPromotion par = GetParameterPromotion(new(pR), false);
 
             var r = ViewReceiptWares(pR);
             DeleteReceiptWaresPromotionNoPrice(pR, eTypeDiscount.ForCountOtherPromotion);

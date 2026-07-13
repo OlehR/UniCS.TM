@@ -331,18 +331,17 @@ namespace Front.Equipments.Implementation
             }
             TextReport.Add(PrintCenter($"------------------------"));
 
-
-            TextReport.Add(PrintTwoColums("Сума", pR.SumCash.ToString("F2")));
+            TextReport.Add(PrintTwoColums("Сума", (pR.SumCreditCard>0? pR.SumCreditCard:pR.SumCash).ToString("F2")));
             decimal sumReceiptFiscal = SumReceiptFiscal(pR);
-            if (sumReceiptFiscal<0.01m)
+            if (sumReceiptFiscal<0.5m)
             {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка при розрахунку чеку! Округлення не може бути більше 10 копійок!");
-                throw new Exception(Environment.NewLine + "Помилка при розрахунку чеку! Округлення не може бути більше 10 копійок!" + Environment.NewLine + StrError);
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка при розрахунку чеку! Округлення не може бути більше 50 копійок!");
+                throw new Exception(Environment.NewLine + "Помилка при розрахунку чеку! Округлення не може бути більше 50 копійок!" + Environment.NewLine + StrError);
             }
             decimal roundFiscal = pR.SumCash - sumReceiptFiscal;
 
 
-            if (roundFiscal != 0)
+            if (pR.SumCreditCard==0 && roundFiscal != 0)
                 TextReport.Add(PrintTwoColums("Заокруглення", roundFiscal.ToString("F2")));
             if (pR.Fiscal?.Taxes?.Count() > 0)
             {
@@ -352,7 +351,6 @@ namespace Front.Equipments.Implementation
                 }
             }
             TextReport.Add(PrintCenter($"------------------------"));
-
 
             //інформація про банк
             if (pR.Payment.Count() > 0)
@@ -391,6 +389,8 @@ namespace Front.Equipments.Implementation
                 if (pR.TypeReceipt == eTypeReceipt.Sale)
                 {
                     TextReport.Add($"QR=>{pR.Fiscal.QR}");
+                    TextReport.Add("");
+                    TextReport.Add("");
                     TextReport.Add(PrintCenter("Фіскальний чек"));
                 }
             }

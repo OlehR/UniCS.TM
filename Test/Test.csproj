@@ -2,18 +2,44 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net9.0-windows10.0.26100.0</TargetFramework>
     <Version>1.0.5</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BarCode" Version="2024.11.5" />
-    <PackageReference Include="System.IO.Packaging" Version="8.0.1" />
+    <Compile Remove="GetGoodUrl.cs" />
+    <Compile Remove="ServerSocket.cs" />
+    <Compile Remove="WebAsses.cs" />
+    <Compile Remove="wsserver.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ExellioLogo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="GetGoodUrl.cs" />
+    <None Include="ServerSocket.cs" />
+    <None Include="WebAsses.cs" />
+    <None Include="wsserver.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BarCode" Version="2024.11.5" />
+    <PackageReference Include="System.IO.Packaging" Version="8.0.1" />
+    <PackageReference Include="System.Management" Version="10.0.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Equipments\Equipments.csproj" />
     <ProjectReference Include="..\ModelMID\ModelMID.csproj" />
     <ProjectReference Include="..\SharedLib\SharedLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="ExellioLogo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>
