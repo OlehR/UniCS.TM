@@ -253,7 +253,7 @@ namespace Front.Equipments
 
 
         public override List<CashInventory> Inventory() => AsyncHelper.RunSync(async () => await InventoryAsync());
-        public  async Task<List<CashInventory>> InventoryAsync()
+        public async Task<List<CashInventory>> InventoryAsync()
         {
             //отримання актуальних купюр
             string SOAPAction = eNameSOAPAction.InventoryOperation.ToString();
@@ -349,7 +349,7 @@ namespace Front.Equipments
                     MoneyStoragePlace = eMoneyStoragePlace.Safe
                 });
             }
-            
+
             return result;
         }
         public override CashMachineStatus StartReplenishment()
@@ -486,6 +486,7 @@ namespace Front.Equipments
             var res = Inventory()
                 .Where(item => item.MoneyStoragePlace == eMoneyStoragePlace.Drum)
                 .Sum(item => item.FaceValue * item.Quantity) > MaxSumRest;
+            TextError = res ? "" : "Заблоковано через брак коштів для решти";
             State = res ? eStateEquipment.On : eStateEquipment.Lock;
             return res;
         }
