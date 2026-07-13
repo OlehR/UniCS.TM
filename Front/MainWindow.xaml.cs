@@ -433,6 +433,7 @@ namespace Front
 
             AdminControl.Init(this);
             PaymentWindow.Init(this);
+            ChangeTypePaymentInKSO.Init(this);
             CustomMessage.Init(this);
             IssueCardUC.Init(this);
             PhoneVerificationUC.Init(this);
@@ -1199,6 +1200,7 @@ namespace Front
                             else
                             {
                                 ChangeTypePaymentInKSO.Visibility = Visibility.Visible;
+                                ChangeTypePaymentInKSO.UpdateTypePayment();
                                 ChangeTypePaymentInKSO.IsCashPayment = (bool isCashPayment) =>
                                 {
                                     if (isCashPayment)

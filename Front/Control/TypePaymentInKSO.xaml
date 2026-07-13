@@ -45,22 +45,60 @@
                 </StackPanel>
 
                 <Button Grid.Row="1" Grid.Column="0" x:Name="Cash"
-                        Style="{StaticResource greenButton}"  FontSize="22" 
+                        FontSize="22" 
                         Height="80" Width="250" 
                         Click="ChangeTypePayment">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="\icons\Cash.png" Width="50" Height="50"/>
                         <TextBlock FontSize="28" Text="Готівка" Foreground="White" Margin="5,0,0,5"/>
                     </StackPanel>
+                    <Button.Style>
+                        <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
+                            <Setter Property="IsEnabled" Value="True"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsCheckReturn, RelativeSource={RelativeSource 
+                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                    <Setter Property="IsEnabled" Value="False" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding TypeReturn, RelativeSource={RelativeSource 
+                   Mode=FindAncestor, AncestorType=UserControl}}" Value="AllPayments">
+                                    <Setter Property="IsEnabled" Value="True" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding TypeReturn, RelativeSource={RelativeSource 
+                   Mode=FindAncestor, AncestorType=UserControl}}" Value="CashMachine">
+                                    <Setter Property="IsEnabled" Value="True" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
                 </Button>
                 <Button Grid.Row="1" Grid.Column="1" x:Name="Terminal"
-                        Style="{StaticResource greenButton}"  FontSize="22" 
+                        FontSize="22" 
                         Height="80" Width="250"
                         Click="ChangeTypePayment">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="\icons\newPaymentTerminal.png" Width="50" Height="50"/>
                         <TextBlock FontSize="28" Text="Карта" Foreground="White" Margin="5,0,0,5"/>
                     </StackPanel>
+                    <Button.Style>
+                        <Style BasedOn="{StaticResource greenButton}" TargetType="Button">
+                            <Setter Property="IsEnabled" Value="True"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsCheckReturn, RelativeSource={RelativeSource 
+                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                    <Setter Property="IsEnabled" Value="False" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding TypeReturn, RelativeSource={RelativeSource 
+                   Mode=FindAncestor, AncestorType=UserControl}}" Value="AllPayments">
+                                    <Setter Property="IsEnabled" Value="True" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding TypeReturn, RelativeSource={RelativeSource 
+                   Mode=FindAncestor, AncestorType=UserControl}}" Value="Card">
+                                    <Setter Property="IsEnabled" Value="True" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
                 </Button>
 
             </Grid>

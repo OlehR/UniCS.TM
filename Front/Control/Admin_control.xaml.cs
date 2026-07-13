@@ -127,6 +127,8 @@ namespace Front.Control
         public int SumDrumCoin { get; set; }
         public int AllSumNote { get; set; }
         public int AllSumCoin { get; set; }
+        public int SumSafeNote { get; set; }
+        public int SumSafeCoin { get; set; }
         public bool IsCashMachine { get; set; } = false;
         public ObservableCollection<CashInventory> AmountMoney { get; set; }
         public class CashInventoryRow
@@ -180,10 +182,12 @@ namespace Front.Control
 
             SumDrumNote = BanknoteRows.Sum(r => r.FaceValue * r.DrumQuantity / 100);
             AllSumNote = BanknoteRows.Sum(r => r.FaceValue * r.AllQuantity / 100);
+            SumSafeNote = AllSumNote - SumDrumNote;
             SumDrumCoin = CoinRows.Sum(r => r.FaceValue * r.DrumQuantity / 100);
             AllSumCoin = CoinRows.Sum(r => r.FaceValue * r.AllQuantity / 100);
+            SumSafeCoin = AllSumCoin - SumDrumCoin;
 
-            foreach (var prop in new[] { nameof(SumDrumNote), nameof(AllSumNote), nameof(SumDrumCoin), nameof(AllSumCoin) })
+            foreach (var prop in new[] { nameof(SumDrumNote), nameof(AllSumNote), nameof(SumDrumCoin), nameof(AllSumCoin), nameof(SumSafeNote), nameof(SumSafeCoin) })
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
@@ -278,12 +282,8 @@ namespace Front.Control
                 IsCashMachine = EF.CashMachine?.IsNotNull() == true;
                 if (IsCashMachine)
                 {
-
                     RefreshCashInventoryTables();
-
                 }
-
-
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCashMachine)));
             }
 

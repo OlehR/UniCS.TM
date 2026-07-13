@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Front.Equipments;
+using ModelMID;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,13 +21,18 @@ namespace Front.Control
     /// <summary>
     /// Interaction logic for TypePaymentInKSO.xaml
     /// </summary>
-    public partial class TypePaymentInKSO : UserControl
+    public partial class TypePaymentInKSO : UserControl, INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
         public Action<bool> IsCashPayment { get; set; }
+        public string TypeReturn { get; set; }
+        MainWindow MW;
         public TypePaymentInKSO()
         {
             InitializeComponent();
         }
+
+
 
         private void ChangeTypePayment(object sender, RoutedEventArgs e)
         {
@@ -44,6 +52,29 @@ namespace Front.Control
                     break;
 
             }
+        }
+        public void Init(MainWindow pMW) { MW = pMW; }
+        public void UpdateTypePayment()
+        {
+            if (MW.curReceipt?.RefundId != null)
+                MW.curReceipt.Payment = MW.Bl.GetPayment(MW.curReceipt.RefundId);
+            if (MW.curReceipt.Payment.Count() > 0)
+                RefreshTypePayment();
+        }
+        void RefreshTypePayment()
+        {
+            TypeReturn = "";
+            if (MW.curReceipt.Payment.Any(x => x.TypePay == eTypePay.CashMachine))
+            {
+                TypeReturn = eTypePay.CashMachine.ToString();
+            }
+            else
+            {
+                TypeReturn = eTypePay.Card.ToString();
+            }
+            if (string.IsNullOrEmpty(TypeReturn))
+                TypeReturn = "AllPayments";
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TypeReturn)));
         }
     }
 }

@@ -2098,7 +2098,7 @@
                 <TabItem Header="Кеш-машина">
                     <TabItem.Style>
                         <Style TargetType="{x:Type TabItem}">
-                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Setter Property="Visibility" Value="Visible" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsCashMachine, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=UserControl}}" Value="True">
@@ -2169,6 +2169,8 @@
                                     <TextBlock Text="Купюри" FontSize="20" FontWeight="Bold" Margin="10" Foreground="DarkGreen"/>
                                     <TextBlock Text="Сума в барабані:"  FontWeight="Bold"/>
                                     <TextBlock Text="{Binding SumDrumNote, StringFormat=0.00₴, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"  Margin="10" FontWeight="Bold"/>
+                                    <TextBlock Text="Сума в сейфі:"  FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding SumSafeNote, StringFormat=0.00₴, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"  Margin="10" FontWeight="Bold"/>
                                     <TextBlock Text="Загальна сума:"  FontWeight="Bold"/>
                                     <TextBlock Text="{Binding AllSumNote, StringFormat=0.00₴, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" Margin="10" FontWeight="Bold"/>
                                 </StackPanel>
@@ -2306,6 +2308,8 @@
                                     <TextBlock Text="Монети" FontSize="20" FontWeight="Bold" Margin="10" Foreground="DarkGreen"/>
                                     <TextBlock Text="Сума в барабані:"  FontWeight="Bold"/>
                                     <TextBlock Text="{Binding SumDrumCoin, StringFormat=0.00₴, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"  Margin="10" FontWeight="Bold"/>
+                                    <TextBlock Text="Сума в сейфі:"  FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding SumSafeCoin, StringFormat=0.00₴, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"  Margin="10" FontWeight="Bold"/>
                                     <TextBlock Text="Загальна сума:"  FontWeight="Bold"/>
                                     <TextBlock Text="{Binding AllSumCoin, StringFormat=0.00₴, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" Margin="10" FontWeight="Bold"/>
                                 </StackPanel>
