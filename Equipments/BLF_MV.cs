@@ -234,6 +234,10 @@ namespace Front.Equipments
             if (StartScan != DateTime.MinValue) StartScan = DateTime.Now;
             //Dispatcher.BeginInvoke(new ThreadStart(() => { ShowClientBonus.Visibility = Visibility.Collapsed; }));
             EF.PutToDisplay(MW.curReceipt);
+            if (!EF.CashMachine.CheckBalance())
+            {
+                Global.Message?.Invoke("Розрахунок готівкою тимчасово недоступний! Можлива оплата лише карткою!", eTypeMessage.Warning);
+            }
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"CodeReceipt=>{MW.curReceipt?.CodeReceipt}");
         }
 

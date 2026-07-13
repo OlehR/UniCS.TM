@@ -2157,14 +2157,22 @@
          MinWidth="150" Height="50"
          HorizontalAlignment="Left" Margin="0"/>
                                 </StackPanel>
-
-                                <Button Click="RefreshCash" Content="Оновити"
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Click="RefreshCash" Content="Оновити"
                 Style="{StaticResource Default}"
                 Width="150" Height="50"
                 HorizontalAlignment="Left" Margin="0"/>
+
+                                </StackPanel>
                                 <!-- КУПЮРИ -->
-                                <TextBlock Text="Купюри" FontSize="20" FontWeight="Bold" Margin="0,0,0,5"/>
-                                <ListView x:Name="BanknoteGrid"
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Купюри" FontSize="20" FontWeight="Bold" Margin="10" Foreground="DarkGreen"/>
+                                    <TextBlock Text="Сума в барабані:"  FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding SumDrumNote, StringFormat=0.00₴, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"  Margin="10" FontWeight="Bold"/>
+                                    <TextBlock Text="Загальна сума:"  FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding AllSumNote, StringFormat=0.00₴, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" Margin="10" FontWeight="Bold"/>
+                                </StackPanel>
+                                    <ListView x:Name="BanknoteGrid"
                   ItemsSource="{Binding BanknoteRows, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"
                    Margin="0,0,0,20">
                                     <ListView.View>
@@ -2294,7 +2302,13 @@
                                 </ListView>
 
                                 <!-- МОНЕТИ -->
-                                <TextBlock Text="Монети" FontSize="20" FontWeight="Bold" Margin="0,0,0,5"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Монети" FontSize="20" FontWeight="Bold" Margin="10" Foreground="DarkGreen"/>
+                                    <TextBlock Text="Сума в барабані:"  FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding SumDrumCoin, StringFormat=0.00₴, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"  Margin="10" FontWeight="Bold"/>
+                                    <TextBlock Text="Загальна сума:"  FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding AllSumCoin, StringFormat=0.00₴, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" Margin="10" FontWeight="Bold"/>
+                                </StackPanel>
                                 <ListView x:Name="CoinGrid"
                   ItemsSource="{Binding CoinRows, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}">
                                     <ListView.View>

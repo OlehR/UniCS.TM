@@ -270,7 +270,7 @@ namespace Front.Equipments
         Other
     }
 
-    public enum eStateEquipment { On = 0, Init=1, Off=2, Process=3, Error=4 }
+    public enum eStateEquipment { On = 0, Init=1, Off=2, Process=3, Error=4, Lock=5 }
 
     /// <summary>
     /// Типи обладнання (ваги, касові апарати)

@@ -98,17 +98,6 @@ namespace Front.Equipments
 
                 if (msg is ChangeResponse resp)
                 {
-                    //Console.WriteLine($"Result={resp.Result}, Amount={resp.Amount}, ManualDeposit={resp.ManualDeposit}");
-                    //Console.WriteLine($"Status.Code={resp.Status?.Code}");
-                    //foreach (var d in resp.Status?.Devices ?? new List<DevStatus>())
-                    //    Console.WriteLine($"Dev {d.DevId}: val={d.Value}, st={d.Status}");
-
-                    //foreach (var cash in resp.Cash ?? new List<CashBlock>())
-                    //{
-                    //    Console.WriteLine($"Cash type={cash.Type}");
-                    //    foreach (var den in cash.Denominations ?? new List<Denomination>())
-                    //        Console.WriteLine($"  {den.CurrencyCode} {den.FaceValue}: piece={den.Piece}, status={den.Status}, devid={den.DeviceId}");
-                    //}
                     if (resp.Result == (int)eResultCode.Success || resp.Result == (int)eResultCode.DesignationDenominationShortage) //якогось хрена коли є решта і він має чим її віддати всеодно вертає помилку
                     {
                         return new Payment()
@@ -263,11 +252,8 @@ namespace Front.Equipments
         }
 
 
-        public override List<CashInventory> Inventory()
-        {
-            return InventoryAsync().Result;
-        }
-        public override async Task<List<CashInventory>> InventoryAsync()
+        public override List<CashInventory> Inventory() => AsyncHelper.RunSync(async () => await InventoryAsync());
+        public  async Task<List<CashInventory>> InventoryAsync()
         {
             //отримання актуальних купюр
             string SOAPAction = eNameSOAPAction.InventoryOperation.ToString();
@@ -363,7 +349,7 @@ namespace Front.Equipments
                     MoneyStoragePlace = eMoneyStoragePlace.Safe
                 });
             }
-
+            
             return result;
         }
         public override CashMachineStatus StartReplenishment()
@@ -378,22 +364,10 @@ namespace Front.Equipments
         {
             var soapAction = eNameSOAPAction.StartReplenishmentFromEntranceOperation.ToString();
             var requestData = GloryXMLData.XMLStartReplenishmentFromEntrance(SessionID);
-
             FileLogger.WriteLogMessage($"Request XMLGetStatus: {soapAction}{Environment.NewLine}{requestData}");
-
             var xmlResponse = await GloryNetworkUtilities.HTTPRequestAsync(Url, soapAction, requestData);
-
             FileLogger.WriteLogMessage($"Response:{Environment.NewLine}{xmlResponse}");
             var msg = SoapParser.Parse(xmlResponse);
-            //if (msg is StartReplenishmentFromEntranceResponse resp)
-            //{
-            //    Console.WriteLine($"Result={resp.Result}, Id={resp.Id}, SeqNo={resp.SeqNo}, User='{resp.User}'");
-            //    if (resp.Result != (int)eResultCode.Success)
-            //    {
-            //        MessageBox.Show(GetErrorText(resp.Result));
-
-            //    }
-            //}
             if (SoapParser.Parse(xmlResponse) is not StartReplenishmentFromEntranceResponse res)
                 return new();
 
@@ -415,21 +389,6 @@ namespace Front.Equipments
 
             FileLogger.WriteLogMessage($"Response:{Environment.NewLine}{xmlResponse}");
             var msg = SoapParser.Parse(xmlResponse);
-            //if (msg is EndReplenishmentFromEntranceResponse resp)
-            //{
-            //    Console.WriteLine($"Result={resp.Result}, Id={resp.Id}, SeqNo={resp.SeqNo}, User='{resp.User}', ManualDeposit={resp.ManualDeposit}");
-            //    foreach (var cash in resp.Cash ?? new List<CashBlock>())
-            //    {
-            //        Console.WriteLine($"Cash type={cash.Type}");
-            //        foreach (var d in cash.Denominations ?? new List<Denomination>())
-            //            Console.WriteLine($"  {d.CurrencyCode} {d.FaceValue}: piece={d.Piece}, status={d.Status}, devid={d.DeviceId}");
-            //    }
-            //    if (resp.Result != (int)eResultCode.Success)
-            //    {
-            //        MessageBox.Show(GetErrorText(resp.Result));
-            //    }
-            //}
-
 
             if (SoapParser.Parse(xmlResponse) is not EndReplenishmentFromEntranceResponse res)
                 return new();
@@ -487,11 +446,7 @@ namespace Front.Equipments
             FileLogger.WriteLogMessage($"Request {SOAPAction}:  {Environment.NewLine} {XMLText}");
             string XMLRespons = await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, XMLText);
             FileLogger.WriteLogMessage($"ResponsGloru: {Environment.NewLine} {XMLRespons}");
-            //var msg = SoapParser.Parse(XMLRespons);
-            //if (msg is CollectResponse resp)
-            //{
-            //    var a = resp.SeqNo;
-            //}
+
             if (SoapParser.Parse(XMLRespons) is not CollectResponse res)
                 return new();
 
@@ -501,6 +456,38 @@ namespace Front.Equipments
                     ? (eResultCode)res.Result
                     : eResultCode.UnknownError,
             };
+        }
+
+        public override bool CheckBalance()
+        {
+            //максимальна сума по якій потрібно рахувати можливість видати решту в копійках
+            //int MaxSumRest = 100000;
+            //int sumMoneyCashMachine = 0;
+
+            //var pMoney = Inventory();
+
+
+            //foreach (var item in pMoney)
+            //{
+            //    if (item.MoneyStoragePlace==eMoneyStoragePlace.Drum)
+            //    {
+            //        sumMoneyCashMachine += item.FaceValue * item.Quantity;
+            //    }
+            //}
+
+            //if (sumMoneyCashMachine> MaxSumRest)
+            //{
+            //    return true;
+            //}
+            //return false;
+            const int MaxSumRest = 100000;
+            // 20-3 50-4 sum>1000
+            // тест девайсу має також викликати цей метод
+            var res = Inventory()
+                .Where(item => item.MoneyStoragePlace == eMoneyStoragePlace.Drum)
+                .Sum(item => item.FaceValue * item.Quantity) > MaxSumRest;
+            State = res ? eStateEquipment.On : eStateEquipment.Lock;
+            return res;
         }
     }
 }

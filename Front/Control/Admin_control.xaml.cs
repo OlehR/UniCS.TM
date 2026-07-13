@@ -123,7 +123,10 @@ namespace Front.Control
             ControlScaleWeightDouble = $"{(pWeight / 1000):N3}";
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ControlScaleWeightDouble"));
         }
-
+        public int SumDrumNote {  get; set; }
+        public int SumDrumCoin { get; set; }
+        public int AllSumNote { get; set; }
+        public int AllSumCoin { get; set; }
         public bool IsCashMachine { get; set; } = false;
         public ObservableCollection<CashInventory> AmountMoney { get; set; }
         public class CashInventoryRow
@@ -166,6 +169,7 @@ namespace Front.Control
         /// </summary>
         public void RefreshCashInventoryTables()
         {
+            AmountMoney = new ObservableCollection<CashInventory>(EF.CashMachine.Inventory());
             var rows = BuildCashRows(AmountMoney);
 
             BanknoteRows = new ObservableCollection<CashInventoryRow>(
@@ -173,6 +177,14 @@ namespace Front.Control
 
             CoinRows = new ObservableCollection<CashInventoryRow>(
                 rows.Where(r => r.TypeMoney == eTypeMoney.Coin).OrderBy(r => r.FaceValue));
+
+            SumDrumNote = BanknoteRows.Sum(r => r.FaceValue * r.DrumQuantity / 100);
+            AllSumNote = BanknoteRows.Sum(r => r.FaceValue * r.AllQuantity / 100);
+            SumDrumCoin = CoinRows.Sum(r => r.FaceValue * r.DrumQuantity / 100);
+            AllSumCoin = CoinRows.Sum(r => r.FaceValue * r.AllQuantity / 100);
+
+            foreach (var prop in new[] { nameof(SumDrumNote), nameof(AllSumNote), nameof(SumDrumCoin), nameof(AllSumCoin) })
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
         private static List<CashInventoryRow> BuildCashRows(IEnumerable<CashInventory> inventory)
@@ -266,9 +278,9 @@ namespace Front.Control
                 IsCashMachine = EF.CashMachine?.IsNotNull() == true;
                 if (IsCashMachine)
                 {
-                    var result = Task.Run(() => EF.CashMachine.InventoryAsync()).Result;
-                    AmountMoney = new ObservableCollection<CashInventory>(result);
+
                     RefreshCashInventoryTables();
+
                 }
 
 
@@ -1569,8 +1581,6 @@ from RECEIPT r
 
         private async void RefreshCash(object sender, RoutedEventArgs e)
         {
-            var result = await EF.CashMachine.InventoryAsync();
-            AmountMoney = new ObservableCollection<CashInventory>(result);
             RefreshCashInventoryTables();
         }
 
@@ -1702,7 +1712,7 @@ from RECEIPT r
         {
             CollectMoneyCashMachine.Visibility=Visibility.Visible;
             BackgroundCashMachine.Visibility = Visibility.Visible;
-            List<CashInventory> result = await EF.CashMachine.InventoryAsync();
+            List<CashInventory> result =  EF.CashMachine.Inventory();
             //свторення списку банкнот для відображення
             BanknotesCashMachine = new ObservableCollection<Banknote> {
             new Banknote() {MonetaryValue = 100,MonetaryAmount = 0},
