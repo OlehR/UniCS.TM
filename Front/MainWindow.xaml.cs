@@ -73,7 +73,7 @@ namespace Front
         public eTypeAccess TypeAccessWait { get; set; }
         public ObservableCollection<ReceiptWares> ListWares { get; set; }
 
-        public ObservableCollection<Pr>  OCPrices { get; set; } 
+        public ObservableCollection<Pr> OCPrices { get; set; }
         public CustomWindow customWindow { get; set; }
         public string WaresQuantity { get { return curReceipt?.Wares?.Count().ToString() ?? "0"; } }
         public decimal MoneySum { get { return EF.SumReceipt(curReceipt); } }
@@ -404,7 +404,7 @@ namespace Front
             MainWorkplace = Bl.db.GetWorkPlace().FirstOrDefault(el => el.CodeWarehouse == Global.CodeWarehouse && el.IdWorkplace == Global.Settings.IdWorkPlaceMain);
             AC = AdminControl;
             //поточний час
-            DispatcherTimer timer = new(){Interval = TimeSpan.FromSeconds(1)};
+            DispatcherTimer timer = new() { Interval = TimeSpan.FromSeconds(1) };
             timer.Tick += timer_Tick;
             timer.Start();
 
@@ -456,7 +456,8 @@ namespace Front
                         {
                             AdminSSC = Bl.GetUserByBarCode(BarCodeAdminSSC);
                         }
-                        catch (Exception e) { };
+                        catch (Exception e) { }
+                        ;
                         if (Global.TypeWorkplaceCurrent == eTypeWorkplace.CashRegister)
                             Access.СurUser = AdminSSC;
                     }
@@ -556,12 +557,12 @@ namespace Front
 
             Global.OnClientChanged += (pClient) =>
             {
-                if (pClient.CodeClient>0 && string.IsNullOrEmpty(pClient.MainPhone))
+                if (pClient.CodeClient > 0 && string.IsNullOrEmpty(pClient.MainPhone))
                 {
                     CustomMessage.Show("Відсутній номер телефону! Додати номер телефону для отримання унікальних пропозицій?", "Відсутній номер телефону", eTypeMessage.Question);
                     CustomMessage.Result = (bool res) =>
                     {
-                        if (res) 
+                        if (res)
                         {
                             SetStateView(eStateMainWindows.PhoneVerification);
                         }
@@ -644,7 +645,7 @@ namespace Front
         public async void PlayNextVideo(LibVLCSharp.Shared.MediaPlayer Player, bool IsFirstStart = false)
         {
             IsBild = false;
-            if (_videoFiles.Length == 0 || LibVLC==null) return;
+            if (_videoFiles.Length == 0 || LibVLC == null) return;
 
             // Зупиняємо відтворення перед зміною відео
             // MediaPlayer.Stop();
@@ -1163,12 +1164,20 @@ namespace Front
 
                             break;
                         case eStateMainWindows.ProcessPay:
-                            PaymentWindowKSO_UC.PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/newPaymentTerminal.png"));
-                            PaymentWindowKSO_UC.Visibility = Visibility.Visible;
-                            if (false && IsManyPayments)
+                            if (curReceipt.CurrentTypePay == eTypePay.CashMachine)
                             {
-                                PaymentWindowKSO_UC_2.PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/newPaymentTerminal.png"));
-                                PaymentWindowKSO_UC_2.Visibility = Visibility.Visible;
+                                PaymentWindowKSO_UC.PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/AddCash.png"));
+                                PaymentWindowKSO_UC.Visibility = Visibility.Visible;
+                            }
+                            else
+                            {
+                                PaymentWindowKSO_UC.PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/newPaymentTerminal.png"));
+                                PaymentWindowKSO_UC.Visibility = Visibility.Visible;
+                                if (false && IsManyPayments)
+                                {
+                                    PaymentWindowKSO_UC_2.PaymentImage.Source = BitmapFrame.Create(new Uri(@"pack://application:,,,/icons/newPaymentTerminal.png"));
+                                    PaymentWindowKSO_UC_2.Visibility = Visibility.Visible;
+                                }
                             }
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
@@ -1206,12 +1215,12 @@ namespace Front
                                     if (isCashPayment)
                                     {
                                         EquipmentInfo = string.Empty;
-                                       // GiveRest = (double)RestMoney;
+                                        // GiveRest = (double)RestMoney;
                                         var task = Task.Run(() => Blf.PrintAndCloseReceipt(null, eTypePay.CashMachine, MoneySum, 0, 0));
                                     }
                                     else
                                     {
-                                        var task = Task.Run(() =>Blf.PrintAndCloseReceipt(null, eTypePay.Card, 0, 0));
+                                        var task = Task.Run(() => Blf.PrintAndCloseReceipt(null, eTypePay.Card, 0, 0));
                                         GiveRest = 0;
                                     }
                                 };
@@ -1219,7 +1228,7 @@ namespace Front
                             }
                             Background.Visibility = Visibility.Visible;
                             BackgroundWares.Visibility = Visibility.Visible;
-                            
+
                             break;
                         case eStateMainWindows.WaitCustomWindows:
                             Background.Visibility = Visibility.Visible;
