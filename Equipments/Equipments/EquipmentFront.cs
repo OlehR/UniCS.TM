@@ -776,6 +776,20 @@ namespace Front
             pR.IdWorkplacePay = Id;
             return Sum;
         }
+        /// <summary>
+        /// Сума чека в залежності від типу оплати (готівка чи картка) 
+        /// з врахуванням завкруглення фіскалки
+        /// </summary>
+        /// <param name="pR"></param>
+        /// <returns></returns>
+        public decimal SumReceipt(Receipt pR)
+        {
+            if(pR==null)
+                return 0;
+            if(pR.CurrentTypePay==eTypePay.Cash || pR.CurrentTypePay==eTypePay.CashMachine)
+                return SumCashReceiptFiscal(pR);
+            return SumReceiptFiscal(pR);
+        }
 
         public LogRRO PrintNoFiscalReceipt(IdReceipt pReceipt, IEnumerable<string> pR)
         {

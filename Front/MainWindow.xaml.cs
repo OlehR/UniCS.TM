@@ -76,7 +76,7 @@ namespace Front
         public ObservableCollection<Pr>  OCPrices { get; set; } 
         public CustomWindow customWindow { get; set; }
         public string WaresQuantity { get { return curReceipt?.Wares?.Count().ToString() ?? "0"; } }
-        public decimal MoneySum { get { return EF.SumReceiptFiscal(curReceipt); } }
+        public decimal MoneySum { get { return EF.SumReceipt(curReceipt); } }
         public string EquipmentInfo { get; set; } = "test";
         bool _Volume = true;
         public bool Volume { get { return _Volume; } set { _Volume = value; if (s != null) s.IsSound = value; } }
