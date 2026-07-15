@@ -103,10 +103,10 @@ namespace Front.Control
             ChangeSumPaymant = MoneySum.ToString(); //вікно де змінюється сума округлення і т.д.
             SumMaxWallet = (MW.curReceipt?.MaxSumWallet < MW.Client?.Wallet ? MW.curReceipt?.MaxSumWallet : MW.Client?.Wallet) ?? 0; //максмсальна сума списання з гаманця
             IsPaymentBonuses = MW.Client != null && MW.Client?.SumMoneyBonus >= MoneySum && MW.curReceipt.IsOnlyOrdinary; // оплата бонусами
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsRounding")); // вертає тру якщо є юзер і впливає на панель з можливою знижкою по гаманцю і на кнопки округлення
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SumMaxWallet"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsPaymentBonuses"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsManagement"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsRounding))); // вертає тру якщо є юзер і впливає на панель з можливою знижкою по гаманцю і на кнопки округлення
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SumMaxWallet)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsPaymentBonuses)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsManagement)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsUseСertificate)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsPostpaid)));
 
