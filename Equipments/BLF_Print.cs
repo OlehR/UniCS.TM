@@ -90,12 +90,13 @@ namespace Front.Equipments
             }*/
            
             SetCurReceipt(R, false);
+       
             R.NameCashier = MW.AdminSSC?.NameUser;
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"pTP=>{pTP} pSumCash=>{pSumCash} pIssuingCash=>{pIssuingCash} pSumWallet=>{pSumWallet} pSumBonus=>{pSumBonus} curReceipt=> {MW.curReceipt.ToJson()}", eTypeLog.Expanded);
 
             int[] IdWorkplacePays = R.IdWorkplacePays;// Wares.Select(el => el.IdWorkplacePay).Distinct().OrderBy(el => el).ToArray();
 
-
+            R.CurrentTypePay = pTP;
             lock (LockPayPrint)
             {
                 R.StateReceipt = Bl.GetStateReceipt(R);
@@ -285,7 +286,10 @@ namespace Front.Equipments
                             }
                         }
                         if (res == null)
+                        {
+                            R.CurrentTypePay=eTypePay.None;
                             return true;
+                        }
                         if (res.CodeError == 0)
                         {
                             R.NumberReceipt = res.FiscalNumber;
@@ -324,9 +328,10 @@ namespace Front.Equipments
                     Thread.Sleep(100);
                     Global.Message?.Invoke(TextError, eTypeMessage.Error);
                 }
+                R.CurrentTypePay = eTypePay.None;
                 return Res;
-            }
-            return Res;
+            }           
+           
         }
         private void PrintOrderReceipt(Receipt R, bool IsTryAgain = true)
         {

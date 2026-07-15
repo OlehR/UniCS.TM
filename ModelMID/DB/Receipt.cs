@@ -438,7 +438,11 @@ namespace ModelMID
         public Payment IssueOfCash { get { return Payment?.Where(el => el.TypePay == eTypePay.IssueOfCash).FirstOrDefault(); } }
 
         public eTypePay TypePay { get { return Payment != null && Payment.Any(el => el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Cash) ? Payment.FirstOrDefault(el => el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Cash).TypePay : eTypePay.None; } }
-
+        [JsonIgnore]
+        /// <summary>
+        /// Під час оплати текучий вид оплати
+        /// </summary>
+        public eTypePay CurrentTypePay { get; set; } = eTypePay.None;
         public bool IsManyPayments { get { return IdWorkplacePays?.Length > 1; } }
 
         public bool IsWaresLink { get { return GetLastWares?.IsWaresLink == true; } }
