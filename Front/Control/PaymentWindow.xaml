@@ -110,6 +110,14 @@
                                    Mode=FindAncestor, AncestorType=UserControl}}" Value="False">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
+                                <DataTrigger Binding="{Binding IsCheckReturn, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding TypeReturn, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=UserControl}}" Value="Postpaid">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </Button.Style>

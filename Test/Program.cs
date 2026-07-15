@@ -44,10 +44,11 @@ namespace Test
         public static string NamePrinter;
         static async Task Main(string[] args)
         {
-            string PathDB = "d:\\MID\\DB\\DB_Exellio_NEW\\";
+            Global.PathPictures = "d:/";
+            string PathDB = "d:\\MID\\DB\\Exelio_2022\\";
             //AddStamp(PathDB);
-            //AddQR(PathDB);
-            Print();
+            AddQR(PathDB);
+            //Print();
         }
         static void Print()//string pPath = "D:\\MID_KCO\\DB_Exellio"
         {
@@ -144,7 +145,7 @@ from  Log_RRO lr where TextReceiptQR is not null and Type_RRO=""RRO""");
                         var ResN = Con.Query<ResReceipt>($@"select wr.Id_Workplace as IdWorkplace, wr.Code_Period as CodePeriod,  wr.Code_Receipt as CodeReceipt, wr.Code_Wares as CodeWares, wr.Excise_Stamp as ExciseStamp, Text_Receipt as TextReceipt 
 from WARES_RECEIPT  wr
 join  Log_RRO lr  on   wr.Code_Receipt= lr.Code_Receipt and Type_RRO=""RRO""
-where wr.QUANTITY =1 and Excise_Stamp is not null and  lr.Id_Workplace_pay=  lr.Id_Workplace");
+where wr.QUANTITY =1 and Excise_Stamp is not null");
                         foreach (var el in ResN)
                         {
                             if (el.CodeReceipt != CodeReceipt) TextReceipt = el.TextReceipt;
@@ -204,8 +205,8 @@ where wr.QUANTITY =1 and Excise_Stamp is not null and  lr.Id_Workplace_pay=  lr.
                         catch { }
                         var ResN = Con.Query<ResReceipt>($@"select Id_Workplace as IdWorkplace, Code_Period as CodePeriod, Code_Receipt as CodeReceipt, TextReceipt as TextReceipt 
 from  Log_RRO lr where TextReceipt is not null");
-                        //Counter += ResN.Count();
-                        //Console.WriteLine(Counter);
+                        Counter += ResN.Count();
+                        Console.WriteLine(Counter);
                         //continue;
 
                         foreach (var el in ResN)

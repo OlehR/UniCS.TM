@@ -119,6 +119,10 @@ namespace Front.Control
             {
                 TypeReturn = eTypePay.Cash.ToString();
             }
+            else if (MW.curReceipt.Payment.Any(x => x.TypePay == eTypePay.Postpaid))
+            {
+                TypeReturn = eTypePay.Postpaid.ToString();
+            }
             else
             {
                 BankTerminal bank1, bank2;
@@ -147,7 +151,7 @@ namespace Front.Control
 
         public void TransferAmounts(decimal pMoneySum, decimal pSumCashBack)
         {
-           
+
             MW.IsCashBackPay = false;
             MoneySumToRound = pMoneySum;
             CashBackMoneySum = pSumCashBack;
@@ -450,7 +454,7 @@ namespace Front.Control
                 MW.SetStateView(eStateMainWindows.WaitAdmin, eTypeAccess.UseBonus, null);
         }
 
-        private void OpenMoneyBoxButton(object sender, RoutedEventArgs e)=>MW.StartOpenMoneyBox();
+        private void OpenMoneyBoxButton(object sender, RoutedEventArgs e) => MW.StartOpenMoneyBox();
 
         private void _ButtonPaymentCashBack(object sender, RoutedEventArgs e)
         {
