@@ -336,6 +336,9 @@
                                                 <DataTrigger Binding="{Binding IsCashRegister}" Value="False">
                                                     <Setter Property="Visibility" Value="Collapsed" />
                                                 </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsCashMachine}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
                                     </Button.Style>
@@ -351,6 +354,9 @@
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding IsCashRegister}" Value="False">
                                                     <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsCashMachine}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
@@ -2731,7 +2737,7 @@
       IsChecked="True" Checked="IsTypeCollectMoneyClick" Unchecked="IsTypeCollectMoneyClick"
       VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
-                            <TextBlock  Text=" В касету" FontSize="24" VerticalAlignment="Center" FontWeight="DemiBold">
+                            <TextBlock  Text=" В сейф" FontSize="24" VerticalAlignment="Center" FontWeight="DemiBold">
                                 <TextBlock.Style>
                                     <Style TargetType="{x:Type TextBlock}">
                                         <Style.Triggers>

@@ -484,7 +484,15 @@ namespace Front.Control
         private void ButtonPostpaid(object sender, RoutedEventArgs e)
         {
             Rounding();
-            var task = Task.Run(() => MW.Blf.PrintAndCloseReceipt(null, eTypePay.Postpaid, MoneySumToRound));
+            MW.CustomMessage.Show("Закрити чек післяплати?", "Оплата товарів Glovo", eTypeMessage.Question);
+            MW.CustomMessage.Result = (bool res) =>
+            {
+                if (res)
+                {
+                    var task = Task.Run(() => MW.Blf.PrintAndCloseReceipt(null, eTypePay.Postpaid, MoneySumToRound));
+                }
+            };
+           
         }
     }
 }

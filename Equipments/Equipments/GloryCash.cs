@@ -63,10 +63,6 @@ namespace Front.Equipments
                 //var aa = InventoryAsync().Result;
             }
             else State = eStateEquipment.Error;
-
-
-
-
         }
         public void startListening()
         {
@@ -261,8 +257,10 @@ namespace Front.Equipments
             FileLogger.WriteLogMessage($"Request {SOAPAction}:  {Environment.NewLine} {pData}");
             string XMLRespons = await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, pData);
             FileLogger.WriteLogMessage($"ResponsGloru: {Environment.NewLine} {XMLRespons}");
-            InventoryResponse Inventory = (InventoryResponse)SoapParser.Parse(XMLRespons);
-            return FromInventoryResponse(Inventory);
+            var Inventory = SoapParser.Parse(XMLRespons);
+            if (Inventory is InventoryResponse open)
+                return FromInventoryResponse(open);
+            else return new();
         }
         /// <summary>
         /// Конвертує InventoryResponse у список CashInventory

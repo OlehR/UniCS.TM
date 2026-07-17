@@ -69,7 +69,20 @@ namespace Equipments.Equipments.Glory
             if (string.IsNullOrWhiteSpace(soapXml))
                 throw new ArgumentException("XML is empty.", nameof(soapXml));
 
-            var doc = XDocument.Parse(soapXml, LoadOptions.PreserveWhitespace);
+            XDocument doc;
+            try
+            {
+                doc = XDocument.Parse(soapXml, LoadOptions.PreserveWhitespace);
+            }
+            catch (XmlException)
+            {
+                // soapXml містить не XML — помилка мережі або таймаут
+                return new UnknownResponse
+                {
+                    LocalName = "ConnectionError",
+                    RawXml = soapXml
+                };
+            }
             var envelope = doc.Root ?? throw new InvalidOperationException("No SOAP Envelope root.");
 
             // Підтримка SOAP 1.1 і SOAP 1.2
