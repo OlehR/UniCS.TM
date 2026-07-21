@@ -201,6 +201,9 @@ namespace ModelMID
         }
 
         // public string FiscalsJSON { get { return Fiscals.ToJSON(); } }
+        /// <summary>
+        /// Ще б згадати для чого я це робив.
+        /// </summary>
         public SortedList<int, Fiscal> Fiscals = new();
 
         public int CountWeightGoods { get
