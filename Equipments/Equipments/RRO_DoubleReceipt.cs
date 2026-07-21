@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using ModelMID;
 using ModelMID.DB;
 using SharedLib;
+using System.Linq;
 using Utils;
 
 namespace Front.Equipments.Implementation
@@ -13,9 +14,10 @@ namespace Front.Equipments.Implementation
         long CodeWares;
       string NameWares;
       decimal Price = 10.00m;
-        int[] TypeVatReplace = [];
+        int[] TypeWaresReplace = [];
 
-
+        WDB_SQLite db = WDB_SQLite.GetInstance;
+        ReceiptWares Wares2Cat;
 
         public RRO_DoubleReceipt(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null,  IEnumerable<Rro> Rros = null) : base(pEquipment, pConfiguration, eModelEquipment.RRO_DoubleReceipt, pLoggerFactory, pActionStatus)
         {
@@ -24,14 +26,21 @@ namespace Front.Equipments.Implementation
             CodeWares= Configuration?.GetValue<long>($"{KeyPrefix}CodeWares") ?? 0;
             NameWares = Configuration?.GetValue<string>($"{KeyPrefix}NameWares")??"";
             Price = Configuration?.GetValue<decimal>($"{KeyPrefix}Price") ?? 10.00m;
-            TypeVatReplace = Configuration?.GetSection($"{KeyPrefix}TypeVatReplace").Get<int[]>(); //Get<int[]>($"{KeyPrefix}TypeVatReplace");
+            TypeWaresReplace = Configuration?.GetSection($"{KeyPrefix}TypeWaresReplace").Get<int[]>(); //Get<int[]>($"{KeyPrefix}TypeVatReplace");
             //Configuration.GetSection($"{KeyPrefix}TypeVatReplace").Bind();
             Fiscal=Rros?.Where(r=>r.DeviceConfigName.Equals(RealRRO) )?.FirstOrDefault();
             Virtual=Rros?.Where(r=>r.DeviceConfigName.Equals(VirtualRRO) )?.FirstOrDefault();
-            if (Fiscal == null || Virtual == null || CodeWares == 0 || string.IsNullOrEmpty(NameWares) || Price == 0)
+            Wares2Cat = db.FindWares(null, null, CodeWares).FirstOrDefault();
+            if (Fiscal == null || Virtual == null || Wares2Cat == null || Price == 0)
                 State = eStateEquipment.Error;
             else
+            {
+                if(!string.IsNullOrEmpty(NameWares))
+                  Wares2Cat.NameWares = NameWares;
+                Wares2Cat.Price = Price;
                 State = eStateEquipment.On;
+            }
+           
         }
         
 
@@ -55,17 +64,11 @@ namespace Front.Equipments.Implementation
                 IEnumerable<ReceiptWares> WaresNew = [], Wares = pR.Wares;
                 foreach (var el in Wares)
                 {
-                    if (el.TypeVat.In(TypeVatReplace))
+                    if (((int)el.TypeWares).In(TypeWaresReplace))
                     {
-                        WaresNew = WaresNew.Append(new ReceiptWares()
-                        {
-                            CodeWares = CodeWares,
-                            NameWares = NameWares,
-                            Price = Price,
-                            Quantity = el.Sum / Price,
-                            //SUM = el.Quantity * Price,
-                            TypeVat = 0
-                        });
+                        ReceiptWares W = (ReceiptWares)Wares2Cat.Clone();
+                        W.Quantity = el.Sum / Price;
+                        WaresNew = WaresNew.Append(W);
                     }
                     else
                     {
@@ -74,6 +77,8 @@ namespace Front.Equipments.Implementation
                 }
                 pR.Wares = WaresNew;
                 var z = Fiscal.PrintReceipt(pR);
+                if (z.CodeError != 0) return z;
+
                 pR.Wares = Wares;
                 var v = Virtual.PrintReceipt(pR);
                 return v;
