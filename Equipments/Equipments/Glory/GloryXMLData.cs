@@ -299,7 +299,7 @@ namespace Equipments.Equipments.Glory
         }
 
 
-        public static string XMLCashoutOperation(string SessionID, int pAmount)
+        public static string XMLCashoutOperation(string SessionID, int pAmount, List<CashInventory> pCashInventories)
         {
             //Delay type 0-Both, 1 - Bill, 2-coin;
             //Pur interval time of dispense for “time” attribute
@@ -355,7 +355,6 @@ namespace Equipments.Equipments.Glory
             //      </Denomination>
             //   </Cash>
             //</n:CashoutRequest>"
-
             return
                 $@"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:bru=""http://www.glory.co.jp/bruebox.xsd"">
    <soapenv:Header/>
@@ -370,39 +369,39 @@ namespace Equipments.Equipments.Glory
          <Delay bru:type=""0"" bru:time=""1""/>
          <Cash bru:type=""2"">
       <Denomination bru:cc=""UAH"" bru:fv=""10000"" bru:rev=""0"" bru:devid=""1"">
-         <bru:Piece>{GetCountBanknotes(ref pAmount, 10000)}</bru:Piece>
+         <bru:Piece>{GetCountBanknotesFromCashout(ref pAmount, pCashInventories, 10000)}</bru:Piece>
          <bru:Status>0</bru:Status>
       </Denomination>
       <Denomination bru:cc=""UAH"" bru:fv=""5000"" bru:rev=""0"" bru:devid=""1"">
-         <bru:Piece>{GetCountBanknotes(ref pAmount, 5000)}</bru:Piece>
+         <bru:Piece>{GetCountBanknotesFromCashout(ref pAmount, pCashInventories, 5000)}</bru:Piece>
          <bru:Status>0</bru:Status>
       </Denomination>
       <Denomination bru:cc=""UAH"" bru:fv=""2000"" bru:rev=""0"" bru:devid=""1"">
-         <bru:Piece>{GetCountBanknotes(ref pAmount, 2000)}</bru:Piece>
+         <bru:Piece>{GetCountBanknotesFromCashout(ref pAmount, pCashInventories, 2000)}</bru:Piece>
          <bru:Status>0</bru:Status>
       </Denomination>
       <Denomination bru:cc=""UAH"" bru:fv=""1000"" bru:rev=""0"" bru:devid=""2"">
-         <bru:Piece>{GetCountBanknotes(ref pAmount, 1000)}</bru:Piece>
+         <bru:Piece>{GetCountBanknotesFromCashout(ref pAmount, pCashInventories, 1000)}</bru:Piece>
          <bru:Status>0</bru:Status>
       </Denomination>
       <Denomination bru:cc=""UAH"" bru:fv=""500"" bru:rev=""0"" bru:devid=""2"">
-         <bru:Piece>{GetCountBanknotes(ref pAmount, 500)}</bru:Piece>
+         <bru:Piece>{GetCountBanknotesFromCashout(ref pAmount, pCashInventories, 500)}</bru:Piece>
          <bru:Status>0</bru:Status>
       </Denomination>
       <Denomination bru:cc=""UAH"" bru:fv=""200"" bru:rev=""0"" bru:devid=""2"">
-         <bru:Piece>{GetCountBanknotes(ref pAmount, 200)}</bru:Piece>
+         <bru:Piece>{GetCountBanknotesFromCashout(ref pAmount, pCashInventories, 200)}</bru:Piece>
          <bru:Status>0</bru:Status>
       </Denomination>
       <Denomination bru:cc=""UAH"" bru:fv=""100"" bru:rev=""0"" bru:devid=""2"">
-         <bru:Piece>{GetCountBanknotes(ref pAmount, 100)}</bru:Piece>
+         <bru:Piece>{GetCountBanknotesFromCashout(ref pAmount, pCashInventories, 100)}</bru:Piece>
          <bru:Status>0</bru:Status>
       </Denomination>
       <Denomination bru:cc=""UAH"" bru:fv=""50"" bru:rev=""0"" bru:devid=""2"">
-         <bru:Piece>{GetCountBanknotes(ref pAmount, 50)}</bru:Piece>
+         <bru:Piece>{GetCountBanknotesFromCashout(ref pAmount, pCashInventories, 50)}</bru:Piece>
          <bru:Status>0</bru:Status>
       </Denomination>
       <Denomination bru:cc=""UAH"" bru:fv=""10"" bru:rev=""0"" bru:devid=""2"">
-         <bru:Piece>{GetCountBanknotes(ref pAmount, 10)}</bru:Piece>
+         <bru:Piece>{GetCountBanknotesFromCashout(ref pAmount, pCashInventories, 10)}</bru:Piece>
          <bru:Status>0</bru:Status>
       </Denomination>
    </Cash>
@@ -411,29 +410,17 @@ namespace Equipments.Equipments.Glory
 </soapenv:Envelope>";
         }
 
-        private static int GetCountBanknotes(ref int pAmount, int pBill)
+        private static int GetCountBanknotesFromCashout(ref int pAmount, List<CashInventory> pCashInventories, int pBill)
         {
-            int res = 0;
-            if (pAmount > 0)
-            {
-                res = pAmount / pBill;
-                pAmount = pAmount - res * pBill;
-            }
+            if (pAmount <= 0) return 0;
 
+            int res = Math.Min(pAmount / pBill, GetCountBanknotes(pCashInventories, pBill));
+            pAmount -= res * pBill;
             return res;
+        }
 
-        }
-        private static int GetCountBanknotes(List<CashInventory> pCashInventories, int pBill)
-        {
-            foreach (var c in pCashInventories)
-            {
-                if (c.FaceValue== pBill)
-                {
-                    return c.Quantity;
-                }
-            }
-            return 0;
-        }
+        private static int GetCountBanknotes(List<CashInventory> pCashInventories, int pBill) =>
+            pCashInventories.FirstOrDefault(c => c.FaceValue == pBill)?.Quantity ?? 0;
 
         public static string XMLStartReplenishmentFromEntrance(string SessionID)
         {
@@ -510,7 +497,6 @@ namespace Equipments.Equipments.Glory
         {
             //Option type - 0 collect to the cassette,  1 collect to the exit slot (only coin), 2 collect to the exit slot (only note), 3 collect to the exit slot (both note and coin) 
             //<Option bru:type=""0""/> 0 - в касету, 3 на видачу
-
             return
                 $@"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:bru=""http://www.glory.co.jp/bruebox.xsd"">
    <soapenv:Header/>
