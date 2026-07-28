@@ -1742,6 +1742,12 @@ from RECEIPT r
         private void CollectMoney_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             SelectedBanknote = ListDenomination.SelectedItem as Banknote;
+            if (SelectedBanknote.IsNull())
+            {
+                NumericPadCollectMoneyCashMachine.Visibility = Visibility.Collapsed;
+                CollectMoneyCashMachine_NumericPad.Visibility = Visibility.Collapsed;
+                return;
+            }
             NumericPadCollectMoneyCashMachine.Visibility = Visibility.Visible;
             CollectMoneyCashMachine_NumericPad.Visibility = Visibility.Visible;
 

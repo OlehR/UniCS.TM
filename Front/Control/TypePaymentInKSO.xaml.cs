@@ -56,9 +56,10 @@ namespace Front.Control
         public void Init(MainWindow pMW) { MW = pMW; }
         public void UpdateTypePayment()
         {
+            MW.curReceipt.Payment = MW.Bl.GetPayment(MW.curReceipt);
             if (MW.curReceipt?.RefundId != null)
                 MW.curReceipt.Payment = MW.Bl.GetPayment(MW.curReceipt.RefundId);
-            if (MW.curReceipt.Payment.Count() > 0)
+            if (MW.curReceipt.Payment?.Count() > 0)
                 RefreshTypePayment();
         }
         void RefreshTypePayment()
