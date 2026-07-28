@@ -30,6 +30,7 @@ namespace Front.Equipments
         private string Url = string.Empty;
         private string UserLogin = string.Empty;
         private string UserPassword = string.Empty;
+        private int ResponseTimeout = 60;
 
         public GloryCash(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null,
             Action<StatusEquipment> pActionStatus = null) :
@@ -39,6 +40,7 @@ namespace Front.Equipments
             Url = Configuration[$"{KeyPrefix}Url"];
             UserLogin = Configuration[$"{KeyPrefix}UserLogin"];
             UserPassword = Configuration[$"{KeyPrefix}UserPassword"];
+            ResponseTimeout = Configuration?.GetValue<int>($"{KeyPrefix}ResponseTimeout") ?? 60;
             Init();
 
 
@@ -51,7 +53,7 @@ namespace Front.Equipments
             string SOAPAction = eNameSOAPAction.OpenOperation.ToString();
             string pData = GloryXMLData.XMLLogin(UserLogin, UserPassword);
             FileLogger.WriteLogMessage($"Request OpenOperation: {SOAPAction} {Environment.NewLine} {pData}");
-            string XMLRespons = await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, pData);
+            string XMLRespons = await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, pData, ResponseTimeout);
             FileLogger.WriteLogMessage($"Respons: {Environment.NewLine} {XMLRespons}");
             var msg = SoapParser.Parse(XMLRespons);
             if (msg is OpenResponse open)
@@ -87,8 +89,7 @@ namespace Front.Equipments
                 string pData = GloryXMLData.XMLChangeOperation(SessionID, pAmount);
                 FileLogger.WriteLogMessage($"Request OpenOperation: {SOAPAction} {Environment.NewLine} {pData}");
                 string XMLRespons =
-                    await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, pData,
-                        200); // збільшений тайм-аут для оплати
+                    await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, pData, ResponseTimeout); // збільшений тайм-аут для оплати
                 FileLogger.WriteLogMessage($"Respons pay: {Environment.NewLine} {XMLRespons}");
                 var msg = SoapParser.Parse(XMLRespons);
 
@@ -139,7 +140,7 @@ namespace Front.Equipments
             string SOAPAction = eNameSOAPAction.ChangeCancelOperation.ToString();
             string XMLText = GloryXMLData.XMLChangeCancelOperation(SessionID);
             FileLogger.WriteLogMessage($"Request {SOAPAction}:  {Environment.NewLine} {XMLText}");
-            string XMLRespons = await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, XMLText);
+            string XMLRespons = await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, XMLText, ResponseTimeout);
             FileLogger.WriteLogMessage($"ResponsGloru: {Environment.NewLine} {XMLRespons}");
             var msg = SoapParser.Parse(XMLRespons);
             if (msg is ChangeCancelResponse resp)
@@ -163,11 +164,10 @@ namespace Front.Equipments
         public async Task<CashMachineStatus> CashoutAsync(decimal pAmount)
         {
             string SOAPAction = eNameSOAPAction.CashoutOperation.ToString();
-            string pData = GloryXMLData.XMLCashoutOperation(SessionID, Decimal.ToInt32(pAmount));
+            string pData = GloryXMLData.XMLCashoutOperation(SessionID, Decimal.ToInt32(pAmount), Inventory());
             FileLogger.WriteLogMessage($"Request OpenOperation: {SOAPAction} {Environment.NewLine} {pData}");
             string XMLRespons =
-                await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, pData,
-                    200); // збільшений тайм-аут для оплати
+                await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, pData, ResponseTimeout); // збільшений тайм-аут для оплати
             FileLogger.WriteLogMessage($"Respons: {Environment.NewLine} {XMLRespons}");
 
             if (SoapParser.Parse(XMLRespons) is not CashoutResponse res)
@@ -214,7 +214,7 @@ namespace Front.Equipments
 
             FileLogger.WriteLogMessage($"Request XMLGetStatus: {soapAction}{Environment.NewLine}{requestData}");
 
-            var xmlResponse = await GloryNetworkUtilities.HTTPRequestAsync(Url, soapAction, requestData);
+            var xmlResponse = await GloryNetworkUtilities.HTTPRequestAsync(Url, soapAction, requestData, ResponseTimeout);
 
             FileLogger.WriteLogMessage($"Response:{Environment.NewLine}{xmlResponse}");
 
@@ -255,7 +255,7 @@ namespace Front.Equipments
             string SOAPAction = eNameSOAPAction.InventoryOperation.ToString();
             string pData = GloryXMLData.XMLInventoryOperation(SessionID);
             FileLogger.WriteLogMessage($"Request {SOAPAction}:  {Environment.NewLine} {pData}");
-            string XMLRespons = await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, pData);
+            string XMLRespons = await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, pData, ResponseTimeout);
             FileLogger.WriteLogMessage($"ResponsGloru: {Environment.NewLine} {XMLRespons}");
             var Inventory = SoapParser.Parse(XMLRespons);
             if (Inventory is InventoryResponse open)
@@ -363,7 +363,7 @@ namespace Front.Equipments
             var soapAction = eNameSOAPAction.StartReplenishmentFromEntranceOperation.ToString();
             var requestData = GloryXMLData.XMLStartReplenishmentFromEntrance(SessionID);
             FileLogger.WriteLogMessage($"Request XMLGetStatus: {soapAction}{Environment.NewLine}{requestData}");
-            var xmlResponse = await GloryNetworkUtilities.HTTPRequestAsync(Url, soapAction, requestData);
+            var xmlResponse = await GloryNetworkUtilities.HTTPRequestAsync(Url, soapAction, requestData, ResponseTimeout);
             FileLogger.WriteLogMessage($"Response:{Environment.NewLine}{xmlResponse}");
             var msg = SoapParser.Parse(xmlResponse);
             if (SoapParser.Parse(xmlResponse) is not StartReplenishmentFromEntranceResponse res)
@@ -383,7 +383,7 @@ namespace Front.Equipments
 
             FileLogger.WriteLogMessage($"Request XMLGetStatus: {soapAction}{Environment.NewLine}{requestData}");
 
-            var xmlResponse = await GloryNetworkUtilities.HTTPRequestAsync(Url, soapAction, requestData);
+            var xmlResponse = await GloryNetworkUtilities.HTTPRequestAsync(Url, soapAction, requestData, ResponseTimeout);
 
             FileLogger.WriteLogMessage($"Response:{Environment.NewLine}{xmlResponse}");
             var msg = SoapParser.Parse(xmlResponse);
@@ -408,7 +408,7 @@ namespace Front.Equipments
             string SOAPAction = eNameSOAPAction.UnLockUnitOperation.ToString();
             string XMLText = GloryXMLData.XMLUnLockUnitOperation(SessionID, pTypeUnit);
             FileLogger.WriteLogMessage($"Request {SOAPAction}:  {Environment.NewLine} {XMLText}");
-            string XMLRespons = await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, XMLText);
+            string XMLRespons = await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, XMLText, ResponseTimeout);
             FileLogger.WriteLogMessage($"ResponsGloru: {Environment.NewLine} {XMLRespons}");
 
 
@@ -424,7 +424,7 @@ namespace Front.Equipments
             string SOAPAction = eNameSOAPAction.LockUnitOperation.ToString();
             string XMLText = GloryXMLData.XMLLockUnitOperation(SessionID, pTypeUnit);
             FileLogger.WriteLogMessage($"Request {SOAPAction}:  {Environment.NewLine} {XMLText}");
-            string XMLRespons = await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, XMLText);
+            string XMLRespons = await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, XMLText, ResponseTimeout);
             FileLogger.WriteLogMessage($"ResponsGloru: {Environment.NewLine} {XMLRespons}");
 
 
@@ -442,7 +442,7 @@ namespace Front.Equipments
             string SOAPAction = eNameSOAPAction.CollectOperation.ToString();
             string XMLText = GloryXMLData.XMLCollectOperation(SessionID, pCashInventories, pTypeCollectMoney);
             FileLogger.WriteLogMessage($"Request {SOAPAction}:  {Environment.NewLine} {XMLText}");
-            string XMLRespons = await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, XMLText);
+            string XMLRespons = await GloryNetworkUtilities.HTTPRequestAsync(Url, SOAPAction, XMLText, ResponseTimeout);
             FileLogger.WriteLogMessage($"ResponsGloru: {Environment.NewLine} {XMLRespons}");
 
             if (SoapParser.Parse(XMLRespons) is not CollectResponse res)
