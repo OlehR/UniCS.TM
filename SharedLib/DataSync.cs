@@ -137,7 +137,7 @@ namespace SharedLib
                 string varMidFile = db.GetMIDFile();
                 try
                 {
-                    if (!IsFull && !File.Exists(varMidFile)) //Якщо відсутній файл
+                    if ((!IsFull && !File.Exists(varMidFile)) || (File.Exists(varMidFile) && new FileInfo(varMidFile).Length==0) ) //Якщо відсутній файл
                     {
                         IsFull = true;
                         FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Відсутній файл {varMidFile} parIsFull=>{IsFull} ");
@@ -176,6 +176,7 @@ namespace SharedLib
                         db.SetConfig<DateTime>("Load_Full", DateTime.Now.Date.AddDays(-1).Date);
                         db.SetConfig<DateTime>("Load_Update", DateTime.Now.Date.AddDays(-1).Date);
                         db.Close(true);
+                        db.GetDB();
                         Exception Ex = null;
                         if (File.Exists(varMidFile))
                         {                            
@@ -221,6 +222,11 @@ namespace SharedLib
                     //if (Global.IsHttp){
                     bool IsReloadFull = pIsFull;
                     r = AsyncHelper.RunSync(() => LoadDataAsync(Global.IdWorkPlace, IsFull, NameDB, MessageNoMin, IsReloadFull));
+                    if (r == null)
+                    {                     
+                        Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = (IsFull ? eSyncStatus.Error : eSyncStatus.NoFatalError), StatusDescription = $"LoadData return null value" });
+                        return false;
+                    }
                     pD = new(NameDB);
                     if (!IsFull)
                     {
@@ -242,11 +248,7 @@ namespace SharedLib
                         }
                         r = MsSQL.LoadData(Global.IdWorkPlace, IsFull, pD, MessageNoMin);
                     }*/
-                    if (r == null)
-                    {
-                        Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = (IsFull ? eSyncStatus.Error : eSyncStatus.NoFatalError), StatusDescription = $"LoadData return null value" });
-                        return false;
-                    }
+                    
                     if (r?.WorkPlace?.Any() == true)
                     {
                         FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Replace SqlGetDimWorkplace => {r?.WorkPlace?.Count()}");

@@ -16,11 +16,12 @@ namespace Front.Equipments.Implementation
       decimal Price = 10.00m;
         int[] TypeWaresReplace = [];
 
-        WDB_SQLite db = WDB_SQLite.GetInstance;
+        WDB_SQLite db;
         ReceiptWares Wares2Cat;
 
         public RRO_DoubleReceipt(Equipment pEquipment, IConfiguration pConfiguration, Microsoft.Extensions.Logging.ILoggerFactory pLoggerFactory = null, Action<StatusEquipment> pActionStatus = null,  IEnumerable<Rro> Rros = null) : base(pEquipment, pConfiguration, eModelEquipment.RRO_DoubleReceipt, pLoggerFactory, pActionStatus)
         {
+            db = WDB_SQLite.GetInstance;
             var RealRRO = Configuration?.GetValue<string>($"{KeyPrefix}RealRRO");
             var VirtualRRO = Configuration?.GetValue<string>($"{KeyPrefix}VirtualRRO");
             CodeWares= Configuration?.GetValue<long>($"{KeyPrefix}CodeWares") ?? 0;
@@ -30,7 +31,8 @@ namespace Front.Equipments.Implementation
             //Configuration.GetSection($"{KeyPrefix}TypeVatReplace").Bind();
             Fiscal=Rros?.Where(r=>r.DeviceConfigName.Equals(RealRRO) )?.FirstOrDefault();
             Virtual=Rros?.Where(r=>r.DeviceConfigName.Equals(VirtualRRO) )?.FirstOrDefault();
-            Wares2Cat = db.FindWares(null, null, CodeWares).FirstOrDefault();
+            
+            Wares2Cat = db.FindWares(null, null, CodeWares)?.FirstOrDefault();
             if (Fiscal == null || Virtual == null || Wares2Cat == null || Price == 0)
                 State = eStateEquipment.Error;
             else

@@ -138,7 +138,11 @@ namespace SharedLib
             {
                 var vLastMidFile = GetMIDFile(LFDB);
                 if (!string.IsNullOrEmpty(vLastMidFile) && File.Exists(vLastMidFile))
-                    LastMidFile = vLastMidFile;
+                {
+                    long length = new System.IO.FileInfo(vLastMidFile).Length;
+                    if(length > 0)
+                        LastMidFile = vLastMidFile;
+                }
                 LFDB = LFDB.AddDays(-1);
             } while (LastMidFile == null && LFDB > DateTime.Now.AddDays(-10));
         }
@@ -190,7 +194,7 @@ namespace SharedLib
                 Parse(SqlUpdateConfig, dbConfig);
 
                 //Mid
-                if (File.Exists(MidFile))
+                if (File.Exists(MidFile)&& new FileInfo(MidFile).Length>0)
                 {
                     using var dbMID = new SQLite(MidFile);
                     //CurVerMid = dbMID.GetVersion;// GetConfig<int>("VerMID",dbConfig);

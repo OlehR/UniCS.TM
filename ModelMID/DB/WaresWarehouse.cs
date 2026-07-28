@@ -10,7 +10,6 @@ namespace ModelMID.DB
         Brand = 2,
         Group =3,
         Wares =4
-
     }
 
     public class WaresWarehouse
