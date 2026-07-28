@@ -171,7 +171,7 @@ namespace Front.Control
         /// </summary>
         public void RefreshCashInventoryTables()
         {
-            AmountMoney = new ObservableCollection<CashInventory>(EF.CashMachine.Inventory());
+            AmountMoney = new ObservableCollection<CashInventory>(EF.CashMachine?.Inventory());
             var rows = BuildCashRows(AmountMoney);
 
             BanknoteRows = new ObservableCollection<CashInventoryRow>(
@@ -279,8 +279,8 @@ namespace Front.Control
                 {
                     ControlScale(pWeight, pIsStable);
                 };
-                IsCashMachine = EF.CashMachine?.IsNotNull() == true;
-                if (IsCashMachine)
+                IsCashMachine = EF.GetListEquipment.Where(x => x.Type == eTypeEquipment.CashMachine).Any(); //EF.CashMachine?.IsNotNull() == true;
+                if (IsCashMachine && EF.CashMachine.IsNotNull())
                 {
                     RefreshCashInventoryTables();
                 }
