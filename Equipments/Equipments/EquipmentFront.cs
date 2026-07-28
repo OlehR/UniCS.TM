@@ -962,7 +962,7 @@ namespace Front
                 ? CashMachine.Purchase(pSum, pIdR.IdWorkplacePay)
                 : CashMachine.Refund(pSum, pIdR.IdWorkplacePay);
 
-            pay.SumExt = pSum;
+            pay.SumExt = pSum/100;
             pay.TypePay = eTypePay.CashMachine;
             pay.SetIdReceipt(pIdR);
 
