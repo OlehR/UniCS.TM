@@ -497,7 +497,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
             if (pR != null)
             {
                 rows = pR.GetParserWaresReceipt(true, false)?.Select(el => new WaresRRO(el, pRro));
-                pays = pR.Payment?.Where(el => el.TypePay == eTypePay.Cash || el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Postpaid).Select(el => new PaysRRO(el));
+                pays = pR.Payment?.Where(el => el.TypePay == eTypePay.Cash || el.TypePay == eTypePay.CashMachine || el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Postpaid).Select(el => new PaysRRO(el));
                 comment_up = String.Join('\n', pR.ReceiptComments);
                 if (pR.Footer?.Any() == true)
                     comment_down = String.Join('\n', pR.Footer);
@@ -589,7 +589,7 @@ namespace Front.Equipments.Implementation.ModelVchasno
 
         public CardPay(Payment pP)
         {
-            sum = (pP.TypePay == eTypePay.Cash && pP.SumExt > pP.SumPay && IsCorectSum(pP.SumExt) ? pP.SumExt : pP.SumPay);
+            sum = ((pP.TypePay == eTypePay.Cash || pP.TypePay == eTypePay.CashMachine) && pP.SumExt > pP.SumPay && IsCorectSum(pP.SumExt) ? pP.SumExt : pP.SumPay);
             paysys = pP.IssuerName;
             rrn = pP.CodeAuthorization;
             cardmask = pP.NumberCard;
