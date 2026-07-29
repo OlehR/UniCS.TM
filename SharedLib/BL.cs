@@ -915,6 +915,46 @@ namespace SharedLib
                 return res.Data;
             return false;
         }
+        public Result SQLQuery(SQLQuery pQ)
+        {
+            if (pQ == null && pQ.SQL == null)
+                return new(-1, "Відсутні дані");
+            try
+            {
+                SQLite DB;
+                switch (pQ.TypeDB)
+                {
+                    case eTypeDB.All:
+                        DB = db.db;
+                        break;
+                    case eTypeDB.Config:
+                        DB = db.dbConfig;
+                        break;
+                    case eTypeDB.RC:
+                        DateTime DT = pQ.CodePeriod.ToString().ToDateTime("yyyyMMdd");
+                        DB = new SQLite(db.GetReceiptFile(DT));
+                        break;
+                    case eTypeDB.MID:
+                        DB = db.dbMid;
+                        break;
+                    default:
+                        return new(-1, "Невідомий тип бази даних");
+                }
+
+                switch (pQ.QueryType)
+                {
+                    case eSQLQueryType.Execute:
+                        int n=DB.ExecuteNonQuery(pQ.SQL);
+                        return new() { Data = n.ToString() };
+                    case eSQLQueryType.Scalar:
+                        return new(0, DB.ExecuteScalar<string>(pQ.SQL));
+                    default:
+                        return new(-1, "Невідомий тип запиту");
+                }
+            }catch (Exception e) { return new(e); }
+
+            return new(-1, "Нічого не виконали");
+        }
 
     }
 }

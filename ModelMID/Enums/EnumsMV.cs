@@ -253,6 +253,10 @@ namespace ModelMID
         /// <summary>
         /// Отримати вагу з віддаленого зважування товару
         /// </summary>
-        WeightNet
+        WeightNet,
+        /// <summary>
+        /// SQL запит до бази даних
+        /// </summary>
+        SQLQuery
     }
 }

@@ -24,16 +24,16 @@ namespace SharedLib
         private bool isDisposed;
         private DateTime DT = DateTime.Today;
 
-        SQLite dbConfig;
-        SQLite dbMid;
-        SQLite dbRC;
+        public SQLite dbConfig;
+        public SQLite dbMid;
+        public SQLite dbRC;
 
         private string Connect = null;
         private string ConfigFile { get { return Path.Combine(ModelMID.Global.PathDB, "config.db"); } }
         public string LastMidFile = null;
         private string MidFile { get { return string.IsNullOrEmpty(Connect) ? (string.IsNullOrEmpty(LastMidFile) ? GetMIDFile() : LastMidFile) : Connect; } }
         private string ReceiptFile { get { return GetReceiptFile(DT); } }
-        private string GetReceiptFile(DateTime pDT) { return Path.Combine(ModelMID.Global.PathDB, $"{pDT:yyyyMM}", $"Rc_{ModelMID.Global.IdWorkPlace}_{pDT:yyyyMMdd}.db"); }
+        public string GetReceiptFile(DateTime pDT) { return Path.Combine(ModelMID.Global.PathDB, $"{pDT:yyyyMM}", $"Rc_{ModelMID.Global.IdWorkPlace}_{pDT:yyyyMMdd}.db"); }
 
         public string GetMIDFile(DateTime pD = default, bool pTmp = false)
         {

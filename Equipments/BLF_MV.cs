@@ -507,6 +507,11 @@ namespace Front.Equipments
                         CommandDouble  = JsonSerializer.Deserialize<CommandAPI<double>>(pDataApi);
                         MW.EF.OnWeight?.Invoke(CommandDouble.Data,true);
                         break;
+                    case eCommand.SQLQuery:
+                        CommandAPI<SQLQuery> SQLQuery = JsonSerializer.Deserialize<CommandAPI<SQLQuery>>(pDataApi);
+                        Res = Bl.SQLQuery(SQLQuery.Data);
+                        
+                        break;
                 }
             }
             catch (Exception ex) { Res = new(ex); }

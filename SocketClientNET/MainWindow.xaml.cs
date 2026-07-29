@@ -16,12 +16,19 @@ namespace SocketClient
     {
         // адрес и порт сервера, к которому будем подключаться
         static int port = 3443; //8005; // порт сервера
-        static string address = "127.0.0.1"; // адрес сервера
+        static string address = "sqlsrv2";//"127.0.0.1"; // адрес сервера
         public int id = 1;
         public ObservableCollection<ListHistoris> Histori { get; set; }
         public MainWindow()
         {
-            InitializeComponent();
+            IPHostEntry hostEntry = Dns.GetHostEntry(address);
+            if (hostEntry.AddressList.Length > 0)
+            {
+                var ip = hostEntry.AddressList[0];
+                address = ip.ToString();
+            }
+
+                InitializeComponent();
             Histori = new ObservableCollection<ListHistoris> { };
             ListHistori.ItemsSource = Histori;
         }
