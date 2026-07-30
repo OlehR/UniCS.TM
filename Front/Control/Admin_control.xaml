@@ -2104,7 +2104,7 @@
                 <TabItem Header="Кеш-машина">
                     <TabItem.Style>
                         <Style TargetType="{x:Type TabItem}">
-                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Setter Property="Visibility" Value="Visible" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsCashMachine, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=UserControl}}" Value="True">
@@ -2180,7 +2180,7 @@
                                     <TextBlock Text="Загальна сума:"  FontWeight="Bold"/>
                                     <TextBlock Text="{Binding AllSumNote, StringFormat=0.00₴, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" Margin="10" FontWeight="Bold"/>
                                 </StackPanel>
-                                    <ListView x:Name="BanknoteGrid"
+                                <ListView x:Name="BanknoteGrid"
                   ItemsSource="{Binding BanknoteRows, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"
                    Margin="0,0,0,20">
                                     <ListView.View>
@@ -2446,7 +2446,10 @@
                                         </GridView>
                                     </ListView.View>
                                 </ListView>
-
+                                <Button Click="CancelPayment_btn" Content="Скасувати оплату!"
+Style="{StaticResource yelowButton}"
+Width="250" Height="50"
+HorizontalAlignment="Left" Margin="10"/>
                             </StackPanel>
 
                             <!--ФОН-->
@@ -2628,7 +2631,7 @@
                         <ListView  x:Name="ListDenomination"  Grid.Column="0" SelectionChanged="CollectMoney_SelectionChanged">
                             <ListView.View>
                                 <GridView >
-                                    
+
                                     <GridViewColumn  Width="100">
 
                                         <GridViewColumn.HeaderTemplate>
@@ -2674,7 +2677,7 @@
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
-                    
+
 
                                     <GridViewColumn  Width="100">
                                         <GridViewColumn.HeaderTemplate>

@@ -1807,6 +1807,18 @@ from RECEIPT r
             IsTypeCollectMoney = (bool)TypeCollectMoneyCheckBox.IsChecked;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsTypeCollectMoney)));
         }
+
+        private void CancelPayment_btn(object sender, RoutedEventArgs e)
+        {
+            MW.CustomMessage.Show("Ви впевнені що хочете скасувати оплату??", "Увага!", eTypeMessage.Question);
+            MW.CustomMessage.Result = (bool res) =>
+            {
+                if (res)
+                {
+                    EF.CashMachineCancel();
+                }
+            };
+        }
     }
 
     public class APIRadiobuton

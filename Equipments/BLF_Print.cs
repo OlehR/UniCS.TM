@@ -80,7 +80,7 @@ namespace Front.Equipments
         public bool PrintAndCloseReceipt(Receipt pR = null, eTypePay pTP = eTypePay.Card, decimal pSumCash = 0m, decimal pIssuingCash = 0, decimal pSumWallet = 0, decimal pSumBonus = 0, bool pIsCashBack = false)
         {
             bool Res = false;
-            string TextError = null;      
+            string TextError = null;
 
             var R = MW.Bl.GetReceiptHead(pR ?? MW.curReceipt, true);
             /*if (Global.IdWorkPlaceAdd > 0 &&  R.CodeReceipt%2==0)//Для олівє 
@@ -88,9 +88,9 @@ namespace Front.Equipments
                 MW.Bl.ReplaceIdWorkplacePay(R, Global.IdWorkPlace, Global.IdWorkPlaceAdd);
                 R = MW.Bl.GetReceiptHead(pR ?? MW.curReceipt, true);
             }*/
-           
+
             SetCurReceipt(R, false);
-       
+
             R.NameCashier = MW.AdminSSC?.NameUser;
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"pTP=>{pTP} pSumCash=>{pSumCash} pIssuingCash=>{pIssuingCash} pSumWallet=>{pSumWallet} pSumBonus=>{pSumBonus} curReceipt=> {MW.curReceipt.ToJson()}", eTypeLog.Expanded);
 
@@ -182,9 +182,10 @@ namespace Front.Equipments
                             {
 
                                 pay = EF.CashMachinePay(R, Rro.GetSumRoundCash(pSumCash) * 100m, pay, R.TypeReceipt);
-                                Bl.db.ReplacePayment(pay, true);
+                                if (pay.IsSuccess)
+                                    Bl.db.ReplacePayment(pay, true);
                             }
-                            else if(pTP == eTypePay.Postpaid)
+                            else if (pTP == eTypePay.Postpaid)
                             {
                                 pay = new Payment(R) { IsSuccess = true, TypePay = eTypePay.Postpaid, SumPay = pSumCash, SumExt = 0 };
                                 Bl.db.ReplacePayment(pay, true);
@@ -287,7 +288,7 @@ namespace Front.Equipments
                         }
                         if (res == null)
                         {
-                            R.CurrentTypePay=eTypePay.None;
+                            R.CurrentTypePay = eTypePay.None;
                             return true;
                         }
                         if (res.CodeError == 0)
@@ -330,8 +331,8 @@ namespace Front.Equipments
                 }
                 R.CurrentTypePay = eTypePay.None;
                 return Res;
-            }           
-           
+            }
+
         }
         private void PrintOrderReceipt(Receipt R, bool IsTryAgain = true)
         {
@@ -340,7 +341,7 @@ namespace Front.Equipments
             {
                 Task.Run(async () =>
                 {
-                    string CodeOrder = "", ComandStr="";
+                    string CodeOrder = "", ComandStr = "";
                     if (Global.IsSkyNex)
                     {
                         CodeOrder = Bl.db.GetCodeOrder().ToString();
@@ -371,7 +372,7 @@ namespace Front.Equipments
                         }
                     }
                     try
-                    { 
+                    {
                         List<string> list = ["Номер замовлення:", $"{CodeOrder}"];
                         var res = EF.PrintNoFiscalReceipt(R, list);
                         List<string> listWares = [];
