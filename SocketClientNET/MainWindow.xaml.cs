@@ -16,7 +16,7 @@ namespace SocketClient
     {
         // адрес и порт сервера, к которому будем подключаться
         static int port = 3443; //8005; // порт сервера
-        static string address = "sqlsrv2";//"127.0.0.1"; // адрес сервера
+        static string address = "NOV-KASA-01";//"127.0.0.1";//; // адрес сервера
         public int id = 1;
         public ObservableCollection<ListHistoris> Histori { get; set; }
         public MainWindow()
@@ -44,34 +44,40 @@ namespace SocketClient
         {
             try
             {
-                IPEndPoint ipPoint = new IPEndPoint(IPAddress.Parse(address), port);
-
-                Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                // подключаемся к удаленному хосту
-                socket.Connect(ipPoint);
-                string message = Message;
-                byte[] data = Encoding.UTF8.GetBytes(message);//Encoding.Unicode.GetBytes(message);
-                socket.Send(data);
-
-                // получаем ответ
-                data = new byte[10000]; // буфер для ответа
-                StringBuilder builder = new StringBuilder();
-                int bytes = 0; // количество полученных байт
-
-                do
+                IPHostEntry hostEntry = Dns.GetHostEntry(address);
+                if (hostEntry.AddressList.Length > 0)
                 {
-                    bytes = socket.Receive(data, data.Length, 0);
-                    builder.Append(Encoding.UTF8.GetString(data, 0, bytes));
-                }
-                while (socket.Available > 0);
-                //MessageBox.Show("Відповідь сервера: " + builder.ToString());
+                    var ip = hostEntry.AddressList[0];
 
-                // закрываем сокет
-                socket.Shutdown(SocketShutdown.Both);
-                socket.Close();
-                var r = builder.ToString();
-                return builder.ToString();
-               
+                    IPEndPoint ipPoint = new IPEndPoint(ip, port);
+
+                    using Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    // подключаемся к удаленному хосту
+                    socket.Connect(ipPoint);
+                    string message = Message;
+                    byte[] data = Encoding.UTF8.GetBytes(message);//Encoding.Unicode.GetBytes(message);
+                    socket.Send(data);
+
+                    // получаем ответ
+                    data = new byte[10000]; // буфер для ответа
+                    StringBuilder builder = new StringBuilder();
+                    int bytes = 0; // количество полученных байт
+
+                    do
+                    {
+                        bytes = socket.Receive(data, data.Length, 0);
+                        builder.Append(Encoding.UTF8.GetString(data, 0, bytes));
+                    }
+                    while (socket.Available > 0);
+                    //MessageBox.Show("Відповідь сервера: " + builder.ToString());
+                    // закрываем сокет
+                    socket.Shutdown(SocketShutdown.Both);
+                    socket.Close();
+                    //var r = builder.ToString();
+                    return builder.ToString();
+                }
+                return null;
+
             }
             catch (Exception ex)
             {

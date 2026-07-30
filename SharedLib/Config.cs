@@ -218,9 +218,11 @@ namespace SharedLib
             try
             {
                 Global.PortAPI = AppConfiguration.GetValue<int>("MID:PortAPI");
+                if(Global.PortAPI == 0)
+                    Global.PortAPI = 3443;
             }
             catch
-            { Global.PortAPI = 0; }
+            { Global.PortAPI = 3443; }
 
             try
             {
