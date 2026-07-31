@@ -504,14 +504,15 @@ namespace ModelMID
             ReceiptWares el = this.Clone() as ReceiptWares;
             decimal PromotionQuantity = 0;
             IEnumerable<WaresReceiptPromotion> PromotionPrice = null;
-
+            bool Is888888=false;
             if (el.ReceiptWaresPromotions != null)
             {
                 PromotionPrice = el.ReceiptWaresPromotions.Where(r => r.TypeDiscount == eTypeDiscount.Price);
                 PromotionQuantity = PromotionPrice.Sum(r => r.Quantity);
+                Is888888 = el.ReceiptWaresPromotions.Any(r => r.TypeDiscount == eTypeDiscount.Price && r.CodePS == 888888);
             }
 
-            if (PromotionQuantity > 0 && (el.ParPrice1 != 888888 && el.ParPrice1>0))
+            if (PromotionQuantity > 0 && (el.ParPrice1 != 888888 && el.ParPrice1>0) && !Is888888 )
             {
                 decimal AllQuantity = el.Quantity;
                 var OtherPromotion = el.ReceiptWaresPromotions.Where(r => r.TypeDiscount != eTypeDiscount.Price);
@@ -554,6 +555,17 @@ namespace ModelMID
                         }
                     }
                 }
+
+                /*!!!!TMP Треба подумати чи треба
+                if (FullQuantity > 0)
+                {
+                    ReceiptWares c = el.Clone() as ReceiptWares;
+                    c.Quantity = FullQuantity;
+                    c.Price = el.Price;
+                    c.PriceDealer = el.Price;
+                    c.Order = i++;
+                    Res.Add(c);
+                }*/
             }
             else
             {
