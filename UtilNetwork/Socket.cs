@@ -178,12 +178,14 @@ namespace UtilNetwork
             ipEndPoint = new IPEndPoint(pIP, pPort);
         }
 
-        public async Task<Result> StartAsync(string pData)
+        public async Task<Result> StartAsync(string pData,int pTimeoutConnect=2000)
         {
             Result res = null;
+            using var cts = new CancellationTokenSource(pTimeoutConnect);
+         
             try
             {
-                await client.ConnectAsync(ipEndPoint);
+                await client.ConnectAsync(ipEndPoint, cts.Token);
                 var messageBytes = Encoding.UTF8.GetBytes(pData);
                 var aa = await client.SendAsync(messageBytes, SocketFlags.None);
 

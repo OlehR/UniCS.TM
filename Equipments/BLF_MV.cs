@@ -441,14 +441,19 @@ namespace Front.Equipments
                         Res = new (0, EF.RroPrintX(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = CommandInt.Data })?.ToJSON());
                         break;
                     case eCommand.OpenShift:
-                        CommandString = JsonSerializer.Deserialize<CommandAPI<string>>(pDataApi);
-                        var u = Bl.GetUserByBarCode(CommandString.Data);
-                        if (u != null)
+                        if (Global.TypeWorkplaceCurrent == eTypeWorkplace.SelfServicCheckout)
                         {
-                            string res=OpenShift(u);
-                            Res = string.IsNullOrEmpty(res)? new(0, $"Зміна відкрита:{u.NameUser}") : new (-1, res);
+                            CommandString = JsonSerializer.Deserialize<CommandAPI<string>>(pDataApi);
+                            var u = Bl.GetUserByBarCode(CommandString.Data);
+                            if (u != null)
+                            {
+                                string res = OpenShift(u);
+                                Res = string.IsNullOrEmpty(res) ? new(0, $"Зміна відкрита:{u.NameUser}") : new(-1, res);
+                            }
                         }
-                        break;
+                        else 
+                            Res = new(-1, $"Каса {Global.IdWorkPlace} не находиться в режимі КСО");
+                            break;
                     case eCommand.GeneralCondition:
                         CommandRemoteInfo = JsonSerializer.Deserialize<CommandAPI<InfoRemoteCheckout>>(pDataApi);
                         var r = Bl.GetUserByBarCode(CommandRemoteInfo.Data.UserBarcode);
