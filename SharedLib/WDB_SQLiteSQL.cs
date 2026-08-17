@@ -28,7 +28,7 @@ DROP INDEX IF exists id_FiscalArticle;--Ver=>15
 CREATE UNIQUE INDEX id_FiscalArticle ON FiscalArticle(IdWorkplacePay,CodeWares);--Ver=>15
 CREATE UNIQUE INDEX id_FiscalArticle_PLU ON FiscalArticle(IdWorkplacePay,PLU);--Ver=>16";
 
-        public readonly int VerRC = 32;
+        public readonly int VerRC = 33;
         readonly string SqlUpdateRC = @"alter TABLE WARES_RECEIPT            add Fix_Weight NUMBER NOT NULL DEFAULT 0;--Ver=>0
 alter TABLE WARES_RECEIPT_PROMOTION  add TYPE_DISCOUNT  INTEGER  NOT NULL  DEFAULT (12);--Ver=>0
 alter TABLE wares_receipt            add Priority INTEGER  NOT NULL DEFAULT 0;--Ver=>0
@@ -71,8 +71,10 @@ alter TABLE WARES_RECEIPT_PROMOTION  add Coefficient  NUMBER  NOT NULL  DEFAULT 
 alter TABLE ReceiptGift add CodeCoupon INTEGER  NOT NULL DEFAULT 0;--Ver=>30
 alter TABLE payment    add  IsCashBack INTEGER  NOT NULL DEFAULT 0;--Ver=>31
 CREATE TABLE ReceiptLimitPS (IdWorkplace INTEGER NOT NULL, CodePeriod INTEGER NOT NULL, CodeReceipt INTEGER NOT NULL,CodePS INTEGER NOT NULL,CodeClient INTEGER NOT NULL, CodeWares INTEGER NOT NULL, Data NUMBER NOT NULL default 0);--Ver=>32
-CREATE INDEX IdReceiptLimitPS ON ReceiptLimitPS(IdWorkplace,CodePeriod,CodeReceipt,CodePS,CodeClient,CodeWares);;--Ver=>32
-CREATE INDEX IndReceiptLimitPS ON ReceiptLimitPS(CodeClient,CodeWares,CodePS);;--Ver=>32
+CREATE INDEX IdReceiptLimitPS ON ReceiptLimitPS(IdWorkplace,CodePeriod,CodeReceipt,CodePS,CodeClient,CodeWares);--Ver=>32
+CREATE INDEX IndReceiptLimitPS ON ReceiptLimitPS(CodeClient,CodeWares,CodePS);--Ver=>32
+alter TABLE LOG_RRO add STATE INTEGER NOT NULL DEFAULT 0;--Ver=>33
+alter TABLE LOG_RRO add id INTEGER DEFAULT 0;--Ver=>33
 ";
        
         readonly string SqlCreateConfigTable = @"
@@ -312,11 +314,13 @@ CREATE INDEX id_payment ON payment(CODE_RECEIPT);
         CREATE INDEX id_RECEIPT_Event ON RECEIPT_Event(CODE_RECEIPT, CODE_WARES, ID_WORKPLACE, CODE_PERIOD);
 
         CREATE TABLE Log_RRO(
+            Id INTEGER PRIMARY KEY,
             ID_WORKPLACE INTEGER  NOT NULL,
             ID_WORKPLACE_PAY INTEGER  NOT NULL DEFAULT 0,
             TypePay INTEGER  NOT NULL DEFAULT 0,
             CODE_PERIOD INTEGER  NOT NULL,
             CODE_RECEIPT INTEGER  NOT NULL,
+            State INTEGER  NOT NULL DEFAULT 0,
             FiscalNumber TEXT,
             Number_Operation INTEGER  NOT NULL DEFAULT 0,
             Type_Operation INTEGER  NOT NULL DEFAULT 0,
@@ -439,8 +443,8 @@ select p.code_client as CodeClient, p.name_client as NameClient, 0 as TypeDiscou
         readonly string SqlGetLogRRO = @"Select ID_WORKPLACE as IdWorkplace,CODE_PERIOD as CodePeriod,CODE_RECEIPT as CodeReceipt,ID_WORKPLACE_PAY as IdWorkplacePay,
       FiscalNumber as FiscalNumber, Number_Operation as NumberOperation,Type_Operation as TypeOperation, SUM as SUM,
       Type_RRO as TypeRRO,JSON as JSON, Text_Receipt as TextReceipt, CodeError as CodeError, Error as Error, USER_CREATE as UserCreate,TypePay
-        from Log_RRO where ID_WORKPLACE = @IdWorkplace and CODE_PERIOD = @CodePeriod
-        and CODE_RECEIPT = case when @CodeReceipt=0 then CODE_RECEIPT else @CodeReceipt end";
+        from Log_RRO where ID_WORKPLACE = @IdWorkplace and CODE_PERIOD = @CodePeriod";
+       
 
         readonly string SqlFoundWares = @"with t$1 as 
 (

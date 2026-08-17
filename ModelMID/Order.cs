@@ -72,11 +72,7 @@ namespace ModelMID
         {
             List<OrderReceiptLink> orderReceiptLinks = new List<OrderReceiptLink>();
             foreach (ReceiptWaresLink w in receiptWares.ReceiptWaresLink)
-            {
-                    orderReceiptLinks.Add(new OrderReceiptLink(w, receiptWares));
-                
-            }
-
+                orderReceiptLinks.Add(new OrderReceiptLink(w, receiptWares));
             return orderReceiptLinks;
         }
 

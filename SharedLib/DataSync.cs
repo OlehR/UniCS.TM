@@ -59,6 +59,7 @@ namespace SharedLib
             try
             {
                 res = SyncData(ref parIsFull);
+                await SendLogRRCAsync();
                 var CurDate = DateTime.Now;
                 // не обміннюємось чеками починаючи з 23:45 до 1:00
                 if (!((CurDate.Hour == 23 && CurDate.Minute > 44) || CurDate.Hour == 0))
@@ -118,7 +119,7 @@ namespace SharedLib
             foreach (var el in varReceipts)
             {
                 var R = varDB.ViewReceipt(el, true);
-               // await DataSync1C.SendReceiptTo1CAsync(R, varDB);
+                // await DataSync1C.SendReceiptTo1CAsync(R, varDB);
                 _ = SendReceipt(R); // В сховище чеків
             }
             if (parDB == null)
@@ -137,7 +138,7 @@ namespace SharedLib
                 string varMidFile = db.GetMIDFile();
                 try
                 {
-                    if ((!IsFull && !File.Exists(varMidFile)) || (File.Exists(varMidFile) && new FileInfo(varMidFile).Length==0) ) //Якщо відсутній файл
+                    if ((!IsFull && !File.Exists(varMidFile)) || (File.Exists(varMidFile) && new FileInfo(varMidFile).Length == 0)) //Якщо відсутній файл
                     {
                         IsFull = true;
                         FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Відсутній файл {varMidFile} parIsFull=>{IsFull} ");
@@ -179,7 +180,7 @@ namespace SharedLib
                         db.GetDB();
                         Exception Ex = null;
                         if (File.Exists(varMidFile))
-                        {                            
+                        {
                             Thread.Sleep(200);
                             FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Try Delete file {varMidFile}");
                             try
@@ -223,7 +224,7 @@ namespace SharedLib
                     bool IsReloadFull = pIsFull;
                     r = AsyncHelper.RunSync(() => LoadDataAsync(Global.IdWorkPlace, IsFull, NameDB, MessageNoMin, IsReloadFull));
                     if (r == null)
-                    {                     
+                    {
                         Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = (IsFull ? eSyncStatus.Error : eSyncStatus.NoFatalError), StatusDescription = $"LoadData return null value" });
                         return false;
                     }
@@ -248,7 +249,7 @@ namespace SharedLib
                         }
                         r = MsSQL.LoadData(Global.IdWorkPlace, IsFull, pD, MessageNoMin);
                     }*/
-                    
+
                     if (r?.WorkPlace?.Any() == true)
                     {
                         FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Replace SqlGetDimWorkplace => {r?.WorkPlace?.Count()}");
@@ -466,7 +467,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     if (response.IsSuccessStatusCode)
                     {
                         var Res = await response.Content.ReadAsStringAsync();
-                        res = "true".Equals(Res);                        
+                        res = "true".Equals(Res);
                     }
 
                     if (res)
@@ -650,7 +651,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     if (!string.IsNullOrEmpty(res))
                     {
                         var Res = Newtonsoft.Json.JsonConvert.DeserializeObject<Result>(res);
-                        if (Res.State == 0 ) //&& !Global.Settings.IsSend1C)
+                        if (Res.State == 0) //&& !Global.Settings.IsSend1C)
                         {
                             pR.StateReceipt = eStateReceipt.Send;
                             db.SetStateReceipt(pR);
@@ -851,7 +852,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                 HttpClient client = new() { Timeout = TimeSpan.FromMilliseconds(5000) };
 
                 HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "GetReceipt1C");
-                string data = (new IdReceipt() { IdWorkplace = pIdWorkplace, CodePeriod = pDT.ToString("yyyyMMdd").ToInt()}).ToJson();
+                string data = (new IdReceipt() { IdWorkplace = pIdWorkplace, CodePeriod = pDT.ToString("yyyyMMdd").ToInt() }).ToJson();
                 requestMessage.Content = new StringContent(data, Encoding.UTF8, "application/json");
                 var response = await client.SendAsync(requestMessage);
                 if (response.IsSuccessStatusCode)
@@ -953,9 +954,9 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
         {
             try
             {
-                HttpClient client = new() {  Timeout = TimeSpan.FromMilliseconds(120000)};
+                HttpClient client = new() { Timeout = TimeSpan.FromMilliseconds(120000) };
                 HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "CashRegister/LoadData")
-                                                        { Content = new StringContent(pData.ToJson(), Encoding.UTF8, "application/json") };
+                { Content = new StringContent(pData.ToJson(), Encoding.UTF8, "application/json") };
                 var response = await client.SendAsync(requestMessage);
                 if (response.IsSuccessStatusCode)
                 {
@@ -1077,14 +1078,14 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             }
             return true;
         }
-        public async Task<Result<bool>> OpenCloseShiftAsync(bool pIsOpen=true)
+        public async Task<Result<bool>> OpenCloseShiftAsync(bool pIsOpen = true)
         {
             try
             {
                 HttpClient client = new() { Timeout = TimeSpan.FromMilliseconds(90000) };
                 HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "CashRegister/OpenCloseShift");
 
-                requestMessage.Content = new StringContent(new OpenCloseShift (){ IdWorkplace=Global.IdWorkPlace, IsOpen= pIsOpen }.ToJson(), Encoding.UTF8, "application/json");
+                requestMessage.Content = new StringContent(new OpenCloseShift() { IdWorkplace = Global.IdWorkPlace, IsOpen = pIsOpen }.ToJson(), Encoding.UTF8, "application/json");
                 var response = await client.SendAsync(requestMessage);
                 if (response.IsSuccessStatusCode)
                 {
@@ -1131,6 +1132,71 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                 return new(e);
             }
             return null;
+        }
+
+        public async Task<Result<bool>> SendLogRRO(LogRRO pL)
+        {
+            try
+            {
+                HttpClient client = new() { Timeout = TimeSpan.FromMilliseconds(20000) };
+                HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "CashRegister/LogRRO");
+
+                requestMessage.Content = new StringContent(pL.ToJson(), Encoding.UTF8, "application/json");
+                var response = await client.SendAsync(requestMessage);
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    if (!string.IsNullOrEmpty(res))
+                    {
+                        var r = Newtonsoft.Json.JsonConvert.DeserializeObject<Result<bool>>(res);
+                        return r;
+                    }
+                }
+                else
+                    return new(response.StatusCode);
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e);
+                return new(e);
+            }
+            return null;
+        }
+
+        public async Task SendLogRRCAsync()
+        {
+            var Ldc = db.GetConfig<DateTime>("LastDaySendLogRRC");
+            var today = DateTime.Now.Date;
+            var IdR = new IdReceipt() { IdWorkplace = Global.IdWorkPlace };
+            try
+            {
+                if (Ldc == default)
+                    Ldc = today.AddDays(-4);
+                Ldc = Ldc.AddDays(1);
+                while (Ldc <= today)
+                {                   
+                    using var ldb = new WDB_SQLite(Ldc);
+                    IdR.CodePeriod = Global.GetCodePeriod(Ldc);
+                    var R = ldb.GetLogRRO(IdR);
+                    FileLogger.WriteLogMessage(this, "SendLogRRCAsync=>", $"Ldc=>{Ldc} today=>{today} N=>{R?.Count()??0}");
+                    if (R?.Any() == true)
+                        foreach (var el in R)
+                        {
+                            var Res = await SendLogRRO(el);
+                            if (!Res.Success || !Res.Data)
+                            {
+                                FileLogger.WriteLogMessage(this, "SendLogRRCAsync=>", Res.ToJSON());
+                                return;
+                            }
+                        }
+                    Ldc = Ldc.AddDays(1);
+                    db.SetConfig("LastDaySendLogRRC", Ldc);
+                }
+            }
+            catch (Exception ex)
+            {
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "SendRWDeleteAsync=>" + Ldc.ToString() + " " + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
+            }
         }
     }
 }

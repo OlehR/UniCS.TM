@@ -264,18 +264,26 @@ namespace ModelMID
             NumberSlip = null;
         }
 
-        public void SetIdReceipt(IdReceipt idReceipt)
+        public new void SetIdReceipt(IdReceipt idReceipt)
         {
             base.SetIdReceipt(idReceipt);
             if (Wares != null)
                 foreach (var el in Wares)
+                {
                     el.SetIdReceipt(idReceipt);
+                    if (el.ReceiptWaresLink != null)
+                        foreach (var rwl in el.ReceiptWaresLink)
+                            rwl.SetIdReceipt(idReceipt);
+                }
             if (Payment != null)
                 foreach (var el in Payment)
                     el.SetIdReceipt(idReceipt);
             if (ReceiptEvent != null)
                 foreach (var el in ReceiptEvent)
                     el.SetIdReceipt(idReceipt);
+            if(Wares != null)
+                foreach (var el in Wares)
+                    el.SetIdReceipt(idReceipt);    
         }
 
         public void SetReceipt(int parCodeReceipt, DateTime parDateReceipt = new DateTime())

@@ -333,7 +333,7 @@ namespace Front.Control
 
         private void AddRelatedProducts(object sender, RoutedEventArgs e)
         {
-            List < ReceiptWaresLink > addedRelatedProducts =  new List<ReceiptWaresLink> ();
+            List < ReceiptWaresLink > addedRelatedProducts = [];
             foreach (var item in LastWares.WaresLink)
             {
                 if (item.IsSelected)
