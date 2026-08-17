@@ -16,7 +16,7 @@ namespace SocketClient
     {
         // адрес и порт сервера, к которому будем подключаться
         static int port = 3443; //8005; // порт сервера
-        static string address = "NOV-KASA-01";//"127.0.0.1";//; // адрес сервера
+        static string address = "127.0.0.1";// "NOV-KASA-01";//; // адрес сервера
         public int id = 1;
         public ObservableCollection<ListHistoris> Histori { get; set; }
         public MainWindow()
@@ -36,6 +36,7 @@ namespace SocketClient
         private void SentMessage(object sender, RoutedEventArgs e)
         {
             string Response = SocketClient(WriteTextMesage.Text);
+            Clipboard.SetText(Response);
             Histori.Add(new ListHistoris { Id = id, TextMessage = WriteTextMesage.Text, ServerResponse = Response });
             id++;
         }

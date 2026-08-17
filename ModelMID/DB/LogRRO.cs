@@ -37,7 +37,8 @@ namespace ModelMID.DB
         ProgramingArticle=152,
         [Description("Отримання тексту останнього чека")]
         LastReceipt =153,
-
+        [Description("Закритий порт")]
+        ClosePort = 154,
         [Description("Z звіт")]
         ZReport = 1000,
         [Description("Х звіт")]
@@ -46,8 +47,7 @@ namespace ModelMID.DB
         PeriodZReport = 1002,
         [Description("Копія чеку")]
         CopyReceipt = 1010,
-        [Description("Закритий порт")]
-        ClosePort,
+        
         [Description("Z звіт POS")]
         ZReportPOS = 2000,
         [Description("X звіт POS")]
@@ -62,6 +62,8 @@ namespace ModelMID.DB
     {
         public LogRRO() { }
         public LogRRO(IdReceipt pIdReceipt) : base(pIdReceipt) { }
+        public int Id { get; set; }
+        public int State { get; set; }
         public eTypePay TypePay { get; set; }
         public int NumberOperation { get; set; }
         public string FiscalNumber { get; set; }

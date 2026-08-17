@@ -519,7 +519,7 @@ namespace SharedLib
             }
 
             var r = db.FindWares(null, pName, 0, 0, pCodeFastGroup, -1, pOffSet, pLimit);
-            if (r.Count() > 0)
+            if (r.Any())
             {
                 return r;
             }
@@ -653,13 +653,7 @@ namespace SharedLib
             return false;
         }
 
-        public User GetUserByBarCode(string pBarCode)
-        {
-            var u = db.GetUser(new User() { BarCode = pBarCode });
-            if (u.Count() > 0)
-                return u.First();
-            return null;
-        }
+        public User GetUserByBarCode(string pBarCode)=>db.GetUser(new User() { BarCode = pBarCode })?.FirstOrDefault();
 
         public User GetUserByLogin(string pLogin, string pPassWord)
         {
@@ -673,8 +667,18 @@ namespace SharedLib
             return null;
         }
 
-        public bool InsertLogRRO(LogRRO pL) { return db.InsertLogRRO(new List<LogRRO>() { pL }); }
-        public bool InsertLogRRO(IEnumerable<LogRRO> pL) { return db.InsertLogRRO(pL); }
+        public bool InsertLogRRO(LogRRO pL) 
+        {
+            int Id= db.InsertLogRRO( pL);
+            if(pL.TypeOperation==eTypeOperation.MoneyIn || pL.TypeOperation==eTypeOperation.MoneyOut || pL.TypeOperation==eTypeOperation.ZReport || pL.TypeOperation==eTypeOperation.ZReportPOS)
+                Task.Run(async()=> {
+                var r= await ds.SendLogRRO(pL);
+                if (r.Success && r.Data)
+                    db.SetStateLogRRO(Id);
+                });
+            return Id>0;
+        }
+        //public bool InsertLogRRO(IEnumerable<LogRRO> pL) { return db.InsertLogRRO(pL); }
 
         public void AddEventAge(Receipt pRecipt)
         {
@@ -726,6 +730,7 @@ namespace SharedLib
                         el.Quantity = 0;
 
                     db.AddWares(el);
+                    db.ReplaceWaresReceiptLink(el.ReceiptWaresLink);
                 }
 
                 if (!IsRefund)
@@ -803,7 +808,6 @@ namespace SharedLib
                 }
             }
         }
-
         public void AddOwnBag(IdReceipt pR, decimal pWeight)
         {
             var rr = new ReceiptEvent(pR) { EventType = eReceiptEventType.OwnBag, EventName = "Власна думка", ProductConfirmedWeight = Convert.ToInt32(pWeight), CreatedAt = DateTime.Now };

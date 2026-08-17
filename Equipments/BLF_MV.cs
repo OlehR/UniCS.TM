@@ -490,8 +490,12 @@ namespace Front.Equipments
                         break;
                     case eCommand.GetDataSkyNex:
                         var D = JsonSerializer.Deserialize<CommandAPI<DateTime>>(pDataApi);
-                        SharedLib.SkyNex.OrdersRoot OR = new(D.Data);
-                        Res = new(0,"Ok",OR.ToJson());
+                        if (D != null)
+                        {
+                            var OR = SharedLib.SkyNex.Orders.GetOrders(D.Data);
+                            Res = new(0, "Ok", OR.ToJson());
+                        }else
+                            Res = new(-1, $"Невірні вхідні дані!");
                         break;
 
                     case eCommand.StartWeightNet:

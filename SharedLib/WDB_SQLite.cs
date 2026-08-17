@@ -821,11 +821,12 @@ insert into RECEIPT_Event(
             return db.Execute<IdReceipt, QR>(SqlGetQR, pR);
         }
 
-        public bool InsertLogRRO(IEnumerable<LogRRO> pLog)
+        public int InsertLogRRO(LogRRO pLog)
         {
-            string SQL = @"insert into Log_RRO  (ID_WORKPLACE,ID_WORKPLACE_PAY,TypePay,CODE_PERIOD,CODE_RECEIPT,FiscalNumber, Number_Operation,Type_Operation, SUM ,Type_RRO,JSON, Text_Receipt,Error,CodeError, USER_CREATE) VALUES
-                     (@IdWorkplace, @IdWorkplacePay,@TypePay,@CodePeriod,@CodeReceipt,@FiscalNumber,@NumberOperation,@TypeOperation,@SUM,@TypeRRO,@JSON,@TextReceipt,@Error,@CodeError,@UserCreate)";
-            return dbRC.BulkExecuteNonQuery<LogRRO>(SQL, pLog) > 0;
+            string SQL = @"insert into Log_RRO  (ID_WORKPLACE, ID_WORKPLACE_PAY,TypePay,CODE_PERIOD,CODE_RECEIPT, State,FiscalNumber, Number_Operation,Type_Operation, SUM,Type_RRO, JSON,Text_Receipt, Error, CodeError,USER_CREATE) VALUES
+                                               (@IdWorkplace, @IdWorkplacePay,@TypePay,@CodePeriod,@CodeReceipt,@State,@FiscalNumber,@NumberOperation,@TypeOperation,@SUM,@TypeRRO,@JSON,@TextReceipt,@Error,@CodeError,@UserCreate)
+RETURNING Id;";
+            return dbRC.ExecuteScalar<LogRRO,int>(SQL, pLog);
         }
 
         public bool AddFiscalArticle(FiscalArticle pFiscalArticle)
@@ -900,14 +901,16 @@ Where ID_WORKPLACE = @IdWorkplace
             return Res;
         }
 
-        public virtual IEnumerable<LogRRO> GetLogRRO(IdReceipt pR)
+        public virtual IEnumerable<LogRRO> GetLogRRO(IdReceipt pR,bool pIsNotSend=false)
         {
+            string Sql= SqlGetLogRRO + (pIsNotSend ? " and State=0 and Type_Operation in (1,2,1000,2000)" :
+                                                     " and CODE_RECEIPT = case when @CodeReceipt=0 then CODE_RECEIPT else @CodeReceipt end");
             if (DT == pR.DTPeriod)
-                return dbRC.Execute<IdReceipt, LogRRO>(SqlGetLogRRO, pR);
+                return dbRC.Execute<IdReceipt, LogRRO>(Sql, pR);
             else
             {
                 using var dbRCD = GetRC(pR.DTPeriod);
-                return dbRCD.Execute<IdReceipt, LogRRO>(SqlGetLogRRO, pR);
+                return dbRCD.Execute<IdReceipt, LogRRO>(Sql, pR);
             }
         }
 
@@ -1300,8 +1303,10 @@ from WaresLink wl join  wares w on wl.CodeWares = w.Code_wares where wl.CodeWare
 
         public IEnumerable<ReceiptWaresLink> GetReceiptWaresLink(IdReceiptWares pIdRW)
         {
-            string Sql = @"select wrl.*,w.NAME_WARES as NameWares from WaresReceiptLink wrl 
+            string Sql = @"select wrl.IdWorkplace, wrl.CodePeriod, wrl.CodeReceipt, wrl.CodeWares, wrl.Sort, wrl.CodeWaresTo, min(wrl.Quantity, wr.Quantity) as Quantity, w.NAME_WARES as NameWares 
+    from WaresReceiptLink wrl 
     join Wares w on wrl.CodeWares=w.Code_Wares
+    join WARES_RECEIPT wr on wrl.CodeWares = wr.Code_Wares and wr.Id_Workplace = @IdWorkplace and wr.Code_Period = @CodePeriod and wr.Code_Receipt = @CodeReceipt
 where wrl.IdWorkplace = @IdWorkplace and wrl.CodePeriod = @CodePeriod and wrl.CodeReceipt = @CodeReceipt and wrl.CodeWaresTo = @CodeWares";
             return db.Execute<IdReceiptWares, ReceiptWaresLink>(Sql, pIdRW);
         }
@@ -1365,6 +1370,11 @@ where RE.EVENT_TYPE=1";
         public bool ReplaceReceiptLimitPS(ReceiptLimitPS pRC) => dbRC.ExecuteNonQuery<ReceiptLimitPS>(SqlReplaceReceiptLimitPS, pRC) > 0;
 
         public long GetCodeFromSKU(int CodeSKU)=> db.ExecuteScalar<long>($"select max(CodeWares) from SKU where SKU={CodeSKU}");
-        
+        public bool SetStateLogRRO(int pId)
+        {
+            string SqlSetStateReceipt = $@"update LogRRO set State = 1 where ID = {pId}";
+            return dbRC.ExecuteNonQuery(SqlSetStateReceipt) > 0;
+        }
+
     }
 }
