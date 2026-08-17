@@ -4,17 +4,20 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Front.ViewModels"
-        mc:Ignorable="d" 
-        WindowState="Maximized"         
-        WindowStyle="None"
         xmlns:uc="clr-namespace:Front.Control" 
->
+        mc:Ignorable="d" 
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        WindowState="Normal"
+        WindowStartupLocation="CenterScreen"
+        Width="1024" Height="768">
+
     <Window.Resources>
         <Style x:Key="PrimaryButton" TargetType="Button">
             <Setter Property="Background" Value="#4A6CF7"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="FontSize" Value="18"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
@@ -39,7 +42,7 @@
 
         <Style x:Key="RowButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
             <Setter Property="Background" Value="#22C55E"/>
-            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontSize" Value="16"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -92,117 +95,148 @@
         <local:ConfirmedRowBrushConverter x:Key="ConfirmedRowBrush"/>
         <local:TopAmountBorderBrushConverter x:Key="TopAmountBorderBrush"/>
     </Window.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="105"/>
+            <!-- Збільшено висоту шапки з 90 до 105 -->
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="550"/>
+            <ColumnDefinition Width="3*"/>
+            <!-- 2/3 екрану для таблиці -->
+            <ColumnDefinition Width="2*"/>
+            <!-- 1/3 екрану для клавіатури -->
         </Grid.ColumnDefinitions>
+
         <!-- ═══════════════════════════════════════
-     ВЕРХНЯ ПОЛОСКА
-     Колонки: [назва/сума *] [на касі 120] [поле 130] [кнопка 120]
-════════════════════════════════════════ -->
-        <Border Grid.Row="0" Background="White" BorderBrush="#E5E7EB" BorderThickness="0,0,0,2" Padding="16,10">
-            <Grid Height="100">
+             ВЕРХНЯ ПОЛОСКА (Ліва частина)
+        ════════════════════════════════════════ -->
+        <!-- У Padding змінено верхній відступ з 10 на 24 (16,24,10,10) -->
+        <Border Grid.Row="0" Grid.Column="0" Background="White" BorderBrush="#E5E7EB" BorderThickness="0,0,1,2" Padding="16,24,10,10">
+            <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="5*"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <!-- Сума (колонка 0) -->
-                <StackPanel Grid.Column="0" Orientation="Horizontal"
-                    VerticalAlignment="Center" Margin="4,0,0,0">
-                    <TextBlock Text="Сума:" FontSize="46" Foreground="#6B7280" 
-                       VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,0">
+                    <TextBlock Text="Сума:" FontSize="24" Foreground="#6B7280" VerticalAlignment="Center" Margin="0,0,8,0"/>
                     <TextBlock Text="{Binding TotalSum, StringFormat={}{0:F2} ₴}" 
-                       FontSize="50" FontWeight="Bold" Foreground="#111827"
-                       VerticalAlignment="Center"/>
+                               FontSize="28" FontWeight="Bold" Foreground="#111827"
+                               VerticalAlignment="Center"/>
                 </StackPanel>
-
-                <!-- Колонка 1: порожня — вирівнювання із "На касі" -->
 
                 <!-- Поле вводу суми (колонка 2) -->
                 <TextBox Grid.Column="2" Style="{StaticResource StyledTextBox}" Text="{Binding TopAmount, UpdateSourceTrigger=PropertyChanged}"
-                         BorderBrush="{Binding TopAmountIsValid, Converter={StaticResource TopAmountBorderBrush}}" FontSize="46" GotFocus="GotFocusTotal"
-                         ToolTip="Введіть суму — має бути менше загальної" Height="60" VerticalAlignment="Center"/>
+                         BorderBrush="{Binding TopAmountIsValid, Converter={StaticResource TopAmountBorderBrush}}" FontSize="24" GotFocus="GotFocusTotal"
+                         ToolTip="Введіть суму — має бути менше загальної" Height="45" Width="140" VerticalAlignment="Center"/>
 
                 <!-- Кнопка підтвердити (колонка 3) -->
-                <Button Grid.Column="3"  Padding="0" Content="Підтвердити"  Style="{StaticResource PrimaryButton}" 
-                        Command="{Binding ConfirmTopCommand}" Height="60" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                <Button Grid.Column="3" Padding="15,0" Content="Підтвердити" Style="{StaticResource PrimaryButton}" 
+                        Command="{Binding ConfirmTopCommand}" Height="45" VerticalAlignment="Center" Margin="8,0,0,0"/>
             </Grid>
         </Border>
 
         <!-- ═══════════════════════════════════════
-     ТАБЛИЦЯ
-════════════════════════════════════════ -->
-        <Grid Grid.Row="1" Margin="16,12,16,16">
+             ВЕРХНЯ ПОЛОСКА (Права частина - Кнопки)
+        ════════════════════════════════════════ -->
+        <!-- У Padding змінено верхній відступ на 24 (10,24,16,10) -->
+        <Border Grid.Row="0" Grid.Column="1" Background="White" BorderBrush="#E5E7EB" BorderThickness="0,0,0,2" Padding="10,24,16,10">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <Button Content="Відправити 1C" Style="{StaticResource PrimaryButton}" Background="#F59E0B" Click="Exit_Click" Height="45" Padding="10,0" Margin="0,0,10,0">
+                    <Button.Triggers>
+                        <EventTrigger RoutedEvent="MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation To="#D97706" Duration="0:0:0.1" Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Button.Triggers>
+                </Button>
+                <Button Content="Вихід" Style="{StaticResource PrimaryButton}" Background="#EF4444" Click="Exit_Click" Height="45" Width="100">
+                    <Button.Triggers>
+                        <EventTrigger RoutedEvent="MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation To="#DC2626" Duration="0:0:0.1" Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Button.Triggers>
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <!-- ═══════════════════════════════════════
+             ТАБЛИЦЯ (Ліва частина)
+        ════════════════════════════════════════ -->
+        <Grid Grid.Row="1" Grid.Column="0" Margin="16,16,10,16">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <!-- Заголовки — ті самі ColumnDefinitions -->
-            <Border Grid.Row="0" Background="#4A6CF7" CornerRadius="8,8,0,0" Padding="8,0">
+            <!-- Заголовки -->
+            <Border Grid.Row="0" Background="#4A6CF7" CornerRadius="8,8,0,0" Padding="8,10">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="3*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="2.5*"/>
+                        <ColumnDefinition Width="1.2*"/>
+                        <ColumnDefinition Width="1.2*"/>
+                        <ColumnDefinition Width="0.8*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="Каса"     Foreground="White" FontWeight="SemiBold" FontSize="40"/>
-                    <TextBlock Grid.Column="1" Text="В касі"   Foreground="White" FontWeight="SemiBold" FontSize="40" HorizontalAlignment="Center"/>
-                    <TextBlock Grid.Column="2" Text="Зняти" Foreground="White" FontWeight="SemiBold" FontSize="40" HorizontalAlignment="Center"/>
-                    <TextBlock Grid.Column="3" Text="Дія"       Foreground="White" FontWeight="SemiBold" FontSize="40" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="0" Text="Каса"     Foreground="White" FontWeight="SemiBold" FontSize="20"/>
+                    <TextBlock Grid.Column="1" Text="В касі"   Foreground="White" FontWeight="SemiBold" FontSize="20" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="2" Text="Зняти"    Foreground="White" FontWeight="SemiBold" FontSize="20" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="3" Text="Дія"      Foreground="White" FontWeight="SemiBold" FontSize="20" HorizontalAlignment="Center"/>
                 </Grid>
             </Border>
 
             <!-- Рядки -->
-            <Border Grid.Row="1" Background="White"  BorderBrush="#E5E7EB" BorderThickness="1,0,1,1" CornerRadius="0,0,8,8">
+            <Border Grid.Row="1" Background="White" BorderBrush="#E5E7EB" BorderThickness="1,0,1,1" CornerRadius="0,0,8,8">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <ItemsControl ItemsSource="{Binding Items}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Border Padding="16,5" Background="{Binding IsConfirmed, Converter={StaticResource ConfirmedRowBrush}}"
+                                <Border Padding="8,10" Background="{Binding IsConfirmed, Converter={StaticResource ConfirmedRowBrush}}"
                                         BorderBrush="#F3F4F6" BorderThickness="0,0,0,1">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="3*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="2.5*"/>
+                                            <ColumnDefinition Width="1.2*"/>
+                                            <ColumnDefinition Width="1.2*"/>
+                                            <ColumnDefinition Width="0.8*"/>
                                         </Grid.ColumnDefinitions>
 
                                         <TextBlock Grid.Column="0"
                                            Text="{Binding Name}"
-                                           FontSize="28" Foreground="#111827"
+                                           FontSize="18" Foreground="#111827"
                                            VerticalAlignment="Center"
-                                           TextTrimming="CharacterEllipsis"/>
+                                           TextTrimming="CharacterEllipsis"
+                                           Margin="0,0,5,0"/>
 
                                         <TextBlock Grid.Column="1"
                                            Text="{Binding AvailableQty, StringFormat={}{0:F2}}"
-                                           FontSize="28" Foreground="#374151"
+                                           FontSize="18" Foreground="#374151"
                                            VerticalAlignment="Center"
                                            HorizontalAlignment="Center"
                                            FontWeight="Medium"/>
 
-                                        <TextBox Grid.Column="2" Padding="5, 0"  Style="{StaticResource StyledTextBox}" GotFocus="GotFocusElement"
-                                                 Text="{Binding InputQty, UpdateSourceTrigger=PropertyChanged}" FontSize="28"
-                                                 IsEnabled="{Binding IsConfirmed, Converter={StaticResource InverseBool}}"  VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="2" Padding="5, 0" Height="40" Style="{StaticResource StyledTextBox}" GotFocus="GotFocusElement"
+                                                 Text="{Binding InputQty, UpdateSourceTrigger=PropertyChanged}" FontSize="18"
+                                                 IsEnabled="{Binding IsConfirmed, Converter={StaticResource InverseBool}}" VerticalAlignment="Center"/>
 
-
-                                        <Button Grid.Column="3" Content="✓"  Style="{StaticResource RowButton}" Margin="10,0,0,0"
+                                        <Button Grid.Column="3" Content="✓" Style="{StaticResource RowButton}" Margin="10,0,0,0" Height="40"
                                                 Command="{Binding DataContext.ConfirmRowCommand,
                                                   RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                 CommandParameter="{Binding}" IsEnabled="{Binding IsConfirmed, Converter={StaticResource InverseBool}}"
-                                                 VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
-
+                                                VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
                                     </Grid>
                                 </Border>
                             </DataTemplate>
@@ -211,16 +245,19 @@
                 </ScrollViewer>
             </Border>
         </Grid>
-        <Grid Grid.Column="1">
-            <Button Content="Відправити 1C" Style="{DynamicResource Default}" Click="Exit_Click" Height="65" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-            <Button Content="Вихід" Style="{DynamicResource Default}"  VerticalAlignment="Top" Click="Exit_Click" HorizontalAlignment="Right"/>
-        </Grid>
-        <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1" Grid.Column="1" Grid.Row="1"
-                Name="Admin_NumericPad" Visibility="Collapsed" Grid.ZIndex="5" CornerRadius="10" VerticalAlignment="Center" HorizontalAlignment="Center">
+
+        <!-- ═══════════════════════════════════════
+             КЛАВІАТУРА (Права частина 1/3)
+        ════════════════════════════════════════ -->
+        <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1" Grid.Column="1" Grid.Row="1" Margin="10,16,16,16"
+                Name="Admin_NumericPad" Visibility="Collapsed" CornerRadius="10" 
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <!-- Змінено Alignment для заповнення простору -->
             <Border.Effect>
-                <DropShadowEffect ShadowDepth="2" BlurRadius="15"/>
+                <DropShadowEffect ShadowDepth="2" BlurRadius="10" Opacity="0.3"/>
             </Border.Effect>
-            <uc:NumericPad x:Name="AdminUC_NumericPad"   />
+            <!-- Переконайтеся, що в NumericPad.xaml прибрано Height та Width -->
+            <uc:NumericPad x:Name="AdminUC_NumericPad"  Width="350"  Height="600"  Margin="5"/>
         </Border>
     </Grid>
 </Window>

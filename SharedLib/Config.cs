@@ -233,9 +233,8 @@ namespace SharedLib
             { Global.IsSkyNex = false; }
 
             try
-            {
-                Global.IsAutoChoiceTerminal = false;
-                Global.IsAutoChoiceTerminal = AppConfiguration["MID:IsAutoChoiceTerminal"].ToLower().Equals("true");
+            {               
+                Global.IsAutoChoiceTerminal = AppConfiguration["MID:IsAutoChoiceTerminal"]?.ToLower()?.Equals("true")??false;
             }
             catch
             { Global.IsAutoChoiceTerminal = false; }
