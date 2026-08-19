@@ -672,13 +672,20 @@ namespace SharedLib
             int Id= db.InsertLogRRO( pL);
             if(pL.TypeOperation==eTypeOperation.MoneyIn || pL.TypeOperation==eTypeOperation.MoneyOut || pL.TypeOperation==eTypeOperation.ZReport || pL.TypeOperation==eTypeOperation.ZReportPOS)
                 Task.Run(async()=> {
-                var r= await ds.SendLogRRO(pL);
-                if (r.Success && r.Data)
-                    db.SetStateLogRRO(Id);
+                    pL.Id = Id;
+                    var r= await ds.SendLogRRO(pL);
+                    if (r.Success)
+                        try
+                        {
+                            db.SetStateLogRRO(Id);
+                        }
+                        catch(Exception e)
+                        {
+                            FileLogger.WriteLogMessage(this, "InsertLogRRO", e);
+                        }
                 });
             return Id>0;
-        }
-        //public bool InsertLogRRO(IEnumerable<LogRRO> pL) { return db.InsertLogRRO(pL); }
+        }        
 
         public void AddEventAge(Receipt pRecipt)
         {

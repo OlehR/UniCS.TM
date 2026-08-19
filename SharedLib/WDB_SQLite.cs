@@ -1372,7 +1372,7 @@ where RE.EVENT_TYPE=1";
         public long GetCodeFromSKU(int CodeSKU)=> db.ExecuteScalar<long>($"select max(CodeWares) from SKU where SKU={CodeSKU}");
         public bool SetStateLogRRO(int pId)
         {
-            string SqlSetStateReceipt = $@"update LogRRO set State = 1 where ID = {pId}";
+            string SqlSetStateReceipt = $@"update Log_RRO set State = 1 where ID = {pId}";
             return dbRC.ExecuteNonQuery(SqlSetStateReceipt) > 0;
         }
 

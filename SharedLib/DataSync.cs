@@ -59,7 +59,7 @@ namespace SharedLib
             try
             {
                 res = SyncData(ref parIsFull);
-                await SendLogRRCAsync();
+                await SendLogRROAsync();
                 var CurDate = DateTime.Now;
                 // не обміннюємось чеками починаючи з 23:45 до 1:00
                 if (!((CurDate.Hour == 23 && CurDate.Minute > 44) || CurDate.Hour == 0))
@@ -1134,14 +1134,14 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             return null;
         }
 
-        public async Task<Result<bool>> SendLogRRO(LogRRO pL)
+        public async Task<Result> SendLogRRO(LogRRO pL)
         {
             try
             {
                 HttpClient client = new() { Timeout = TimeSpan.FromMilliseconds(20000) };
-                HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "CashRegister/LogRRO");
-
-                requestMessage.Content = new StringContent(pL.ToJson(), Encoding.UTF8, "application/json");
+                HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "CashRegister/SendLogRRO");
+                string Data = pL.ToJson();
+                requestMessage.Content = new StringContent(Data, Encoding.UTF8, "application/json");
                 var response = await client.SendAsync(requestMessage);
                 if (response.IsSuccessStatusCode)
                 {
@@ -1163,34 +1163,42 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             return null;
         }
 
-        public async Task SendLogRRCAsync()
+        public async Task SendLogRROAsync()
         {
-            var Ldc = db.GetConfig<DateTime>("LastDaySendLogRRC");
+            var Ldc = db.GetConfig<DateTime>("LastDaySendLogRRO");
             var today = DateTime.Now.Date;
             var IdR = new IdReceipt() { IdWorkplace = Global.IdWorkPlace };
             try
             {
                 if (Ldc == default)
                     Ldc = today.AddDays(-4);
-                Ldc = Ldc.AddDays(1);
                 while (Ldc <= today)
                 {                   
                     using var ldb = new WDB_SQLite(Ldc);
                     IdR.CodePeriod = Global.GetCodePeriod(Ldc);
                     var R = ldb.GetLogRRO(IdR);
-                    FileLogger.WriteLogMessage(this, "SendLogRRCAsync=>", $"Ldc=>{Ldc} today=>{today} N=>{R?.Count()??0}");
+                    FileLogger.WriteLogMessage(this, "SendLogRROAsync=>", $"Ldc=>{Ldc} today=>{today} N=>{R?.Count()??0}");
                     if (R?.Any() == true)
                         foreach (var el in R)
                         {
-                            var Res = await SendLogRRO(el);
-                            if (!Res.Success || !Res.Data)
+                            try
                             {
-                                FileLogger.WriteLogMessage(this, "SendLogRRCAsync=>", Res.ToJSON());
-                                return;
+                                var Res = await SendLogRRO(el);
+                                if (Res != null && Res.Success)
+                                    db.SetStateLogRRO(el.Id);
+                                else
+                                {
+                                    FileLogger.WriteLogMessage(this, "SendLogRROAsync=>", Res?.ToJSON());
+                                    return;
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                FileLogger.WriteLogMessage(this, $"InsertLogRRO {el.Id}", e);
                             }
                         }
-                    Ldc = Ldc.AddDays(1);
-                    db.SetConfig("LastDaySendLogRRC", Ldc);
+                    db.SetConfig("LastDaySendLogRRO", Ldc);
+                    Ldc = Ldc.AddDays(1);                 
                 }
             }
             catch (Exception ex)

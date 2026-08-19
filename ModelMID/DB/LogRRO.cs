@@ -79,6 +79,7 @@ namespace ModelMID.DB
         public string TextReceipt { get; set; }
         public string Error { get; set; } = null;
         public int CodeError { get; set; } = 0;
+        public DateTime DateCreate { get; set; }
         public int UserCreate { get; set;}       
     }
    
