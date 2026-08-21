@@ -153,11 +153,11 @@ namespace Front.ViewModels
                 pCashItem.IsConfirmed = true;
                 pCashItem.InputQty = "";
 
-                Task.Run(async()=> { 
+                /*Task.Run(async()=> { 
                     var r= await Bl.ds.InOutMoneyAsync(IOM);
                     if(!(r?.Success==true))
                         Global.Message.Invoke($"Помилка збереження винесення коштів по {IOM.IdWorkplace} в 1С=> " + r?.TextError, eTypeMessage.Error);
-                });
+                });*/
                 return true;
             }
             else

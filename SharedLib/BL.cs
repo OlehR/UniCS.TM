@@ -916,7 +916,7 @@ namespace SharedLib
                 return res.Data;
             return false;
         }
-        public async Task<bool> InOutMoney(InOutMoney pIOM)
+        /*public async Task<bool> InOutMoney(InOutMoney pIOM)
         {
             //return false;
             if (!Global.Settings.IsOpenCloseShift)
@@ -925,7 +925,7 @@ namespace SharedLib
             if (res.Success)
                 return res.Data;
             return false;
-        }
+        }*/
         public Result SQLQuery(SQLQuery pQ)
         {
             if (pQ == null && pQ.SQL == null)

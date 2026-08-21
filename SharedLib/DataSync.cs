@@ -1105,7 +1105,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             return null;
         }
 
-        public async Task<Result<bool>> InOutMoneyAsync(InOutMoney pIOM)
+        public async Task<Result> InOutMoneyAsync(InOutMoney pIOM)
         {
             try
             {
@@ -1119,7 +1119,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     var res = await response.Content.ReadAsStringAsync();
                     if (!string.IsNullOrEmpty(res))
                     {
-                        var r = Newtonsoft.Json.JsonConvert.DeserializeObject<Result<bool>>(res);
+                        var r = Newtonsoft.Json.JsonConvert.DeserializeObject<Result>(res);
                         return r;
                     }
                 }
