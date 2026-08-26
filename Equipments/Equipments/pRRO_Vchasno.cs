@@ -61,6 +61,7 @@ namespace Front.Equipments.Implementation
             {
                 d = new ApiRRO(eTask.SetOffLine) { token = Token, device = Device }.ToJSON();
                 var rr=RequestAsync($"{Url}", HttpMethod.Post, d, TimeOut, "application/json");
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Перехід в OffLine=>{rr}");
             }
             d = new ApiRRO(eTask.OpenShift) { token = Token, device = Device }.ToJSON();
             var r = RequestAsync($"{Url}", HttpMethod.Post, d, TimeOut, "application/json");
