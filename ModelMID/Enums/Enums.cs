@@ -550,7 +550,11 @@ namespace ModelMID
         /// <summary>
         /// Слабоалкогольні напої без акцизної марки
         /// </summary>
-        LowAlcohol = 5
+        LowAlcohol = 5,
+        /// <summary>
+        /// Тимчасово Тест 2 КСО. Потрібно буде видалити після тестування.
+        /// </summary>
+        OrdinaryTest = 6
     }
 
     public enum eDBStatus

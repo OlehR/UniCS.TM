@@ -38,6 +38,7 @@ namespace SharedLib
             {
                 db = WDB_SQLite.GetInstance;
                 ds = new DataSync(this);
+                AsyncHelper.RunSync(() => DataSync.SetIsSyncAsync());
                 Global.BildWorkplace(db.GetWorkPlace());
                 if (!File.Exists(db.LastMidFile))
                 {

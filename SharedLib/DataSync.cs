@@ -45,14 +45,18 @@ namespace SharedLib
                 StartSyncData();
             }
         }
-        bool IsSync(int p) => true;
+        static public bool IsSync = false;
 
         public async Task<bool> SyncDataAsync(bool parIsFull = false)
         {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            await SetIsSyncAsync();
+            stopwatch.Stop();
             bool res = false;
-            if (!IsSync(Global.CodeWarehouse))
+            if (!IsSync)
             {
                 FileLogger.WriteLogMessage(this, "SyncDataAsync", $"Обмін заблоковано", eTypeLog.Expanded);
+                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.Error, StatusDescription = $"Обмін заблоковано" });
                 return res;
             }
             FileLogger.WriteLogMessage($"BL.SyncDataAsync({parIsFull}) Start");
@@ -98,7 +102,7 @@ namespace SharedLib
         public bool SendReceiptTo1C(IdReceipt pIdR)
         {
             using var ldb = new WDB_SQLite(pIdR.DTPeriod);
-            if (!IsSync(Global.CodeWarehouse))
+            if (!IsSync)
             {
                 FileLogger.WriteLogMessage(this, "SendReceiptTo1C", $"Обмін заблоковано CodeReceipt=>{pIdR.CodeReceipt}", eTypeLog.Expanded);
                 return false;
@@ -216,7 +220,7 @@ namespace SharedLib
                         FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "Create New DB");
                     }
 
-                    if (!IsSync(Global.CodeWarehouse)) return false;
+                    if (!IsSync) return false;
 
                     SQLiteMid pD = null;
                     MidData r = null;
@@ -536,7 +540,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     string s = "ПСЮ00000000";
                     pNumberOrder = pNumberOrder.Trim();
                     pNumberOrder = s.Substring(0, 11 - pNumberOrder.Length) + pNumberOrder;
-                    if (!IsSync(Global.CodeWarehouse)) return;
+                    if (!IsSync) return;
 
                     var Order = await GetClientOrder(pNumberOrder);// MsSQL.GetClientOrder(pNumberOrder);
                     if (Order != null && Order.Any())
@@ -1205,6 +1209,39 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
             {
                 Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Exception = ex, Status = eSyncStatus.NoFatalError, StatusDescription = "SendRWDeleteAsync=>" + Ldc.ToString() + " " + ex.Message + '\n' + new System.Diagnostics.StackTrace().ToString() });
             }
+        }
+
+        static public async Task<bool> SetIsSyncAsync()
+        {
+            var R = await IsSyncAsync();
+            IsSync = R?.Success ?? false;
+            return IsSync;
+        }
+        static public async Task<Result> IsSyncAsync()
+        {
+            try
+            {
+                HttpClient client = new() { Timeout = TimeSpan.FromMilliseconds(1000) };
+                HttpRequestMessage requestMessage = new(HttpMethod.Post, Global.Api + "CashRegister/IsSync")
+                {
+                    Content = new StringContent(Global.CodeWarehouse.ToString(), Encoding.UTF8, "application/json")
+                };
+                var response = await client.SendAsync(requestMessage);
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = await response.Content.ReadAsStringAsync();
+                    if (!string.IsNullOrEmpty(res))                 
+                        return Newtonsoft.Json.JsonConvert.DeserializeObject<Result>(res);                    
+                }
+                else
+                    return new(response.StatusCode);
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage("DataSync", MethodBase.GetCurrentMethod().Name, e);
+                return new(e);
+            }
+            return null;
         }
     }
 }

@@ -56,9 +56,14 @@ namespace Front.Equipments.Implementation
 
         override public bool OpenWorkDay()
         {
-            ApiRRO d = new(eTask.OpenShift) { token = Token, device = Device };
-            string dd = d.ToJSON();
-            var r = RequestAsync($"{Url}", HttpMethod.Post, dd, TimeOut, "application/json");
+            string d;
+            if (!DataSync.IsSync)
+            {
+                d = new ApiRRO(eTask.SetOffLine) { token = Token, device = Device }.ToJSON();
+                var rr=RequestAsync($"{Url}", HttpMethod.Post, d, TimeOut, "application/json");
+            }
+            d = new ApiRRO(eTask.OpenShift) { token = Token, device = Device }.ToJSON();
+            var r = RequestAsync($"{Url}", HttpMethod.Post, d, TimeOut, "application/json");
             Responce<ResponceOpenShift> Res = JsonConvert.DeserializeObject<Responce<ResponceOpenShift>>(r);
             IsOpenWorkDay = Res.res == 0;
             return IsOpenWorkDay;
@@ -379,6 +384,8 @@ namespace Front.Equipments.Implementation.ModelVchasno
         MoneyOut = 4,
         [Description("Не фіскальний")]
         NoFiscalReceipt = 5,
+        [Description("Примусове переведення в OffLine")]
+        SetOffLine =8,
         [Description("Х звіт")]
         XReport = 10,
         [Description("Z звіт")]
