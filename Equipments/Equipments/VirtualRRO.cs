@@ -390,12 +390,12 @@ namespace Front.Equipments.Implementation
                 if (pR.TypeReceipt == eTypeReceipt.Sale)
                 {
                     TextReport.Add($"QR=>{pR.Fiscal.QR}");
-                    TextReport.Add("");
-                    TextReport.Add("");
-                    TextReport.Add("");
-                    TextReport.Add("");
-                    TextReport.Add("");
-                    TextReport.Add("");
+                    TextReport.Add(" ");
+                    TextReport.Add(" ");
+                    TextReport.Add(" ");
+                    TextReport.Add(" ");
+                    TextReport.Add(" ");
+                    TextReport.Add(" ");
                     TextReport.Add(PrintCenter("Фіскальний чек"));
                 }
             }

@@ -235,7 +235,7 @@ namespace ModelMID
         /// </summary>
         public decimal AgeRestrict { get { return _Wares?.Any() == true ? _Wares?.Max(e => e.LimitAge) ?? 0 : 0; } }
 
-        public bool IsOnlyOrdinary { get { return _Wares?.Any(e => e.TypeWares != eTypeWares.Ordinary) == false; } }
+        public bool IsOnlyOrdinary { get { return _Wares?.Any(e => e.TypeWares != eTypeWares.Ordinary && e.TypeWares != eTypeWares.OrdinaryTest ) == false; } }
 
         public Receipt()
         {
