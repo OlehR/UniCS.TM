@@ -427,7 +427,7 @@ namespace Front.Equipments.Implementation
             string NumberReceipt = rnd.Next(100000000, 999999999).ToString();
             string QR = $"{Guid.NewGuid()}{Environment.NewLine}{pR.SumReceipt}{Environment.NewLine}{DT.ToString("dd/MM/yyyy H:mm")}";
 
-            if(!pR.Fiscals.ContainsKey(IdWorkplacePay))
+            if(!pR.Fiscals.ContainsKey(pR.IdWorkplacePay))
             //ToDateTime("d-M-yyyy HH:mm:ss");
             pR.Fiscals.Add(pR.IdWorkplacePay, new Fiscal()
             {
