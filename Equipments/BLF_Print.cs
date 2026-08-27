@@ -377,7 +377,7 @@ namespace Front.Equipments
                     {
                         List<string> list = ["Номер замовлення:", $"{CodeOrder}"];
                         var res = EF.PrintNoFiscalReceipt(R, list);
-                        if (Global.IsSkyNex)
+                        if (!Global.IsSkyNex)
                         {
                             List<string> listWares = [];
                             listWares = R.Wares.Where(x => x.ProductionLocation > 0).Select(x => $"{x.NameWares} => {x.Quantity}").ToList();

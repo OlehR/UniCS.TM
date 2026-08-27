@@ -455,12 +455,12 @@ replace into Wares(CODE_WARES, CODE_GROUP, CodeGroupUp, NAME_WARES, Name_Wares_U
              values(@CodeWares, @CodeGroup,@CodeGroupUp, @NameWares, @NameWaresUpper, @Article, @CodeBrand, @CodeUnit,
                      @PercentVat, @TypeVat, @NameWaresReceipt, @Description, @TypeWares, @WeightBrutto,
                      @WeightFact, @WeightDelta, @CodeUKTZED, @LimitAge, @PLU, @CodeDirection, @CodeTM,@ProductionLocation,@Country);";
-        public bool ReplaceWares(IEnumerable<Wares> parData) //=> BulkExecuteNonQuery<Wares>(SqlReplaceWares, parData, true) > 0;
-        { //TMP!!!! Для тесту 2 підприємців.
+        public bool ReplaceWares(IEnumerable<Wares> parData) => BulkExecuteNonQuery<Wares>(SqlReplaceWares, parData, true) > 0;
+        /*{ //TMP!!!! Для тесту 2 підприємців.
             bool r = BulkExecuteNonQuery<Wares>(SqlReplaceWares, parData, true) > 0;
             ExecuteNonQuery("update Wares set Type_Wares=6 where CODE_WARES=70804");//66862 Банани 2 категорія ваг.
             return r;
-        }
+        }*/
         public bool ReplaceAdditionUnit(IEnumerable<AdditionUnit> parData)
         {
             string SqlReplaceAdditionUnit = @"replace into  Addition_Unit(CODE_WARES, CODE_UNIT, COEFFICIENT, DEFAULT_UNIT, WEIGHT, WEIGHT_NET)
