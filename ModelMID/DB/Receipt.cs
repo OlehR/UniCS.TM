@@ -396,7 +396,7 @@ namespace ModelMID
             //SumWallet = Payment?.Where(r => r.TypePay == eTypePay.Wallet).Sum(r => r.SumPay) ?? 0;
             if (SumWallet > 0)
             {
-                var OrdinaryWares = Wares.Where(el => el.TypeWares == eTypeWares.Ordinary);
+                var OrdinaryWares = Wares.Where(el => el.TypeWares == eTypeWares.Ordinary || el.TypeWares == eTypeWares.OrdinaryTest);
                 decimal Sum = OrdinaryWares.Sum(el => el.SumTotal);
                 foreach (var el in OrdinaryWares)
                     el.SumWallet = Math.Round(el.SumTotal * SumWallet / Sum, 2);
@@ -420,7 +420,7 @@ namespace ModelMID
 
             if (SumBonusPay > 0)
             {
-                var NotOrdinaryWares = Wares.Where(el => el.TypeWares != eTypeWares.Ordinary);
+                var NotOrdinaryWares = Wares.Where(el => el.TypeWares != eTypeWares.Ordinary && el.TypeWares != eTypeWares.OrdinaryTest );
                 if (!NotOrdinaryWares.Any())
                 {
                     decimal SumTotal = 0m;

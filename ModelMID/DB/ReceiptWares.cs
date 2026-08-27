@@ -375,7 +375,7 @@ namespace ModelMID
         /// <summary>
         /// Вікові обмеження (Піротехніка)
         /// </summary>
-        public decimal LimitAge { get { return TypeWares > 0 && _LimitAge < 18 ? 18 : _LimitAge; } set { _LimitAge = value; } }
+        public decimal LimitAge { get { return TypeWares > 0 && TypeWares!=eTypeWares.OrdinaryTest && _LimitAge < 18 ? 18 : _LimitAge; } set { _LimitAge = value; } }
 
 
         public IEnumerable<MRC> Prices;
