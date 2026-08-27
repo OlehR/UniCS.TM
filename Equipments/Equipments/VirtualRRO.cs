@@ -391,7 +391,10 @@ namespace Front.Equipments.Implementation
                 {
                     TextReport.Add($"QR=>{pR.Fiscal.QR}");
                     TextReport.Add("");
-                    TextReport.Add(pR.Fiscal.QR);
+                    TextReport.Add("");
+                    TextReport.Add("");
+                    TextReport.Add("");
+                    TextReport.Add("");
                     TextReport.Add("");
                     TextReport.Add(PrintCenter("Фіскальний чек"));
                 }
