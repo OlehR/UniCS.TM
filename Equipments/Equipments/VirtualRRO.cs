@@ -333,12 +333,13 @@ namespace Front.Equipments.Implementation
 
             TextReport.Add(PrintTwoColums("Сума", (pR.SumCreditCard>0? pR.SumCreditCard:pR.SumCash).ToString("F2")));
             decimal sumReceiptFiscal = SumReceiptFiscal(pR);
-            if (sumReceiptFiscal<0.5m)
+            
+            decimal roundFiscal = Math.Abs(pR.SumCash - sumReceiptFiscal);
+            if (roundFiscal > 0.5m)
             {
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка при розрахунку чеку! Округлення не може бути більше 50 копійок!");
                 throw new Exception(Environment.NewLine + "Помилка при розрахунку чеку! Округлення не може бути більше 50 копійок!" + Environment.NewLine + StrError);
             }
-            decimal roundFiscal = pR.SumCash - sumReceiptFiscal;
 
 
             if (pR.SumCreditCard==0 && roundFiscal != 0)
@@ -390,6 +391,7 @@ namespace Front.Equipments.Implementation
                 {
                     TextReport.Add($"QR=>{pR.Fiscal.QR}");
                     TextReport.Add("");
+                    TextReport.Add(pR.Fiscal.QR);
                     TextReport.Add("");
                     TextReport.Add(PrintCenter("Фіскальний чек"));
                 }
