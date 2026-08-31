@@ -80,9 +80,9 @@ namespace Front.Equipments
                 eScaleCom.ICS15 => [0, 0, 0, 3],
                 eScaleCom.CASPDC15 => [0],
                 eScaleCom.LongG => [0x53, 0x49, 0x0D, 0x0A],
+                eScaleCom.KS400 => [0x57],
                 _ => [0]
             };
-
         
             SerialDevice?.Write(SendCommand);
             if (CountZero++ >= 2)
@@ -169,7 +169,25 @@ namespace Front.Equipments
                         OnScalesData?.Invoke(Weight, true);
                 }
             }
-                return true;
+            else if (ModelScale == eScaleCom.KS400)
+            {
+                if (data[0] == 2)
+                {
+                    if(data[1] == 0x49 || data[1] == 0x4A)
+                    {
+                        OnScalesData?.Invoke(0, true);
+                        return true;
+                    }
+                    data = data[1..7];
+                    Str = Encoding.ASCII.GetString(data);
+                    if(decimal.TryParse(Str, out decimal Weight))
+                    {
+                        OnScalesData?.Invoke((int)(Weight*1000m), true);
+                    }
+                }
+            }
+
+            return true;
         }
 
         public void GetReadDataSync(byte[] command, Action<byte[]> onDatAction)
@@ -198,6 +216,7 @@ namespace Front.Equipments
         ICS15,
         CASPDC15,
         LongG,
-        AXIS
+        AXIS,
+        KS400
     }
 }
