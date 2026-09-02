@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using RJCP.IO.Ports;
 using System.Text;
 using System.Timers;
+using Utils;
 
 namespace Front.Equipments
 {
@@ -173,14 +174,18 @@ namespace Front.Equipments
             {
                 if (data[0] == 2)
                 {
-                    if(data[1] == 0x49 || data[1] == 0x4A)
+                    if(data[1] == 0x49 || data[1] == 0x4A|| data[2] == 0x49 || data[2] == 0x4A)
                     {
                         OnScalesData?.Invoke(0, true);
                         return true;
                     }
                     data = data[1..7];
                     Str = Encoding.ASCII.GetString(data);
-                    if(decimal.TryParse(Str, out decimal Weight))
+                    if (Str[0] == '0')
+                        Str = Str[1..];
+                    var Weight=Str.ToDecimal();
+
+                    if(Weight>0)
                     {
                         OnScalesData?.Invoke((int)(Weight*1000m), true);
                     }
