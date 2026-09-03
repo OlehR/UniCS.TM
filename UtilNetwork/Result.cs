@@ -46,7 +46,7 @@ namespace UtilNetwork
             if (httpResult.HttpState != eStateHTTP.HTTP_OK)                
             {
                 State = -1;
-                TextError = httpResult.HttpState.ToString();
+                TextError = httpResult.HttpState.ToString() + " " + httpResult.Result;
             }
             
             Data = pData?? httpResult.Result;
