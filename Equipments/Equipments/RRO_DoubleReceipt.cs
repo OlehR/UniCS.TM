@@ -69,6 +69,7 @@ namespace Front.Equipments.Implementation
                     if (((int)el.TypeWares).In(TypeWaresReplace))
                     {
                         ReceiptWares W = (ReceiptWares)Wares2Cat.Clone();
+                        W.IdWorkplacePay = pR.IdWorkplacePay;
                         W.Quantity = el.Sum / Price;
                         WaresNew = WaresNew.Append(W);
                     }
