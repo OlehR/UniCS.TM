@@ -9,7 +9,8 @@ namespace Model
         NoDefine = 0,
         Vopak = 1,
         Spar = 2,
-        Lubo = 3
+        Lubo = 3,
+        Koshik = 6
     }
 
 }
