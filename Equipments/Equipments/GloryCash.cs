@@ -232,17 +232,15 @@ namespace Front.Equipments
                     : eStatusChangeEvent.Initializing
             };
         }
+
+
         public override StatusEquipment TestDevice()
         {
             var getInfo = AsyncHelper.RunSync(async () => await GetStatusAsync());
-            if (getInfo.Status == eStatusChangeEvent.Idle)
-            {
-                State = eStateEquipment.On;
-            }
-            else
-            {
-                State = eStateEquipment.Error;
-            }
+
+            State = getInfo.Status != eStatusChangeEvent.Idle
+                ? eStateEquipment.Error
+                : eStateEquipment.On;
 
             return new StatusEquipment(eModelEquipment.GloryCash, State, getInfo.Status.GetDescription());
         }
@@ -458,35 +456,28 @@ namespace Front.Equipments
 
         public override bool CheckBalance()
         {
-            //максимальна сума по якій потрібно рахувати можливість видати решту в копійках
-            //int MaxSumRest = 100000;
-            //int sumMoneyCashMachine = 0;
+            const int MaxSumRest = 100000; // 1000 грн
 
-            //var pMoney = Inventory();
-
-
-            //foreach (var item in pMoney)
-            //{
-            //    if (item.MoneyStoragePlace==eMoneyStoragePlace.Drum)
-            //    {
-            //        sumMoneyCashMachine += item.FaceValue * item.Quantity;
-            //    }
-            //}
-
-            //if (sumMoneyCashMachine> MaxSumRest)
-            //{
-            //    return true;
-            //}
-            //return false;
-            const int MaxSumRest = 100000;
-            // 20-3 50-4 sum>1000
-            // тест девайсу має також викликати цей метод
-            var res = Inventory()
+            var drum = Inventory()
                 .Where(item => item.MoneyStoragePlace == eMoneyStoragePlace.Drum)
-                .Sum(item => item.FaceValue * item.Quantity) > MaxSumRest;
+                .ToList();
+
+            bool hasEnoughSum = drum.Sum(item => item.FaceValue * item.Quantity) > MaxSumRest; // загальна сума більша за MaxSumRest 
+
+            bool hasEnoughBills = HasMinQuantity(drum, 50, 1) //мінімум одна по 0,50 грн
+                               && HasMinQuantity(drum, 100, 2) // мінімум дві по 1 грн 
+                               && HasMinQuantity(drum, 2000, 3)  // мінімум три по 20 грн
+                               && HasMinQuantity(drum, 5000, 4); // мінімум чотири по 50 грн
+
+            var res = hasEnoughSum && hasEnoughBills;
+
             TextError = res ? "" : "Заблоковано через брак коштів для решти";
             State = res ? eStateEquipment.On : eStateEquipment.Lock;
+
             return res;
         }
+
+        private static bool HasMinQuantity(List<CashInventory> drum, int faceValue, int minQty) =>
+            drum.Any(item => item.FaceValue == faceValue && item.Quantity >= minQty);
     }
 }

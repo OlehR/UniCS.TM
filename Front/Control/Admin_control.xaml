@@ -1625,6 +1625,37 @@
                                         </Style>
                                     </Button.Style>
                                 </Button>
+                                <Button  Grid.Column="2" FontSize="20" Click="AddPaymentCash"   >
+                                    <TextBlock Text="Реквізити кеш" Margin="5">
+                                        <TextBlock.Style>
+                                            <Style TargetType="{x:Type TextBlock}">
+                                                <Setter Property="Margin" Value="5"/>
+                                                <Setter Property="FontSize" Value="22" />
+                                                <Setter Property="FontWeight" Value="DemiBold"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding TypeMonitor, RelativeSource={RelativeSource 
+                        Mode=FindAncestor, AncestorType=Window}}" Value="HorisontalMonitorRegular">
+                                                        <Setter Property="FontSize" Value="12" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <Button.Style>
+                                        <Style BasedOn="{StaticResource Default}" TargetType="Button">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsInputCashPay}" Value="True">
+                                                    <Setter Property="IsEnabled" Value="True"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsInputCashPay}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
 
                                 <Button Grid.Column="2" FontSize="22" Click="Transfer1CButton"   >
                                     <TextBlock  Text="Передати в 1С" Margin="5">
@@ -2104,7 +2135,7 @@
                 <TabItem Header="Кеш-машина">
                     <TabItem.Style>
                         <Style TargetType="{x:Type TabItem}">
-                            <Setter Property="Visibility" Value="Visible" />
+                            <Setter Property="Visibility" Value="Collapsed" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsCashMachine, RelativeSource={RelativeSource 
                                    Mode=FindAncestor, AncestorType=UserControl}}" Value="True">
