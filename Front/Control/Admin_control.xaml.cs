@@ -123,7 +123,7 @@ namespace Front.Control
             ControlScaleWeightDouble = $"{(pWeight / 1000):N3}";
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ControlScaleWeightDouble"));
         }
-        public int SumDrumNote {  get; set; }
+        public int SumDrumNote { get; set; }
         public int SumDrumCoin { get; set; }
         public int AllSumNote { get; set; }
         public int AllSumCoin { get; set; }
@@ -689,6 +689,7 @@ namespace Front.Control
                 IsPrintReceipt = curReceipt?.StateReceipt != eStateReceipt.Print && curReceipt?.StateReceipt != eStateReceipt.Send;
                 IsPayReceipt = curReceipt?.StateReceipt == eStateReceipt.Prepare || curReceipt?.StateReceipt == eStateReceipt.StartPay;
                 IsInputPay = curReceipt?.StateReceipt == eStateReceipt.Prepare || curReceipt?.StateReceipt == eStateReceipt.StartPay;
+                IsInputCashPay = IsInputPay && EF?.CashMachine?.IsNotNull() == true;
                 IsSendTo1C = curReceipt?.StateReceipt == eStateReceipt.Print || curReceipt?.StateReceipt == eStateReceipt.Send;
                 IsCreateReturn = (curReceipt?.StateReceipt == eStateReceipt.Send || curReceipt?.StateReceipt == eStateReceipt.Print) && curReceipt?.TypeReceipt == eTypeReceipt.Sale;
                 IsPrintCoffeQR = (bool)curReceipt?.IsQR();
@@ -697,7 +698,7 @@ namespace Front.Control
             }
             else
             {
-                IsPrintReceipt = IsPayReceipt = IsInputPay = IsSendTo1C = IsCreateReturn = IsPrintCoffeQR = false;
+                IsPrintReceipt = IsPayReceipt = IsInputPay = IsInputCashPay = IsSendTo1C = IsCreateReturn = IsPrintCoffeQR = false;
             }
         }
 
@@ -780,6 +781,7 @@ namespace Front.Control
         public bool IsPrintReceipt { get; set; } = false;// { get { return curReceipt?.StateReceipt == eStateReceipt.Pay; } }  //
         public bool IsPayReceipt { get; set; } = false;//{ get { return curReceipt?.StateReceipt == eStateReceipt.Prepare; } } // 
         public bool IsInputPay { get; set; } = false;// { get { return curReceipt?.StateReceipt == eStateReceipt.Prepare; } }
+        public bool IsInputCashPay { get; set; } = false;
         public bool IsSendTo1C { get; set; } = false;// { get { return curReceipt?.StateReceipt == eStateReceipt.Print; } }
         public bool IsCreateReturn { get; set; } = false;// { get { return curReceipt?.StateReceipt == eStateReceipt.Send && curReceipt?.TypeReceipt == eTypeReceipt.Sale; } }
 
@@ -1401,7 +1403,7 @@ from RECEIPT r
         private void MoneyCountingCancel(object sender, RoutedEventArgs e)
         {
             MoneyCounting.Visibility = Visibility.Collapsed;
-            CollectMoneyCashMachine.Visibility= Visibility.Collapsed;
+            CollectMoneyCashMachine.Visibility = Visibility.Collapsed;
             BackgroundCashMachine.Visibility = Visibility.Collapsed;
         }
 
@@ -1658,7 +1660,7 @@ from RECEIPT r
                 }
 
 
-                
+
             };
             Admin_NumericPad.Visibility = Visibility.Visible;
             BackgroundCashMachine.Visibility = Visibility.Visible;
@@ -1687,7 +1689,7 @@ from RECEIPT r
 
         private void UnLockCashMachineUnit(eTypeUnit pTypeUnit)
         {
-            
+
             if (EF.CashMachine.UnLockUnit(pTypeUnit))
             {
                 MW.CustomMessage.Show($"Сейф для \"{pTypeUnit.GetDescription()}\" відкрито", "Успішно!", eTypeMessage.Information);
@@ -1710,9 +1712,9 @@ from RECEIPT r
 
         private async void Collect_btn(object sender, RoutedEventArgs e)
         {
-            CollectMoneyCashMachine.Visibility=Visibility.Visible;
+            CollectMoneyCashMachine.Visibility = Visibility.Visible;
             BackgroundCashMachine.Visibility = Visibility.Visible;
-            List<CashInventory> result =  EF.CashMachine.Inventory();
+            List<CashInventory> result = EF.CashMachine.Inventory();
             //свторення списку банкнот для відображення
             BanknotesCashMachine = new ObservableCollection<Banknote> {
             new Banknote() {MonetaryValue = 100,MonetaryAmount = 0},
@@ -1762,7 +1764,7 @@ from RECEIPT r
                     int countBanknotes = Convert.ToInt32(res) > SelectedBanknote.MonetaryAmountCashMachine ? SelectedBanknote.MonetaryAmountCashMachine : Convert.ToInt32(res);
                     SelectedBanknote.MonetaryAmount = countBanknotes;
                 }
-                    
+
                 else
                     SelectedBanknote.MonetaryAmount = 0;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TotalMoneyCollect)));
@@ -1816,6 +1818,50 @@ from RECEIPT r
                 if (res)
                 {
                     EF.CashMachineCancel();
+                }
+            };
+        }
+
+        private void AddPaymentCash(object sender, RoutedEventArgs e)
+        {
+            MW.CustomMessage.Show("Ви дійсно все звірили і хочете заповнити реквізити для оплати через кеш-машину?", "Увага!", eTypeMessage.Question);
+            MW.CustomMessage.Result = (bool res) =>
+            {
+                if (res)
+                {
+                    curReceipt.Payment = Bl.GetPayment(curReceipt);
+
+                    var payments = curReceipt.Payment.Where(x => x.IdWorkplacePay == SelectedWorkPlace.IdWorkplace);
+                    if (payments.Count() > 0)
+                    {
+                        MW.CustomMessage.Show(@$"Оплата по даному робочому місцю вже існує! Тип: {payments.FirstOrDefault().TypePay.GetDescription()} на суму: {payments.FirstOrDefault().SumPay}", "Увага!", eTypeMessage.Error);
+                    }
+                    else
+                    {
+                        Payment pay = new()
+                        {
+                            IsSuccess = true,
+                            SumPay = curReceipt.SumReceipt,
+                            IssuerName = "Manual",
+                            NumberCard = $"",
+                            TypePay = eTypePay.CashMachine,
+                            NumberSlip = "",
+                            IdWorkplacePay = SelectedWorkPlace.IdWorkplace,
+                        };
+                        int Id = pay.IdWorkplacePay;
+                        pay.SetIdReceipt(curReceipt);
+                        pay.DateCreate = DateTime.Now;
+                        pay.IdWorkplacePay = Id;
+                        Bl.db.ReplacePayment(pay, true);
+                        curReceipt.StateReceipt = eStateReceipt.Pay;
+                        Bl.db.ReplaceReceipt(curReceipt);
+                        curReceipt.Payment = [pay];
+
+                        //для оновлення сторінки
+                        FindChecksByDate(null, null);
+                        historiReceiptList_SelectionChanged(null, null);
+                        MW.CustomMessage.Show("Успішно!", "Інформація", eTypeMessage.Information);
+                    }
                 }
             };
         }

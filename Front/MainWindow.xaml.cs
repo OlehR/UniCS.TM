@@ -1215,8 +1215,17 @@ namespace Front
                                     if (isCashPayment)
                                     {
                                         EquipmentInfo = string.Empty;
-                                        // GiveRest = (double)RestMoney;
-                                        var task = Task.Run(() => Blf.PrintAndCloseReceipt(null, eTypePay.CashMachine, MoneySum, 0, 0));
+                                        var cashMachineInfo = EF.CashMachine.GetStatus();
+                                        if (cashMachineInfo.Status == eStatusChangeEvent.Idle)
+                                        {
+                                            var task = Task.Run(() => Blf.PrintAndCloseReceipt(null, eTypePay.CashMachine, MoneySum, 0, 0));
+                                        }
+                                        else if (cashMachineInfo.Status >= eStatusChangeEvent.AtStartingChange &&
+                                        cashMachineInfo.Status <= eStatusChangeEvent.Collecting)
+                                            CustomMessage.Show($"Кеш-машина зайнята іншою касою! Будь ласка зачекайте або скористайтесь оплатою карткою", "Увага!", eTypeMessage.Warning);
+                                        else
+                                            CustomMessage.Show($"Кеш-машина перебуває в стані: {cashMachineInfo.Status}! Зачекайте якщо інший клієнт вносить кошти або викличте адміністратора!", "Увага!", eTypeMessage.Warning);
+
                                     }
                                     else
                                     {
