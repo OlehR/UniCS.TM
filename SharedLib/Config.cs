@@ -67,6 +67,10 @@ namespace SharedLib
             }
             catch
             { Global.IdWorkPlace = 36; }
+
+            if (!string.IsNullOrWhiteSpace(AppConfiguration["MID:StartCodeReceipt"]))
+                Global.StartCodeReceipt = Convert.ToInt32(AppConfiguration["MID:StartCodeReceipt"]);
+            
             try
             {
                 Global.IdWorkPlaceAdd = 0;

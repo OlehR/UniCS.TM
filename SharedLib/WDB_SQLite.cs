@@ -608,7 +608,7 @@ INSERT OR ignore into GEN_WORKPLACE(ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT) val
             {
                 if (pIdR.CodePeriod == 0)
                     pIdR.CodePeriod = Global.GetCodePeriod();
-                pIdR.CodeReceipt = dbConfig.ExecuteScalar<IdReceipt, int>(SqlGetNewReceipt, new IdReceipt { IdWorkplace = pIdR.IdWorkplace, CodePeriod = Global.GetCodePeriodForNumberReceipt() });
+                pIdR.CodeReceipt = dbConfig.ExecuteScalar<IdReceipt, int>(SqlGetNewReceipt, new IdReceipt {CodeReceipt= pIdR.CodeReceipt,  IdWorkplace = pIdR.IdWorkplace, CodePeriod = Global.GetCodePeriodForNumberReceipt() });
                 dbRC.ExecuteNonQuery<IdReceipt>(SqlGetNewReceipt2, pIdR);
             }
             return pIdR;
