@@ -79,11 +79,11 @@ namespace Front.Equipments.Implementation
             else
                 EF.PrintNoFiscalReceipt(new IdReceipt() { IdWorkplace = Global.IdWorkPlace, CodePeriod = Global.GetCodePeriod(), IdWorkplacePay = Global.IdWorkPlace }, TextReport);
 
-     
+
             return new LogRRO(pIdR) { TypeOperation = eTypeOperation.XReport, FiscalNumber = $"{FiscalNumber}_{typeOperation}", JSON = pIdR.ToJSON(), TextReceipt = string.Join(Environment.NewLine, TextReport), TypeRRO = "VirtualRRO", TypePay = TypePay };
         }
 
-        void BildReport(IdReceipt pIdR, eTypeOperation typeOperation,IEnumerable<LogRRO> logRRO,eTypePay pTypePay)
+        void BildReport(IdReceipt pIdR, eTypeOperation typeOperation, IEnumerable<LogRRO> logRRO, eTypePay pTypePay)
         {
             //кількість продажних чеків
             int CountSaleReceipt = logRRO.Where(x => x.IdWorkplacePay == pIdR.IdWorkplacePay && x.TypeOperation == eTypeOperation.Sale && x.TypePay == pTypePay).Count();
@@ -130,7 +130,7 @@ namespace Front.Equipments.Implementation
                 if (typeOperation != eTypeOperation.PeriodZReport)
                     TextReport.Add(PrintTwoColums("Готівки в касі:", TotalSum.ToString("0.00")));
             }
-            
+
 
         }
         private string PrintCenter(string text)
@@ -331,18 +331,22 @@ namespace Front.Equipments.Implementation
             }
             TextReport.Add(PrintCenter($"------------------------"));
 
-            TextReport.Add(PrintTwoColums("Сума", (pR.SumCreditCard>0? pR.SumCreditCard:pR.SumCash).ToString("F2")));
+            TextReport.Add(PrintTwoColums("Сума", (pR.SumCreditCard > 0 ? pR.SumCreditCard : pR.SumCash).ToString("F2")));
             decimal sumReceiptFiscal = SumReceiptFiscal(pR);
-            
-            decimal roundFiscal = Math.Abs(pR.SumCash - sumReceiptFiscal);
-            /*if (roundFiscal > 0.5m)
+
+            decimal roundFiscal = 0;
+            if (pR.SumCash > 0)
             {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка при розрахунку чеку! Округлення не може бути більше 50 копійок!");
-                throw new Exception(Environment.NewLine + "Помилка при розрахунку чеку! Округлення не може бути більше 50 копійок!" + Environment.NewLine + StrError);
-            }*/
+                roundFiscal = Math.Abs(pR.SumCash - sumReceiptFiscal);
+                if ( roundFiscal > 0.5m)
+                {
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка при розрахунку чеку! Округлення не може бути більше 50 копійок!");
+                    throw new Exception(Environment.NewLine + "Помилка при розрахунку чеку! Округлення не може бути більше 50 копійок!" + Environment.NewLine + StrError);
+                }
+            }
 
 
-            if (pR.SumCreditCard==0 && roundFiscal != 0)
+            if (pR.SumCreditCard == 0 && roundFiscal != 0)
                 TextReport.Add(PrintTwoColums("Заокруглення", roundFiscal.ToString("F2")));
             if (pR.Fiscal?.Taxes?.Count() > 0)
             {
@@ -432,20 +436,20 @@ namespace Front.Equipments.Implementation
             string NumberReceipt = rnd.Next(100000000, 999999999).ToString();
             string QR = $"{Guid.NewGuid()}{Environment.NewLine}{pR.SumReceipt}{Environment.NewLine}{DT.ToString("dd/MM/yyyy H:mm")}";
 
-            if(!pR.Fiscals.ContainsKey(pR.IdWorkplacePay))
-            //ToDateTime("d-M-yyyy HH:mm:ss");
-            pR.Fiscals.Add(pR.IdWorkplacePay, new Fiscal()
-            {
-                IdWorkplacePay = pR.IdWorkplacePay,
-                QR = QR,
-                Sum = pR.SumFiscal,
-                SumRest = pR.SumRest,
-                Id = FiscalNumber,
-                Number = NumberReceipt,
-                Head = HeadReceipt,
-                //Taxes = Res.info.printinfo.taxes?.Select(el => new TaxResult() { Name = el.tax_fname, Sum = el.tax_sum, IdWorkplacePay = pR.IdWorkplacePay }),
-                DT = DT
-            });
+            if (!pR.Fiscals.ContainsKey(pR.IdWorkplacePay))
+                //ToDateTime("d-M-yyyy HH:mm:ss");
+                pR.Fiscals.Add(pR.IdWorkplacePay, new Fiscal()
+                {
+                    IdWorkplacePay = pR.IdWorkplacePay,
+                    QR = QR,
+                    Sum = pR.SumFiscal,
+                    SumRest = pR.SumRest,
+                    Id = FiscalNumber,
+                    Number = NumberReceipt,
+                    Head = HeadReceipt,
+                    //Taxes = Res.info.printinfo.taxes?.Select(el => new TaxResult() { Name = el.tax_fname, Sum = el.tax_sum, IdWorkplacePay = pR.IdWorkplacePay }),
+                    DT = DT
+                });
 
         }
         override public LogRRO PrintNoFiscalReceipt(IEnumerable<string> pR)
