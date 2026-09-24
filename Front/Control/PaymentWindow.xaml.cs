@@ -349,7 +349,7 @@ namespace Front.Control
 
         private void CalculateReturn()
         {
-            if (ChangeSumPaymantDecimal > 0) // це поле це таж сама ціна просто з строки в decimal
+            if (ChangeSumPaymantDecimal >= 0) // це поле це таж сама ціна просто з строки в decimal
                 RestMoney = Math.Round((ChangeSumPaymantDecimal - Convert.ToDecimal(MoneySumToRound)), 2); //решта
             else
                 RestMoney = 0;
