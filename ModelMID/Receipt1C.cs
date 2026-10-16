@@ -54,9 +54,12 @@ namespace ModelMID
         /// </summary>
         public int IsNotFiscalReceipt { get; set; }
         public IEnumerable<GiftCard> GiftCard { get; set; }
+        public eTypeWorkplace TypeWorkplace { get; set; }
+
         public Receipt1C() { }
         public Receipt1C(Receipt pR)
         {
+            TypeWorkplace = pR.TypeWorkplace;
             Date = pR.DateReceipt;
             pR.RefundId ??= new(pR);
             pR.RefundId.IdWorkplacePay = pR.IdWorkplacePay > 0 ? pR.IdWorkplacePay : pR.IdWorkplace;
