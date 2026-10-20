@@ -123,5 +123,14 @@ namespace ModelMID
         /// Чи можлива післяплата
         /// </summary>
         public bool IsPostpaid { get; set; }
+        /// <summary>
+        /// Чи відкриває зміну pRRO (Вчасно відкриє зміну автоматично при відповідному налаштуванні)
+        /// </summary>
+        public bool IsAutoOpenShiftRRO { get; set; }
+        /// <summary>
+        /// Відправляти на сервер опереції внесення винесення грошей тільки в Online
+        /// </summary>
+        public bool IsSendInOutMoneyOnline { get; set; }
+
     }
 }

@@ -668,25 +668,30 @@ namespace SharedLib
             return null;
         }
 
-        public bool InsertLogRRO(LogRRO pL) 
+        public bool InsertLogRRO(LogRRO pL)
         {
-            int Id= db.InsertLogRRO( pL);
-            if(pL.TypeOperation==eTypeOperation.MoneyIn || pL.TypeOperation==eTypeOperation.MoneyOut || pL.TypeOperation==eTypeOperation.ZReport || pL.TypeOperation==eTypeOperation.ZReportPOS)
-                Task.Run(async()=> {
+            pL.UserCreate = GetUserIdbyWorkPlace(Global.IdWorkPlace);
+            int Id = db.InsertLogRRO(pL);
+            if (pL.TypeOperation == eTypeOperation.MoneyIn || pL.TypeOperation == eTypeOperation.MoneyOut || pL.TypeOperation == eTypeOperation.ZReport || pL.TypeOperation == eTypeOperation.ZReportPOS)
+                Task.Run(async () =>
+                {
                     pL.Id = Id;
-                    var r= await ds.SendLogRRO(pL);
+                    var r = await ds.SendLogRRO(pL);
                     if (r.Success)
                         try
                         {
                             db.SetStateLogRRO(Id);
                         }
-                        catch(Exception e)
+                        catch (Exception e)
                         {
                             FileLogger.WriteLogMessage(this, "InsertLogRRO", e);
                         }
+                    else
+                        if (Global.Settings.IsSendInOutMoneyOnline)
+                            Global.Message?.Invoke("Не вдалось створити ПКО в 1С", eTypeMessage.Warning);
                 });
-            return Id>0;
-        }        
+            return Id > 0;
+        }       
 
         public void AddEventAge(Receipt pRecipt)
         {

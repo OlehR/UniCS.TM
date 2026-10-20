@@ -1181,6 +1181,8 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     using var ldb = new WDB_SQLite(Ldc);
                     IdR.CodePeriod = Global.GetCodePeriod(Ldc);
                     var R = ldb.GetLogRRO(IdR,true);
+                    if (Global.Settings.IsSendInOutMoneyOnline)
+                        R = R.Where(el => el.TypeOperation==eTypeOperation.ZReport || el.TypeOperation == eTypeOperation.ZReportPOS);
                     FileLogger.WriteLogMessage(this, "SendLogRROAsync=>", $"Ldc=>{Ldc} today=>{today} N=>{R?.Count()??0}");
                     if (R?.Any() == true)
                         foreach (var el in R)

@@ -80,7 +80,7 @@ namespace ModelMID.DB
         public string Error { get; set; } = null;
         public int CodeError { get; set; } = 0;
         public DateTime DateCreate { get; set; }
-        public int UserCreate { get; set;}       
+        public long UserCreate { get; set;}       
     }
    
 }

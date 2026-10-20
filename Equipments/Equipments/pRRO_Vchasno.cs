@@ -63,6 +63,11 @@ namespace Front.Equipments.Implementation
                 var rr=RequestAsync($"{Url}", HttpMethod.Post, d, TimeOut, "application/json");
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Перехід в OffLine=>{rr}");
             }
+            if(!Global.Settings.IsAutoOpenShiftRRO)
+            {
+                IsOpenWorkDay = true;
+                return IsOpenWorkDay;
+            }
             d = new ApiRRO(eTask.OpenShift) { token = Token, device = Device }.ToJSON();
             var r = RequestAsync($"{Url}", HttpMethod.Post, d, TimeOut, "application/json");
             Responce<ResponceOpenShift> Res = JsonConvert.DeserializeObject<Responce<ResponceOpenShift>>(r);

@@ -59,7 +59,7 @@ namespace Front.ViewModels
                         else
                         {
                             el.InputQty = Sum.ToString();
-                                s = 0;
+                            s = 0;
                             break;
                         }
                     }
@@ -126,7 +126,7 @@ namespace Front.ViewModels
                         bool Res = Send1CMonyeOut(TopAmount.ToInt());
                         if (Res)
                         {
-                            Global.Message($"Успішно відправлено в 1С. Сума=>{TopAmount}", eTypeMessage.Information);
+                            Global.Message?.Invoke($"Успішно відправлено в 1С. Сума=>{TopAmount}", eTypeMessage.Information);
                             TopAmount = "";
                         }
                     }
@@ -162,7 +162,7 @@ namespace Front.ViewModels
             }
             else
             {
-                Global.Message.Invoke("Помилка " + r.Error, eTypeMessage.Error);
+                Global.Message?.Invoke("Помилка " + r.Error, eTypeMessage.Error);
                 return false;
             }
         }
