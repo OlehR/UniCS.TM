@@ -1123,14 +1123,14 @@ namespace Front.Control
             decimal Sum1CTotal = 0, Sum = 0;
             Res.Append($"Звіт за {DateSoSearch:d} {Environment.NewLine}");
 
-            decimal Total = 0;// Receipts.Where(el => el.StateReceipt >= eStateReceipt.Pay).Sum(el => el.SumTotal);
+            decimal Total = 0,TotalPrg=0;// Receipts.Where(el => el.StateReceipt >= eStateReceipt.Pay).Sum(el => el.SumTotal);
 
             foreach (var IdWP in Global.GetIdWorkPlaces)
             {
                 Total = 0;
 
                 var R1C = await Bl.ds.GetReceipt1CAsync(DateSoSearch, IdWP.IdWorkplace);
-                if (R1C == null) return;
+                if (R1C == null) R1C = [];
                 Sum = R1C.Sum(el => el.Value);
                 Sum1CTotal += Sum;
 
@@ -1150,7 +1150,7 @@ namespace Front.Control
 
                             SumPr = r.WorkplacePays?.Where(e => e.IdWorkplacePay == IdWP.IdWorkplace)?.Sum(e => e.Sum) ?? 0m;
                             if (SumPr > 0 && Math.Abs(SumPr - Sum1c) > 0.00m)
-                                Res.Append($"{r.NumberReceipt1C} Сума чека:{SumPr} В 1с:{Sum1c}{Environment.NewLine}");
+                                Res.Append($"{r.NumberReceipt1C} Сума чека:{SumPr} В 1с:{Sum1c}{(SumPr - SumPr!=0?$" Різниця{SumPr - SumPr}":"")}{Environment.NewLine}");
                         }
                         else
                         {
@@ -1162,9 +1162,9 @@ namespace Front.Control
                     }
                     r.IdWorkplacePay = IdWP.IdWorkplace;
                 }
-                Res.Append($"Всього по {IdWP.Name}{Environment.NewLine}1С => {Sum} Програма => {Total}{Environment.NewLine}");
+                Res.Append($"Всього по {IdWP.Name}{Environment.NewLine}1С => {Sum} Програма => {Total}{(Sum - Total !=0?$" Різниця:{Sum - Total}":"")}{Environment.NewLine}");
                 //Res.Append($"Програма {IdWP.CodeWarehouse} Total={Total}{Environment.NewLine}");
-
+                TotalPrg += Total;
                 foreach (var r in Receipts)
                     r.IdWorkplacePay = IdWP.IdWorkplace;
 
@@ -1175,8 +1175,8 @@ namespace Front.Control
                 }
             }
 
-            Sum = Receipts.Where(el => el.StateReceipt >= eStateReceipt.Pay).Sum(el => el.SumTotal);
-            Res.Append($"Всього 1С => {Sum1CTotal} Програма => {Sum}{Environment.NewLine}");
+            //Sum = Receipts.Where(el => el.StateReceipt >= eStateReceipt.Pay).Sum(el => el.SumTotal);
+            Res.Append($"Всього 1С => {Sum1CTotal} Програма => {TotalPrg}{(Sum1CTotal - TotalPrg != 0 ? $" Різниця:{Sum1CTotal - TotalPrg}" : "")}{Environment.NewLine}");
             Sum = Receipts.Where(el => el.StateReceipt >= eStateReceipt.Pay && el.StateReceipt < eStateReceipt.Send).Sum(el => el.SumTotal);
             Res.Append($"Всього в проміжних станах => {Sum}{Environment.NewLine}");
 

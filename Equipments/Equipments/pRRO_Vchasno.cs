@@ -63,7 +63,7 @@ namespace Front.Equipments.Implementation
                 var rr=RequestAsync($"{Url}", HttpMethod.Post, d, TimeOut, "application/json");
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Перехід в OffLine=>{rr}");
             }
-            if(!Global.Settings.IsAutoOpenShiftRRO)
+            if(Global.Settings.IsAutoOpenShiftRRO)
             {
                 IsOpenWorkDay = true;
                 return IsOpenWorkDay;

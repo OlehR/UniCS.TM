@@ -413,7 +413,7 @@ namespace Front.Equipments.Implementation
             else
                 Printer.Print(TextReport);
 
-            if (roundFiscal != 0)
+            if (roundFiscal != 0 || pR.SumReceipt!=0)
             {
                 try
                 {
