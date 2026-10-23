@@ -17,9 +17,13 @@ namespace Front.Equipments
         private eScaleCom ModelScale = eScaleCom.ICS15;
         public bool IsReady { get { return SerialDevice != null; } }
 
+        bool IsNotClosePort  =false;
+
         public ScaleCom(Equipment pEquipment, IConfiguration pConfiguration, ILoggerFactory pLoggerFactory = null, Action<double, bool> pOnScalesData = null) : base(pEquipment, pConfiguration, eModelEquipment.ScaleCom, pLoggerFactory, pOnScalesData)
         {
             ModelScale = Configuration.GetValue<eScaleCom>($"{KeyPrefix}ModelScale", eScaleCom.ICS15);
+            IsNotClosePort = Configuration.GetValue <bool>($"{KeyPrefix}IsNotClosePort", false);
+
             Init();
             Timer = new System.Timers.Timer(500.0);
             Timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
@@ -69,7 +73,8 @@ namespace Front.Equipments
         public override void StopWeight()
         {
             Timer?.Stop();
-            SerialDevice?.Close();
+            if(!IsNotClosePort)
+                SerialDevice?.Close();
         }
         bool IsRead = false;
         private void OnTimedEvent(object sender, ElapsedEventArgs e)
@@ -98,7 +103,7 @@ namespace Front.Equipments
         {
             if (SerialDevice != null)
             {
-                if (IsReady)
+                if (IsReady && !IsNotClosePort)
                     SerialDevice.Close();
                 SerialDevice.Dispose();
             }
