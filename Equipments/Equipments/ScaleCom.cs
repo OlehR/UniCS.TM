@@ -166,7 +166,7 @@ namespace Front.Equipments
             }
             else if (ModelScale == eScaleCom.AXIS)
             {
-                if (data[0] == 2 && data[1] == 45 && data[2] == 48)
+                if (data[0] == 2 && data[1] == 45 && data[2] == 48 && data.Length>10)
                 {
                     data = data[4..10];
                     Str = Encoding.ASCII.GetString(data);
