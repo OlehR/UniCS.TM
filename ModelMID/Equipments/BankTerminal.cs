@@ -62,6 +62,78 @@ namespace Front.Equipments
             return MerchantId;
         }
 
+        /// <summary>
+        /// Статус для екрана покупця за кодом відповіді хоста/термінала (спільний для Ingenico (BPOS) і JSON-протоколу ПриватБанку)
+        /// </summary>
+        protected static eStatusPos? GetStatusByResponseCode(uint pResponseCode) => pResponseCode switch
+        {
+            0 => eStatusPos.ApprovedAndCompleted,
+            1 or 2 => eStatusPos.AuthorizationDenied,
+            3 => eStatusPos.UnregisteredTradingPoint,
+            4 or 7 => eStatusPos.AuthorizationRejectedWithdrawTheCardAtTheBanksRequest,
+            5 => eStatusPos.AuthorizationRejectedNoPayment,
+            6 => eStatusPos.CommonErrorNeedToRepeat,
+            12 => eStatusPos.InvalidTransactionNetworkErrorNeedToRepeat,
+            13 => eStatusPos.IncorrectAmountEntered,
+            14 => eStatusPos.InvalidCardNumber,
+            15 => eStatusPos.BankNodeIsNotFoundOnTheNetwork,
+            17 => eStatusPos.CanceledByTheClient,
+            21 => eStatusPos.ActionsNotCompletedDidNotMatchData,
+            28 => eStatusPos.NoResponseFileIsTemporarilyUnavailable,
+            30 => eStatusPos.WrongFormatNeedToRepeat,
+            31 => eStatusPos.TheIssuerIsNotFoundInThePaymentSystem,
+            32 => eStatusPos.PartiallyCompleted,
+            33 => eStatusPos.TheValidityPeriodOfTheCardHasExpiredTheCardHasBeenWithdrawnAtTheBanksRequest,
+            36 => eStatusPos.ForbiddenCardRemove,
+            37 => eStatusPos.WithdrawnByTheIssuerRemovedFromTheCardAndContactedByTheAcquirer,
+            38 => eStatusPos.ThereAreNoAttemptsToEnterThePINRemoveTheCard,
+            39 => eStatusPos.NoClientsCreditAccount,
+            41 => eStatusPos.CardIslostRemoved,
+            43 => eStatusPos.CardIsStolenRemoved,
+            51 => eStatusPos.NotEnoughMoney,
+            52 => eStatusPos.NoSettlementSpecifiedClienAccount,
+            53 => eStatusPos.ThereIsNoCumulativeAccountOfTheClient,
+            54 => eStatusPos.TheExpirationDateOfTheCardExpires,
+            55 => eStatusPos.WrongPIN,
+            57 => eStatusPos.ThisTransactionTypeIsNotProvidedForTheGivenCard,
+            58 => eStatusPos.ThisTypeOfTransactionIsNotProvidedForPOSTerminal,
+            61 => eStatusPos.TheAamountOfAuthorizationExceededTheExpenseLimitOnTheCard,
+            62 => eStatusPos.IncorrectServiceCodeForbiddenCardCanNotBeSeized,
+            64 => eStatusPos.TheAmountOfTheCancellationAuthorizationIsDifferentFromTheAmountOfTheOriginalAuthorization,
+            65 => eStatusPos.TheExpenseLimitExpiredOnTheAccount,
+            66 => eStatusPos.TheCardIsVoidCanNotBeSeized,
+            67 => eStatusPos.CardIsWithdrawnFromATM,
+            68 => eStatusPos.ItIsTooLateToReceiveAnAnswerFromTheNetworkItIsNecessaryToRepeat,
+            75 or 76 => eStatusPos.TheNumberOfIncorrectlyEnteredPINsExceededTheAmountDischarged,
+            77 => eStatusPos.ActionsAreNotCompletedIncompleteDataItIsNecessaryToRollbackOrRepeat,
+            78 => eStatusPos.NoAccount,
+            79 => eStatusPos.AlreadyCanceledWhenTurnedOn,
+            80 => eStatusPos.GeneralNetworkErrorIncorrectData,
+            81 => eStatusPos.RemoteNetworkErrorOrPINEncryption,
+            82 => eStatusPos.TimeoutWhenConnectedWithTheIssuersNodeOrWrongCVVOrCacheIsNotApprovedTheCashbackSumLimitIsExceeded,
+            83 => eStatusPos.ThePINVerificationTransactionIsUnsuccessfulNetworkError,
+            85 => eStatusPos.TheCardIsInOrderThereIsNoReasonToRefuse,
+            86 => eStatusPos.PINCanNotBeCheckedNetworkError,
+            88 => eStatusPos.PINEncryptionErrorNetworkError,
+            89 => eStatusPos.IdentificationErrorIsANetworkError,
+            91 => eStatusPos.NoConnectionWithTheBankByTheIssuerNetworkError,
+            92 => eStatusPos.UnsuccessfulRequestRoutingIsNotPossibleNetworkError,
+            93 => eStatusPos.TheTransactionCanNotBeCompletedTheIssuerDeclineAuthorizationDueToAViolationOfTheRules,
+            94 => eStatusPos.DuplicationOfTransmissionNetworkError,
+            96 => eStatusPos.GeneralSystemMalfunction,
+            119 => eStatusPos.UnableToSendEncryptedMessage,
+            1000 => eStatusPos.GeneralError,
+            1001 => eStatusPos.TransactionCanceledByUser,
+            1002 => eStatusPos.EMVDecline,
+            1003 => eStatusPos.TransactionLogIsFullNeedCloseBatch,
+            1004 => eStatusPos.NoConnectionWithHost,
+            1005 => eStatusPos.NoPaperInPrinter,
+            1006 => eStatusPos.ErrorCryptoKeys,
+            1007 => eStatusPos.CardReaderIsNotConnected,
+            1008 => eStatusPos.TransactionIsAlreadyComplete,
+            _ => null
+        };
+
         protected void InvokeLastStatusMsg(byte LastStatMsgCode)
         {
             if (LastStatMsgCode == 0) return;
