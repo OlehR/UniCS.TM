@@ -142,7 +142,7 @@ namespace Front.Equipments.Utils
         {
             if (pNode.HasClass("align-right") || pNode.HasClass("pull-right") || pNode.HasClass("text-right")) return eAlign.Right;
             if (pNode.HasClass("align-left") || pNode.HasClass("pull-left") || pNode.HasClass("text-left")) return eAlign.Left;
-            if (pNode.HasClass("align-center") || pNode.HasClass("text-center") || pNode.HasClass("font-xl") || pNode.HasClass("oper")) return eAlign.Center;
+            if (pNode.HasClass("align-center") || pNode.HasClass("text-center") || pNode.HasClass("font-xl") || pNode.HasClass("oper") || pNode.HasClass("copy")) return eAlign.Center;
             return pParent;
         }
 
