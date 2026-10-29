@@ -187,7 +187,7 @@ namespace ModelMID
         /// </summary>
         public DateTime Date { get; set; }
         /// <summary>
-        /// Номер часу 1С
+        /// Номер чека в 1С
         /// </summary>
         public string Number { get { return NumberReceipt1C; } }        
         /// <summary>

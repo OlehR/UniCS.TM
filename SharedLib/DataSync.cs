@@ -452,28 +452,31 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
 
             try
             {
-                if (Ldc == default(DateTime))
+                if (Ldc == default(DateTime) || Ldc.AddDays(10)<DateTime.Today)
                     Ldc = today.AddDays(-10);
                 Ldc = Ldc.AddDays(1);
                 while (Ldc < today)
                 {
                     using var ldb = new WDB_SQLite(Ldc);
                     var t = ldb.GetReceiptWaresDeleted();
-                    //var res = await DataSync1C.Send1CReceiptWaresDeletedAsync(t);
-                    HttpClient client = new();
-                    client.Timeout = TimeSpan.FromMilliseconds(3000);
-
-                    HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Global.Api + "Send1CReceiptWaresDeleted");
-                    string data = t.ToJson();
-                    requestMessage.Content = new StringContent(data, Encoding.UTF8, "application/json");
-                    var response = await client.SendAsync(requestMessage);
-                    bool res = false;
-                    if (response.IsSuccessStatusCode)
+                    bool res = true;
+                    if (t?.Any() == true)
                     {
-                        var Res = await response.Content.ReadAsStringAsync();
-                        res = "true".Equals(Res);
-                    }
+                        //var res = await DataSync1C.Send1CReceiptWaresDeletedAsync(t);
+                        HttpClient client = new();
+                        client.Timeout = TimeSpan.FromMilliseconds(3000);
 
+                        HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Global.Api + "Send1CReceiptWaresDeleted");
+                        string data = t.ToJson();
+                        requestMessage.Content = new StringContent(data, Encoding.UTF8, "application/json");
+                        var response = await client.SendAsync(requestMessage);
+                        res = false;
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var Res = await response.Content.ReadAsStringAsync();
+                            res = "true".Equals(Res);
+                        }
+                    }
                     if (res)
                         db.SetConfig<DateTime>("LastDaySendDeleted", Ldc);
                     else
