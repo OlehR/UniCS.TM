@@ -196,11 +196,20 @@ namespace SharedLib
                 //Mid
                 if (File.Exists(MidFile)&& new FileInfo(MidFile).Length>0)
                 {
-                    using var dbMID = new SQLite(MidFile);
-                    //CurVerMid = dbMID.GetVersion;// GetConfig<int>("VerMID",dbConfig);
-                    //Lines = SqlUpdateMID.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-                    bool IsReload = Parse(SQLiteMid.SqlUpdateMID, dbMID);
-                    dbMID.Close(true);
+                    bool IsReload = false;
+                    try
+                    {
+                        using var dbMID = new SQLite(MidFile);
+                        //CurVerMid = dbMID.GetVersion;// GetConfig<int>("VerMID",dbConfig);
+                        //Lines = SqlUpdateMID.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                        IsReload = Parse(SQLiteMid.SqlUpdateMID, dbMID);
+                        dbMID.Close(true);
+                    }
+                    catch (Exception ex) when (SQLite.IsCorrupt(ex))
+                    {
+                        // Пошкоджений файл (напр. вимкнення ПК під час завантаження) - відкладаємо його і працюємо з попереднім днем, сьогоднішній завантажить синхронізація
+                        MoveCorruptMid(MidFile, ex);
+                    }
                     if (IsReload)
                     {
                         if (File.Exists(MidFile)) File.Delete(MidFile);
@@ -224,6 +233,31 @@ namespace SharedLib
                 FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Перейменування пошкодженого файла MID у *.bad (разом з журналом), щоб наступний старт взяв попередню базу
+        /// </summary>
+        void MoveCorruptMid(string pFile, Exception pEx)
+        {
+            string BadFile = $"{pFile}.{DateTime.Now:yyyyMMddHHmmss}.bad";
+            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Пошкоджений файл {pFile} => {BadFile} ({pEx.Message})", eTypeLog.Error);
+            try
+            {
+                System.Data.SQLite.SQLiteConnection.ClearAllPools();
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                File.Move(pFile, BadFile);
+                if (File.Exists(pFile + "-journal"))
+                    File.Move(pFile + "-journal", BadFile + "-journal");
+            }
+            catch (Exception e)
+            {
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, e);
+                try { File.Delete(pFile); } catch { }
+            }
+            if (string.Equals(LastMidFile, pFile, StringComparison.OrdinalIgnoreCase))
+                LastMidFile = null;
         }
 
         void UpdateRC(DateTime pDT)
