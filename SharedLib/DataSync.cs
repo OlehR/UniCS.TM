@@ -270,6 +270,24 @@ namespace SharedLib
                             FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, "Create MIDIndex");
                             // (!Global.IsHttp)  pD?.CreateMIDIndex();
                             pD?.Close();
+                            // Перед заміною робочого файла: скидаємо дані на диск і перевіряємо цілісність,
+                            // щоб при вимкненні ПК не отримати пошкоджену базу (сторінки з нулями)
+                            try
+                            {
+                                SQLite.FlushToDisk(NameDB);
+                            }
+                            catch (Exception e)
+                            {
+                                FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, e);
+                            }
+                            if (!SQLite.QuickCheck(NameDB, out string CheckResult))
+                            {
+                                FileLogger.WriteLogMessage(this, MethodBase.GetCurrentMethod().Name, $"Пошкоджений файл {NameDB} quick_check=>{CheckResult}", eTypeLog.Error);
+                                try { File.Delete(NameDB); } catch { }
+                                Status = eSyncStatus.Error;
+                                Global.OnSyncInfoCollected?.Invoke(new SyncInformation { Status = eSyncStatus.Error, StatusDescription = $"SyncData Error=> Пошкоджений файл бази {Path.GetFileName(NameDB)}" });
+                                return false;
+                            }
                             try
                             {
                                 db.Close(true);

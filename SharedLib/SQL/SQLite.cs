@@ -32,9 +32,12 @@ namespace SharedLib
                 ExecuteNonQuery("PRAGMA journal_mode = DELETE;");
                 ExecuteNonQuery("PRAGMA wal_autocheckpoint = 5;");
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 FileLogger.WriteLogMessage(this, connectionString, ex);
+                // Звільняємо файл, інакше його неможливо перейменувати/видалити (напр. пошкоджену БД)
+                try { Connection?.Dispose(); } catch { }
+                Connection = null;
                 throw;
             }
             FileLogger.WriteLogMessage(this, "SQLite", connectionString);
@@ -43,6 +46,56 @@ namespace SharedLib
         ~SQLite()
         {
             //Close();
+        }
+
+        /// <summary>
+        /// Помилка означає пошкоджений файл БД (SQLITE_CORRUPT / SQLITE_NOTADB), а не тимчасову проблему (lock і т.д.)
+        /// </summary>
+        public static bool IsCorrupt(Exception pEx)
+        {
+            for (var e = pEx; e != null; e = e.InnerException)
+            {
+                if (e is SQLiteException se)
+                {
+                    int Code = (int)se.ResultCode & 0xFF; // базовий код без розширених
+                    if (Code == (int)SQLiteErrorCode.Corrupt || Code == (int)SQLiteErrorCode.NotADb)
+                        return true;
+                }
+                if (e.Message?.Contains("database disk image is malformed") == true || e.Message?.Contains("file is not a database") == true)
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Примусовий запис файлу з кешу Windows на диск (FlushFileBuffers), щоб при раптовому вимкненні ПК не залишився файл з "нулями"
+        /// </summary>
+        public static void FlushToDisk(string pFile)
+        {
+            using var fs = new System.IO.FileStream(pFile, System.IO.FileMode.Open, System.IO.FileAccess.ReadWrite, System.IO.FileShare.ReadWrite);
+            fs.Flush(true);
+        }
+
+        /// <summary>
+        /// Швидка перевірка цілісності БД (PRAGMA quick_check). true - "ok"
+        /// </summary>
+        public static bool QuickCheck(string pFile, out string pResult)
+        {
+            pResult = null;
+            try
+            {
+                var cs = new SQLiteConnectionStringBuilder() { DataSource = pFile, Version = 3, ReadOnly = true, Pooling = false }.ToString();
+                using var Con = new SQLiteConnection(cs);
+                Con.Open();
+                pResult = string.Join("; ", Con.Query<string>("PRAGMA quick_check(10)"));
+                Con.Close();
+                return "ok".Equals(pResult, StringComparison.OrdinalIgnoreCase);
+            }
+            catch (Exception e)
+            {
+                pResult = e.Message;
+                return false;
+            }
         }
 
         public SQLiteTransaction GetTransaction() => Connection.BeginTransaction(IsolationLevel.Serializable);
