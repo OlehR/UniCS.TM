@@ -514,6 +514,8 @@ namespace Front.Equipments
                     Payment Res = WaitPosRespone(20);
                     if (!Res.IsSuccess)
                         result = Res;
+                    else
+                        FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Error confirm {Res.ToJSON()}");
                 }
 
                 if (OnResponse != null) OnResponse((IPosResponse)new PayPosResponse() { Response = result });
