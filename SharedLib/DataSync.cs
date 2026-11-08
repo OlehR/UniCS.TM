@@ -482,7 +482,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     {
                         //var res = await DataSync1C.Send1CReceiptWaresDeletedAsync(t);
                         HttpClient client = new();
-                        client.Timeout = TimeSpan.FromMilliseconds(3000);
+                        client.Timeout = TimeSpan.FromMilliseconds(30000);
 
                         HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, Global.Api + "Send1CReceiptWaresDeleted");
                         string data = t.ToJson();
