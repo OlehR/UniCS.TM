@@ -12,7 +12,7 @@ namespace Front.Equipments
     {
         private readonly ILogger<ScaleCom> _logger;
         private readonly System.Timers.Timer Timer;
-        private readonly object Lock = new object();
+        private readonly object Lock = new();
         private SerialPortStreamWrapper SerialDevice;
 
         public bool IsReady { get { return SerialDevice != null; } }

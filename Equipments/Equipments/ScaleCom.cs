@@ -85,6 +85,7 @@ namespace Front.Equipments
             {
                 eScaleCom.ICS15 => [0, 0, 0, 3],
                 eScaleCom.CASPDC15 => [0],
+                eScaleCom.BTA => [0,0,3],
                 eScaleCom.LongG => [0x53, 0x49, 0x0D, 0x0A],
                 eScaleCom.KS400 => [0x57],
                 _ => [0]
@@ -107,7 +108,7 @@ namespace Front.Equipments
                     SerialDevice.Close();
                 SerialDevice.Dispose();
             }
-            SerialPortStreamWrapper portStreamWrapper = new SerialPortStreamWrapper(SerialPort, BaudRate, ModelScale == eScaleCom.ICS15 ? Parity.Even : Parity.None, StopBits.One, 8, new Func<byte[], bool>(OnDataReceived));
+            SerialPortStreamWrapper portStreamWrapper = new(SerialPort, BaudRate, ModelScale == eScaleCom.ICS15 ? Parity.Even : Parity.None, StopBits.One, 8, new Func<byte[], bool>(OnDataReceived));
             portStreamWrapper.RtsEnable = true;
             SerialDevice = portStreamWrapper;
         }
@@ -116,7 +117,7 @@ namespace Front.Equipments
         private bool OnDataReceived(byte[] data)
         {
             CountZero = 0;
-            string  Str = Encoding.ASCII.GetString(data);
+            string Str = Encoding.ASCII.GetString(data);
             if (ModelScale == eScaleCom.ICS15)
             {
                 if (IsRead && Str.Length >= 6)
@@ -166,7 +167,7 @@ namespace Front.Equipments
             }
             else if (ModelScale == eScaleCom.AXIS)
             {
-                if (data[0] == 2 && data[1] == 45 && (data[2] == 48 || data[2] == 49) && data.Length>10)
+                if (data[0] == 2 && data[1] == 45 && (data[2] == 48 || data[2] == 49) && data.Length > 10)
                 {
                     data = data[4..10];
                     Str = Encoding.ASCII.GetString(data);
@@ -179,7 +180,7 @@ namespace Front.Equipments
             {
                 if (data[0] == 2)
                 {
-                    if(data[1] == 0x49 || data[1] == 0x4A|| data[2] == 0x49 || data[2] == 0x4A)
+                    if (data[1] == 0x49 || data[1] == 0x4A || data[2] == 0x49 || data[2] == 0x4A)
                     {
                         OnScalesData?.Invoke(0, true);
                         return true;
@@ -188,12 +189,26 @@ namespace Front.Equipments
                     Str = Encoding.ASCII.GetString(data);
                     if (Str[0] == '0')
                         Str = Str[1..];
-                    var Weight=Str.ToDecimal();
+                    var Weight = Str.ToDecimal();
 
-                    if(Weight>0)
+                    if (Weight > 0)
                     {
-                        OnScalesData?.Invoke((int)(Weight*1000m), true);
+                        OnScalesData?.Invoke((int)(Weight * 1000m), true);
                     }
+                }
+            }
+            else if (ModelScale == eScaleCom.BTA)
+            {
+                if (data.Length<18)
+                {
+                    //OnScalesData?.Invoke(0, true);
+                    return true;
+                }
+                string Result = $"{data[5]}{data[4]}{data[3]}{data[2]}{data[1]}{data[0]}" ;
+                var Weight = Result.ToInt();
+                if (Weight > 0)
+                {
+                    OnScalesData?.Invoke((int)(Weight ), true);
                 }
             }
 
@@ -227,6 +242,7 @@ namespace Front.Equipments
         CASPDC15,
         LongG,
         AXIS,
-        KS400
+        KS400,
+        BTA
     }
 }
