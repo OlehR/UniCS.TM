@@ -5,6 +5,7 @@ using SharedLib;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Security.Policy;
 using System.Text;
@@ -316,24 +317,26 @@ namespace Front.Control
         }
 
 
-        public decimal RoundingUpPrice(decimal price, decimal precision)
+        /// <summary>
+        /// Заокруглення суми вгору до кратного pPrecision (різниця відкладається в гаманець)
+        /// </summary>
+        public decimal RoundingUpPrice(decimal pPrice, decimal pPrecision)
         {
-            price = Convert.ToInt32(Math.Round(price * 100, 3));
-            precision = Math.Round(precision, 2);
-            MoneySumToRound = Math.Round(Math.Ceiling(Math.Ceiling(price / precision / 100)) * precision, 2);
+            MoneySumToRound = Math.Ceiling(pPrice / pPrecision) * pPrecision;
             SumUseWallet = MoneySumToRound - MoneySum;
             return MoneySumToRound;
         }
 
-        public decimal RoundingDownPrice(decimal price, decimal precision)
+        /// <summary>
+        /// Заокруглення суми вниз до кратного pPrecision (різниця списується з гаманця, але не більше SumMaxWallet)
+        /// </summary>
+        public decimal RoundingDownPrice(decimal pPrice, decimal pPrecision)
         {
-            price = Convert.ToInt32(Math.Round(price * 100, 3));
-            precision = Math.Round(precision, 2);
-            MoneySumToRound = Math.Round(Math.Floor(Math.Floor(price / precision / 100)) * precision, 2);
-
-            if (MoneySum - MoneySumToRound > SumMaxWallet)
-                MoneySumToRound = RoundingUpPrice(MoneySum - SumMaxWallet, 1.0m);
-
+            MoneySumToRound = Math.Floor(pPrice / pPrecision) * pPrecision;
+            // Якщо в гаманці не вистачає - списуємо скільки можна, до цілої гривні, але сума до сплати не може стати більшою за чек
+            decimal MaxWallet = Math.Max(SumMaxWallet, 0);
+            if (MoneySum - MoneySumToRound > MaxWallet)
+                MoneySumToRound = Math.Min(Math.Ceiling(MoneySum - MaxWallet), MoneySum);
             SumUseWallet = MoneySumToRound - MoneySum;
             return MoneySumToRound;
         }
@@ -355,95 +358,76 @@ namespace Front.Control
                 RestMoney = 0;
         }
 
-        private void Rounding(string Name = "")
+        /// <summary>
+        /// Розрахунок суми до сплати з урахуванням заокруглення / списання з гаманця.
+        /// pStep > 0 - заокруглити вгору до кратного pStep, pStep < 0 - списати з гаманця до кратного |pStep|, 0 - без заокруглення.
+        /// </summary>
+        private void Rounding(decimal pStep = 0)
         {
-            decimal tmp = 0;
-            switch (Name)
+            if (pStep > 0)
+                RoundingUpPrice(MoneySum, pStep);
+            else if (pStep < 0)
+                RoundingDownPrice(MoneySum, -pStep);
+            else
             {
-                case "plus05":
-                    RoundingUpPrice(MoneySum, 0.5m);
-                    break;
-                case "plus1":
-                    RoundingUpPrice(MoneySum, 1.0m);
-                    break;
-                case "plus2":
-                    RoundingUpPrice(MoneySum, 2.0m);
-                    break;
-                case "plus5":
-                    RoundingUpPrice(MoneySum, 5.0m);
-
-                    break;
-                case "plus10":
-                    RoundingUpPrice(MoneySum, 10.0m);
-                    break;
-                case "minus1":
-                    RoundingDownPrice(MoneySum, 1);
-                    break;
-                case "minus2":
-                    RoundingDownPrice(MoneySum, 2);
-                    break;
-                case "minus5":
-                    RoundingDownPrice(MoneySum, 5);
-                    break;
-                case "minus10":
-                    RoundingDownPrice(MoneySum, 10);
-                    break;
-                case "enterAmount":
-                    PaymentWindowUC_NumericPad.Desciption = $"Максимальна сума списання: {SumMaxWallet}";
-                    PaymentWindowUC_NumericPad.ValidationMask = "";
-                    PaymentWindowUC_NumericPad.Result = "";
-                    PaymentWindowUC_NumericPad.IsEnableComma = true;
-                    PaymentWindow_NumericPad.Visibility = Visibility.Visible;
-                    BackgroundPayment.Visibility = Visibility.Visible;
-                    PaymentWindowUC_NumericPad.CallBackResult = (string result) =>
-                    {
-                        tmp = string.IsNullOrEmpty(result) ? 0 : Convert.ToDecimal(result);
-                        //if (tmp > MoneySum)
-                        //{
-                        //    RoundingUpPrice(tmp, 1.0m);
-                        //}
-                        //else
-                        //{
-                        //    if (MoneySum - tmp > SumMaxWallet)
-                        //        tmp = MoneySum - SumMaxWallet;
-                        //    RoundingUpPrice(tmp, 1.0m);
-                        //}
-                        if (SumMaxWallet < tmp)
-                        {
-                            tmp = SumMaxWallet;
-                            MW.CustomMessage.Show($"Вказана сума більша за максимально можлив", "Помилка!", eTypeMessage.Error);
-                            //MW.ShowErrorMessage("Вказана сума більша за максимально можливу");
-                        }
-
-
-                        MoneySumToRound = MoneySum - tmp; // сума до якої ми округлюємо стоїть навпроти всього:
-                        SumUseWallet = -tmp;
-                        ChangeSumPaymant = MoneySumToRound.ToString();
-                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ChangeSumPaymant"));
-                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MoneySumToRound"));
-                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCashPayment"));
-                        CalculateReturn();
-                        BackgroundPayment.Visibility = Visibility.Collapsed;
-                    };
-                    break;
-                default:
-                    MoneySumToRound = (decimal)MW.MoneySum; //навпроти всього
-                    SumUseWallet = 0; //?
-                    break;
+                MoneySumToRound = MoneySum; //навпроти всього
+                SumUseWallet = 0;
             }
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MoneySumToRound"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCashPayment"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MoneySumToRound)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCashPayment)));
             CalculateReturn();
         }
 
+        /// <summary>
+        /// Кнопки заокруглення: крок у Tag ("10" - вгору до 10грн, "-10" - списати до 10грн), без Tag - відміна заокруглень
+        /// </summary>
         private void Round(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
             EnteringPriceManually = false;
-            Rounding(btn.Name);
+            decimal.TryParse(btn?.Tag as string, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal Step);
+            Rounding(Step);
             ChangeSumPaymant = MoneySumToRound.ToString();
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ChangeSumPaymant"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ChangeSumPaymant)));
+        }
 
+        /// <summary>
+        /// Введення суми списання з гаманця вручну
+        /// </summary>
+        private void EnterWalletAmount(object sender, RoutedEventArgs e)
+        {
+            EnteringPriceManually = false;
+            decimal MaxWallet = Math.Max(Math.Min(SumMaxWallet, MoneySum), 0);
+            PaymentWindowUC_NumericPad.Desciption = $"Максимальна сума списання: {MaxWallet}";
+            PaymentWindowUC_NumericPad.ValidationMask = "";
+            PaymentWindowUC_NumericPad.Result = "";
+            PaymentWindowUC_NumericPad.IsEnableComma = true;
+            PaymentWindow_NumericPad.Visibility = Visibility.Visible;
+            BackgroundPayment.Visibility = Visibility.Visible;
+            PaymentWindowUC_NumericPad.CallBackResult = (string result) =>
+            {
+                BackgroundPayment.Visibility = Visibility.Collapsed;
+                if (string.IsNullOrWhiteSpace(result))
+                    return;
+                if (!decimal.TryParse(result.Replace(',', '.'), NumberStyles.Number, CultureInfo.InvariantCulture, out decimal Sum) || Sum < 0)
+                {
+                    MW.CustomMessage.Show($"Некоректна сума: {result}", "Помилка!", eTypeMessage.Error);
+                    return;
+                }
+                if (Sum > MaxWallet)
+                {
+                    Sum = MaxWallet;
+                    MW.CustomMessage.Show($"Вказана сума більша за максимально можливу ({MaxWallet}₴)", "Помилка!", eTypeMessage.Error);
+                }
+
+                MoneySumToRound = MoneySum - Sum; // сума до якої ми округлюємо стоїть навпроти всього
+                SumUseWallet = -Sum;
+                ChangeSumPaymant = MoneySumToRound.ToString();
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ChangeSumPaymant)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MoneySumToRound)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCashPayment)));
+                CalculateReturn();
+            };
         }
 
         private void _ButtonPaymentBonus(object sender, RoutedEventArgs e)
