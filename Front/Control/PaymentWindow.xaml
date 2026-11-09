@@ -531,30 +531,30 @@
                              ></TextBlock>
                         </StackPanel>
 
-                        <Button Grid.Row="0" Grid.Column="1" Click="Round" x:Name="plus05"
-                                    Style="{StaticResource Default}" Margin="5"
-                                    >
-                            <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 50коп." Margin="5"/>
-                        </Button>
-                        <Button Grid.Row="0" Grid.Column="2" Click="Round" x:Name="plus1"
+                        <Button Grid.Row="0" Grid.Column="1" Click="Round" x:Name="plus1" Tag="1"
                                     Style="{StaticResource Default}" Margin="5"
                                     >
                             <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 1грн" Margin="5"/>
                         </Button>
-                        <Button Grid.Row="0" Grid.Column="3" Click="Round" x:Name="plus2"
+                        <Button Grid.Row="0" Grid.Column="2" Click="Round" x:Name="plus2" Tag="2"
                                     Style="{StaticResource Default}" Margin="5"
                                     >
                             <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 2грн" Margin="5"/>
                         </Button>
-                        <Button Grid.Row="0" Grid.Column="4" Click="Round" x:Name="plus5"
+                        <Button Grid.Row="0" Grid.Column="3" Click="Round" x:Name="plus5" Tag="5"
                                     Style="{StaticResource Default}" Margin="5"
                                     >
                             <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 5грн" Margin="5"/>
                         </Button>
-                        <Button Grid.Row="0" Grid.Column="5" Click="Round" x:Name="plus10"
+                        <Button Grid.Row="0" Grid.Column="4" Click="Round" x:Name="plus10" Tag="10"
                                     Style="{StaticResource Default}" Margin="5"
                                     >
                             <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 10грн" Margin="5"/>
+                        </Button>
+                        <Button Grid.Row="0" Grid.Column="5" Click="Round" x:Name="plus50" Tag="50"
+                                    Style="{StaticResource Default}" Margin="5"
+                                    >
+                            <TextBlock FontSize="14" TextWrapping="Wrap" Text="Заокруглити до 50грн" Margin="5"/>
                         </Button>
 
                         <StackPanel Orientation="Vertical" Grid.Row="1">
@@ -565,27 +565,27 @@
                                             Text="{Binding SumUseWalletDown, StringFormat=0.00₴, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"
                                      ></TextBlock>
                         </StackPanel>
-                        <Button Grid.Row="1" Grid.Column="1" Click="Round" x:Name="minus1"
+                        <Button Grid.Row="1" Grid.Column="1" Click="Round" x:Name="minus1" Tag="-1"
                                     Style="{StaticResource Default}" Margin="5"
                                     >
                             <TextBlock FontSize="14" TextWrapping="Wrap" Text="Списати до 1грн" Margin="5"/>
                         </Button>
-                        <Button Grid.Row="1" Grid.Column="2"  x:Name="minus2" Click="Round"
+                        <Button Grid.Row="1" Grid.Column="2"  x:Name="minus2" Tag="-2" Click="Round"
                                     Style="{StaticResource Default}" Margin="5"
                                     >
                             <TextBlock FontSize="14" TextWrapping="Wrap" Text="Списати до 2грн" Margin="5"/>
                         </Button>
-                        <Button Grid.Row="1" Grid.Column="3" x:Name="minus5" Click="Round"
+                        <Button Grid.Row="1" Grid.Column="3" x:Name="minus5" Tag="-5" Click="Round"
                                     Style="{StaticResource Default}" Margin="5"
                                     >
                             <TextBlock FontSize="14" TextWrapping="Wrap" Text="Списати до 5грн" Margin="5"/>
                         </Button>
-                        <Button Grid.Row="1" Grid.Column="4"  x:Name="minus10" Click="Round"
+                        <Button Grid.Row="1" Grid.Column="4"  x:Name="minus10" Tag="-10" Click="Round"
                                     Style="{StaticResource Default}" Margin="5"
                                     >
                             <TextBlock FontSize="14" TextWrapping="Wrap" Text="Списати до 10грн" Margin="5"/>
                         </Button>
-                        <Button Grid.Row="1" Grid.Column="5"  x:Name="enterAmount" Click="Round"
+                        <Button Grid.Row="1" Grid.Column="5"  x:Name="enterAmount" Click="EnterWalletAmount"
                                     Style="{StaticResource greenButton}" Margin="5"
                                     >
                             <TextBlock FontSize="14" Foreground="White" TextWrapping="Wrap" Text="Ввести суму" Margin="5"/>
