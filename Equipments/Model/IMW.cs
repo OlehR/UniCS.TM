@@ -63,6 +63,6 @@ namespace Front.Equipments
         public InfoRemoteCheckout RemoteCheckout { get; set; }
         Action<eCommand, WorkPlace, Result> SocketAnsver { get; set; }
         public bool IsFullReturn { get; set; }
-        public void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine, eTypeAccess pTypeAccess = eTypeAccess.NoDefine, ReceiptWares pRW = null, CustomWindow pCW = null, eSender pS = eSender.NotDefine);
+        public void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine, eTypeAccess pTypeAccess = eTypeAccess.NoDefine, ReceiptWares pRW = null, CustomWindow pCW = null, eSender pS = eSender.NotDefine, eTypeSound pTS = eTypeSound.NotDefine);
     }
 }

@@ -30,9 +30,9 @@ namespace Front.Equipments
         public void Init(IMW pMW) => MW = pMW;
 
 
-        public static Action<eStateMainWindows, eTypeAccess, ReceiptWares, CustomWindow, eSender> OnSetStateView { get; set; }
-        public void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine, eTypeAccess pTypeAccess = eTypeAccess.NoDefine, ReceiptWares pRW = null, CustomWindow pCW = null, eSender pS = eSender.NotDefine) =>
-            OnSetStateView?.Invoke(pSMV, pTypeAccess, pRW, pCW, pS);
+        public static Action<eStateMainWindows, eTypeAccess, ReceiptWares, CustomWindow, eSender, eTypeSound> OnSetStateView { get; set; }
+        public void SetStateView(eStateMainWindows pSMV = eStateMainWindows.NotDefine, eTypeAccess pTypeAccess = eTypeAccess.NoDefine, ReceiptWares pRW = null, CustomWindow pCW = null, eSender pS = eSender.NotDefine, eTypeSound pTS=eTypeSound.NotDefine) =>
+            OnSetStateView?.Invoke(pSMV, pTypeAccess, pRW, pCW, pS,pTS);
 
         public void GetBarCode(string pBarCode, string pTypeBarCode)
         {

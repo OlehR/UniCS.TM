@@ -169,6 +169,13 @@ namespace Front.Equipments
                             decimal sum = R.WorkplacePays[i].Sum;
                             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Sum={sum}", eTypeLog.Expanded);
                             SetStateView(eStateMainWindows.ProcessPay);
+
+                            eTypeSound Sound = eTypeSound.InsertCardIntoBankTerminal;
+                            if (pTP == eTypePay.CashMachine) Sound = eTypeSound.InsertMoney;
+                            else
+                             Sound = i==0?eTypeSound.InsertCardIntoBankTerminalMultyPay:eTypeSound.InsertCardIntoBankTerminalAgain;
+                            MW.s.Play(Sound);
+
                             Payment pay = null;
                             if (pTP == eTypePay.Cash)
                             {

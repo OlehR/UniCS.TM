@@ -19,8 +19,17 @@ namespace Front.Equipments
         DoNotForgetProducts, // + Не забутьте забрати товар
         IncorectWeight, // + Вага не вірна Зверніться до адміністратора
         InsertCardIntoBankTerminal,
+        /// <summary>
+        /// Необхідно здійснити кілька оплат
+        /// </summary>
+        InsertCardIntoBankTerminalMultyPay, 
+        /// <summary>
+        /// Здійсніть повторну оплату
+        /// </summary>
+        InsertCardIntoBankTerminalAgain,
+
         //InsertCardIntoBankTerminal_new, // + Вставте картку в банківський термінал та виконайте вказівку.
-        //InsertMoney, // Внесіть кошти
+        InsertMoney, // Внесіть кошти
         ProductNotFound, //Товар відсутній в базі
         PutPackageOnPlatform, // + Покладіть ваш пакет на платформу
         //PutProduct, //
@@ -101,8 +110,15 @@ namespace Front.Equipments
                     return;
             }
             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, pS.ToString(),eTypeLog.Expanded);
-            var FileName = Path.Combine(Global.PathCur,"Sound", System.Threading.Thread.CurrentThread.CurrentUICulture.Name,pS.ToString()+ ".wav");
-            if(!File.Exists(FileName))
+            var FileName = Path.Combine(Global.PathCur,"Sound", Thread.CurrentThread.CurrentUICulture.Name,pS.ToString()+ ".wav");
+            //TMP!!!!! До створення озвучки
+            if (!File.Exists(FileName) && (pS == eTypeSound.InsertCardIntoBankTerminalAgain || pS == eTypeSound.InsertCardIntoBankTerminalMultyPay || pS == eTypeSound.InsertMoney))
+            {
+                pS = eTypeSound.InsertCardIntoBankTerminal;
+                FileName = Path.Combine(Global.PathCur, "Sound", Thread.CurrentThread.CurrentUICulture.Name, pS.ToString() + ".wav");
+            }
+
+            if (!File.Exists(FileName))
                 FileName = Path.Combine(Global.PathCur, "Sound", "en", pS.ToString()+ ".wav");// $@"D:\MID\Sound\en\{pS}.wav";
             if(File.Exists(FileName) && Player != null && LastTypeSound != pS)
             {
@@ -156,7 +172,7 @@ namespace Front.Equipments
             if (pState == eStateMainWindows.BlockWeight) //Якщо немає вікна то і не повинно бути звуку.
                 return;
             if(pState==eStateMainWindows.WaitInput) Play(eTypeSound.ScanAndPutProductOnPlatform);
-            if (pState == eStateMainWindows.ProcessPay) Play(eTypeSound.InsertCardIntoBankTerminal);
+            //if (pState == eStateMainWindows.ProcessPay) Play(eTypeSound.InsertCardIntoBankTerminal);
             if (pState == eStateMainWindows.WaitOwnBag) Play(eTypeSound.PutPackageOnPlatform);
 
             if (pState == eStateMainWindows.WaitAdmin)
