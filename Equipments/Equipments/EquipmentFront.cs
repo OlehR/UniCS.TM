@@ -991,7 +991,12 @@ namespace Front
         /// <param name="pSum"></param>
         /// <param name="pRNN"></param>
         /// <returns></returns>
-        public Payment PosPay(IdReceipt pIdR, decimal pSum, string pRNN, Payment pP = null, decimal pIssuingCash = 0, bool pIsCashBack = false)
+        /// <param name="pTypeInstallment">Оплата частинами / миттєва розстрочка (None - звичайна оплата карткою)</param>
+        /// <param name="pAmountOfParts">Кількість платежів (для оплати)</param>
+        /// <param name="pAgreementNum">Номер договору (для повернення)</param>
+        /// <param name="pIsPartialRefund">Часткове повернення оплати частинами / розстрочки</param>
+        public Payment PosPay(IdReceipt pIdR, decimal pSum, string pRNN, Payment pP = null, decimal pIssuingCash = 0, bool pIsCashBack = false,
+            eTypeInstallment pTypeInstallment = eTypeInstallment.None, int pAmountOfParts = 0, string pAgreementNum = null, bool pIsPartialRefund = false)
         {
             if(Global.IsAutoChoiceTerminal)
             {
@@ -1012,7 +1017,22 @@ namespace Front
                     r = pP;
                 else
                 {
-                    if (pSum < 0)
+                    if (pTypeInstallment != eTypeInstallment.None)
+                    {
+                        // Оплата частинами / розстрочка - тільки через термінал, який це підтримує
+                        if (Terminal?.IsInstallment != true)
+                            Terminal = GetBankTerminal.FirstOrDefault(el => el.IsInstallment) ?? Terminal;
+                        if (Terminal?.IsInstallment != true)
+                        {
+                            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Немає термінала з підтримкою {pTypeInstallment}", eTypeLog.Error);
+                            r = new Payment() { IsSuccess = false, TypeInstallment = pTypeInstallment };
+                        }
+                        else if (pSum < 0)
+                            r = Terminal.RefundInstallment(-pSum, pTypeInstallment, pAgreementNum, pIsPartialRefund, pIdR.IdWorkplacePay);
+                        else
+                            r = Terminal.PurchaseInstallment(pSum, pTypeInstallment, pAmountOfParts, pIdR.IdWorkplacePay);
+                    }
+                    else if (pSum < 0)
                         r = Terminal?.Refund(-pSum, pRNN, pIdR.IdWorkplacePay, pIsCashBack);
                     else
                         r = Terminal?.Purchase(pSum, pIssuingCash, pIdR.IdWorkplacePay, pIsCashBack);

@@ -36,6 +36,22 @@ namespace Front.Equipments
         public virtual Payment Purchase(decimal pAmount, decimal pCash = 0, int IdWorkPlace = 0, bool pIsCashBack = false) { throw new NotImplementedException(); }
         public virtual Payment Refund(decimal pAmount, string pRRN, int IdWorkPlace = 0, bool pIsCashBack = false) { throw new NotImplementedException(); }
 
+        /// <summary>
+        /// Чи підтримує термінал кредитні сервіси банку (оплата частинами, миттєва розстрочка)
+        /// </summary>
+        public virtual bool IsInstallment => false;
+        /// <summary>
+        /// Оплата частинами / миттєва розстрочка
+        /// </summary>
+        /// <param name="pAmountOfParts">Кількість платежів</param>
+        public virtual Payment PurchaseInstallment(decimal pAmount, eTypeInstallment pTypeInstallment, int pAmountOfParts, int IdWorkPlace = 0) { throw new NotImplementedException(); }
+        /// <summary>
+        /// Повернення оплати частинами / миттєвої розстрочки
+        /// </summary>
+        /// <param name="pAgreementNum">Номер договору з відповіді на оплату</param>
+        /// <param name="pIsPartial">Часткове повернення (сума менша за суму оплати)</param>
+        public virtual Payment RefundInstallment(decimal pAmount, eTypeInstallment pTypeInstallment, string pAgreementNum, bool pIsPartial = false, int IdWorkPlace = 0) { throw new NotImplementedException(); }
+
         public virtual IEnumerable<string> GetLastReceipt() { throw new NotImplementedException(); }
 
         public virtual void Cancel() { CancelRequested = true; }     

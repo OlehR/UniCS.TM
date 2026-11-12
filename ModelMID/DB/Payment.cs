@@ -74,5 +74,18 @@ namespace ModelMID
         }
 
         public bool IsCashBack { get; set; }
+
+        /// <summary>
+        /// Кредитний сервіс банку, яким проведена оплата (оплата частинами / миттєва розстрочка)
+        /// </summary>
+        public eTypeInstallment TypeInstallment { get; set; } = eTypeInstallment.None;
+        /// <summary>
+        /// Номер договору (agreementNum) - потрібен для повернення оплати частинами / розстрочки
+        /// </summary>
+        public string AgreementNum { get; set; }
+        /// <summary>
+        /// Кількість платежів (частин)
+        /// </summary>
+        public int AmountOfParts { get; set; }
     }
 }

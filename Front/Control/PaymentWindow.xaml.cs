@@ -265,6 +265,53 @@ namespace Front.Control
             MW.GiveRest = 0;
         }
 
+        /// <summary>
+        /// Допустима кількість платежів для оплати частинами / миттєвої розстрочки (точні межі залежать від договору з банком)
+        /// </summary>
+        const int MinAmountOfParts = 2, MaxAmountOfParts = 24;
+
+        /// <summary>
+        /// Чи є підключений термінал з підтримкою оплати частинами / миттєвої розстрочки (для видимості кнопок)
+        /// </summary>
+        public bool IsInstallment => MW?.EF?.GetBankTerminal?.Any(el => el.IsInstallment) == true;
+
+        /// <summary>
+        /// Кнопка "Оплата частинами" / "Миттєва розстрочка". Тип сервісу в Tag кнопки: "PayByParts" або "InstantInstallment".
+        /// Продаж - запитує кількість платежів і проводить оплату; чек повернення - повертає тим сервісом, яким був оплачений чек.
+        /// </summary>
+        private void _ButtonPaymentInstallment(object sender, RoutedEventArgs e)
+        {
+            if (!Enum.TryParse((sender as Button)?.Tag as string, out eTypeInstallment TypeInstallment) || TypeInstallment == eTypeInstallment.None)
+                return;
+            Rounding();
+            MW.GiveRest = 0;
+            if (curReceipt?.TypeReceipt == eTypeReceipt.Refund)
+            {
+                // Тип сервісу і номер договору беруться з оплати чека, який повертається
+                Task.Run(() => MW.Blf.PrintAndCloseReceipt(null, eTypePay.Card));
+                return;
+            }
+
+            PaymentWindowUC_NumericPad.Desciption = $"Введіть кількість платежів (від {MinAmountOfParts} до {MaxAmountOfParts})";
+            PaymentWindowUC_NumericPad.ValidationMask = "";
+            PaymentWindowUC_NumericPad.Result = "";
+            PaymentWindowUC_NumericPad.IsEnableComma = false;
+            PaymentWindow_NumericPad.Visibility = Visibility.Visible;
+            BackgroundPayment.Visibility = Visibility.Visible;
+            PaymentWindowUC_NumericPad.CallBackResult = (string result) =>
+            {
+                BackgroundPayment.Visibility = Visibility.Collapsed;
+                if (string.IsNullOrWhiteSpace(result))
+                    return;
+                if (!int.TryParse(result, out int AmountOfParts) || AmountOfParts < MinAmountOfParts || AmountOfParts > MaxAmountOfParts)
+                {
+                    MW.CustomMessage.Show($"Кількість платежів повинна бути від {MinAmountOfParts} до {MaxAmountOfParts}", "Помилка!", eTypeMessage.Error);
+                    return;
+                }
+                Task.Run(() => MW.Blf.PrintAndCloseReceipt(null, eTypePay.Card, 0, 0, 0, 0, false, TypeInstallment, AmountOfParts));
+            };
+        }
+
         private void _ButtonPaymentCash(object sender, RoutedEventArgs e)
         {
             //MW.PaymentWindowKSO_UC.EquipmentStatusInPayment.Text = "";

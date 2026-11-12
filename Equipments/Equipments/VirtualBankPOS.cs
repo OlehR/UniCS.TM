@@ -72,6 +72,27 @@ namespace Front.Equipments.Implementation
             return GetPaymentResultModel(pAmount, pIsCashBack);
         }
 
+        #region Оплата частинами / миттєва розстрочка (імітація для перевірки без термінала)
+        public override bool IsInstallment => true;
+
+        public override Payment PurchaseInstallment(decimal pAmount, eTypeInstallment pTypeInstallment, int pAmountOfParts, int IdWorkPlace = 0)
+        {
+            Payment r = Purchase(pAmount, 0, IdWorkPlace);
+            r.TypeInstallment = pTypeInstallment;
+            r.AmountOfParts = pAmountOfParts;
+            r.AgreementNum = $"{TransactionCode++}";
+            return r;
+        }
+
+        public override Payment RefundInstallment(decimal pAmount, eTypeInstallment pTypeInstallment, string pAgreementNum, bool pIsPartial = false, int IdWorkPlace = 0)
+        {
+            Payment r = GetPaymentResultModel(pAmount);
+            r.TypeInstallment = pTypeInstallment;
+            r.AgreementNum = pAgreementNum;
+            return r;
+        }
+        #endregion
+
         BatchTotals GetBatchTotals()
         {
             return new BatchTotals() { CencelledCount = 0, CencelledSum = 0, CreditCount = Count, CreditSum = (uint)Sum, DebitCount = CountRefund, DebitSum = (uint)SumRefund };

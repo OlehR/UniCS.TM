@@ -220,6 +220,78 @@ namespace Front.Equipments.Implementation
             return GetPaymentResult(pIsCashBack);
         }
 
+        #region Оплата частинами / миттєва розстрочка
+        public override bool IsInstallment => true;
+
+        /// <summary>
+        /// Оплата частинами (ServicePbP) / миттєва розстрочка (ServiceInstantPbI).
+        /// Код сервісу і мерчант зашиті в терміналі (Таблиця 1.1 протоколу), тому merchantId не передається.
+        /// </summary>
+        public override Payment PurchaseInstallment(decimal pAmount, eTypeInstallment pTypeInstallment, int pAmountOfParts, int pIdWorkPlace = 0)
+        {
+            eCommand Command = pTypeInstallment switch
+            {
+                eTypeInstallment.PayByParts => eCommand.ServicePbP,
+                eTypeInstallment.InstantInstallment => eCommand.ServiceInstantPbI,
+                _ => eCommand.NotDefine
+            };
+            if (Command == eCommand.NotDefine || pAmountOfParts <= 0)
+            {
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Некоректні параметри pTypeInstallment=>{pTypeInstallment} pAmountOfParts=>{pAmountOfParts}", eTypeLog.Error);
+                return new Payment() { IsSuccess = false, CodeBank = CodeBank, TypeInstallment = pTypeInstallment };
+            }
+            CurSum = pAmount;
+            CurIsCashBack = false;
+            CancelStatus = null;
+            OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.WaitingForCard });
+            SendCommand(Command, new { amount = pAmount.ToS(), amountOfParts = pAmountOfParts.ToString() }.ToJSON(), 180 * 1000);
+            return GetInstallmentResult(pTypeInstallment, pAmountOfParts);
+        }
+
+        /// <summary>
+        /// Повернення оплати частинами (ServiceRefPbP / ServicePartlyRefPbP) або миттєвої розстрочки (ServiceRefPbI / ServicePartlyRefPbI) за номером договору
+        /// </summary>
+        public override Payment RefundInstallment(decimal pAmount, eTypeInstallment pTypeInstallment, string pAgreementNum, bool pIsPartial = false, int pIdWorkPlace = 0)
+        {
+            eCommand Command = pTypeInstallment switch
+            {
+                eTypeInstallment.PayByParts => pIsPartial ? eCommand.ServicePartlyRefPbP : eCommand.ServiceRefPbP,
+                eTypeInstallment.InstantInstallment => pIsPartial ? eCommand.ServicePartlyRefPbI : eCommand.ServiceRefPbI,
+                _ => eCommand.NotDefine
+            };
+            if (Command == eCommand.NotDefine || string.IsNullOrEmpty(pAgreementNum))
+            {
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Некоректні параметри pTypeInstallment=>{pTypeInstallment} pAgreementNum=>{pAgreementNum}", eTypeLog.Error);
+                return new Payment() { IsSuccess = false, CodeBank = CodeBank, TypeInstallment = pTypeInstallment };
+            }
+            CurSum = pAmount;
+            CurIsCashBack = false;
+            CancelStatus = null;
+            OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.WaitingForCard });
+            SendCommand(Command, new { amount = pAmount.ToS(), agreementNum = pAgreementNum }.ToJSON(), 180 * 1000);
+            Payment r = GetInstallmentResult(pTypeInstallment, 0);
+            if (string.IsNullOrEmpty(r.AgreementNum))
+                r.AgreementNum = pAgreementNum;
+            return r;
+        }
+
+        Payment GetInstallmentResult(eTypeInstallment pTypeInstallment, int pAmountOfParts)
+        {
+            Payment r = GetPaymentResult(false);
+            r.TypeInstallment = pTypeInstallment;
+            if (r.AmountOfParts == 0)
+                r.AmountOfParts = pAmountOfParts;
+            return r;
+        }
+
+        /// <summary>
+        /// Фінансові операції: довге очікування з опитуванням статусу, відповідь у форматі PAPurchase
+        /// </summary>
+        static bool IsFinancial(eCommand pC) => pC is eCommand.Purchase or eCommand.Refund or eCommand.Cashback
+            or eCommand.ServicePbP or eCommand.ServiceRefPbP or eCommand.ServicePartlyRefPbP
+            or eCommand.ServiceInstantPbI or eCommand.ServiceRefPbI or eCommand.ServicePartlyRefPbI;
+        #endregion
+
         /// <summary>
         /// Результат фінансової операції + статус для екрана покупця (успіх або причина відмови)
         /// </summary>
@@ -371,14 +443,7 @@ namespace Front.Equipments.Implementation
                         Cmd = "{\"method\":\"" + pC.ToString() + "\",\"step\":0}";
                         break;
 
-                    case eCommand.Audit:
-                    case eCommand.Verify:
-                    case eCommand.PrintBatchJournal:
-                    case eCommand.ServiceMessage:
-                    case eCommand.Refund:
-                    case eCommand.Purchase:
-                    case eCommand.Cashback:
-                    case eCommand.PrintReceiptNum:
+                    default: //Усі команди з параметрами
                         Cmd = "{\"method\":\"" + pC.ToString() + "\",\"step\":0,\"params\":" + pParam + " }";
                         break;
                 }
@@ -398,13 +463,13 @@ namespace Front.Equipments.Implementation
                     WaitCommand = pC;
                     WaitMsgType = pMsgType;
                     IsRes = false;
-                    if (pC == eCommand.Purchase || pC == eCommand.Refund || pC == eCommand.Cashback)
+                    if (IsFinancial(pC))
                         IsResLongOperation = false;
 
                     WriteData(buffer);
                 }
                 bool res;
-                if (pC == eCommand.Purchase || pC == eCommand.Refund || pC == eCommand.Cashback)
+                if (IsFinancial(pC))
                     res = WaitWithStatus(pWait);
                 else
                     res = Wait(pWait);
@@ -523,6 +588,12 @@ namespace Front.Equipments.Implementation
                     case eCommand.Refund:
                     case eCommand.Purchase:
                     case eCommand.Cashback:
+                    case eCommand.ServicePbP:
+                    case eCommand.ServiceRefPbP:
+                    case eCommand.ServicePartlyRefPbP:
+                    case eCommand.ServiceInstantPbI:
+                    case eCommand.ServiceRefPbI:
+                    case eCommand.ServicePartlyRefPbI:
                         if (!IsWaited) break; //Запізніла відповідь на попередню операцію
                         var ResJson = JsonSerializer.Deserialize<Answer<PAPurchase>>(pStr);
                         var par = ResJson.@params ?? new PAPurchase();
@@ -547,6 +618,8 @@ namespace Front.Equipments.Implementation
                             TransactionId = par.invoiceNumber,
                             MerchantID = par.merchant,
                             TransactionStatus = ResJson.errorDescription,
+                            AgreementNum = par.agreementNum,
+                            AmountOfParts = par.amountOfParts?.ToInt() ?? 0,
                             DateCreate = DateTime.TryParseExact($"{par.date} {par.time}", "dd.MM.yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var Dt) ? Dt : DateTime.Now
                         };
                         IsResLongOperation = true;
@@ -598,7 +671,31 @@ namespace Front.Equipments.Implementation
         /// <summary>
         /// X-звіт??
         /// </summary>
-        PrintBatchJournal
+        PrintBatchJournal,
+        /// <summary>
+        /// Оплата частинами
+        /// </summary>
+        ServicePbP,
+        /// <summary>
+        /// Повернення оплати частинами
+        /// </summary>
+        ServiceRefPbP,
+        /// <summary>
+        /// Часткове повернення оплати частинами
+        /// </summary>
+        ServicePartlyRefPbP,
+        /// <summary>
+        /// Миттєва розстрочка
+        /// </summary>
+        ServiceInstantPbI,
+        /// <summary>
+        /// Повернення миттєвої розстрочки
+        /// </summary>
+        ServiceRefPbI,
+        /// <summary>
+        /// Часткове повернення миттєвої розстрочки
+        /// </summary>
+        ServicePartlyRefPbI
 
     }
 
@@ -665,7 +762,12 @@ namespace Front.Equipments.Implementation
         public string subMerchant { get; set; }
         public string signVerif { get; set; }
         public string txnType { get; set; }
-        public string trnStatus { get; set; }       
+        public string trnStatus { get; set; }
+        /// <summary>
+        /// Номер договору оплати частинами / розстрочки
+        /// </summary>
+        public string agreementNum { get; set; }
+        public string amountOfParts { get; set; }
     }
 
     class PPurchase

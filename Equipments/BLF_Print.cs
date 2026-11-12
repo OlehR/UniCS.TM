@@ -77,7 +77,8 @@ namespace Front.Equipments
         /// Оплата і Друк чека.
         /// </summary>
         /// <returns></returns>
-        public bool PrintAndCloseReceipt(Receipt pR = null, eTypePay pTP = eTypePay.Card, decimal pSumCash = 0m, decimal pIssuingCash = 0, decimal pSumWallet = 0, decimal pSumBonus = 0, bool pIsCashBack = false)
+        public bool PrintAndCloseReceipt(Receipt pR = null, eTypePay pTP = eTypePay.Card, decimal pSumCash = 0m, decimal pIssuingCash = 0, decimal pSumWallet = 0, decimal pSumBonus = 0, bool pIsCashBack = false,
+            eTypeInstallment pTypeInstallment = eTypeInstallment.None, int pAmountOfParts = 0)
         {
             bool Res = false;
             string TextError = null;
@@ -227,7 +228,19 @@ namespace Front.Equipments
                                     if (PayRef != null && PayRef.Any())
                                         rrn = PayRef.First().CodeAuthorization;
                                 }
-                                pay = EF.PosPay(R, R.TypeReceipt == eTypeReceipt.Sale ? sum : -sum, rrn, pay, Global.IdWorkPlaceIssuingCash == IdWorkplacePays[i] ? pIssuingCash : 0);
+                                eTypeInstallment TypeInstallment = pTypeInstallment;
+                                string AgreementNum = null;
+                                bool IsPartialRefund = false;
+                                if (R.TypeReceipt == eTypeReceipt.Refund)
+                                {
+                                    // Чек, оплачений частинами / в розстрочку, повертаємо тим самим сервісом за номером договору
+                                    var PayInstallment = PayRefaund?.FirstOrDefault(el => el.IdWorkplacePay == R.IdWorkplacePay && el.TypeInstallment != eTypeInstallment.None);
+                                    TypeInstallment = PayInstallment?.TypeInstallment ?? eTypeInstallment.None;
+                                    AgreementNum = PayInstallment?.AgreementNum;
+                                    IsPartialRefund = PayInstallment != null && sum < PayInstallment.SumPay;
+                                }
+                                pay = EF.PosPay(R, R.TypeReceipt == eTypeReceipt.Sale ? sum : -sum, rrn, pay, Global.IdWorkPlaceIssuingCash == IdWorkplacePays[i] ? pIssuingCash : 0, false,
+                                    TypeInstallment, pAmountOfParts, AgreementNum, IsPartialRefund);
                             }
 
 

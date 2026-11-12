@@ -25,6 +25,22 @@ namespace ModelMID
         Day=3
     }    
 
+    /// <summary>
+    /// Кредитні сервіси банку при оплаті карткою (ПриватБанк)
+    /// </summary>
+    public enum eTypeInstallment
+    {
+        None = 0,
+        /// <summary>
+        /// Оплата частинами
+        /// </summary>
+        PayByParts = 1,
+        /// <summary>
+        /// Миттєва розстрочка
+        /// </summary>
+        InstantInstallment = 2
+    }
+
     public enum eTypePay
     {
         None = 0,
