@@ -96,7 +96,7 @@ namespace Front.Equipments.Implementation
             }
            
 
-            if (Res?.info?.printinfo?.sum_receipt != 0 || Res?.info?.printinfo?.round != 0)
+            if (Res?.info?.printinfo != null && (Res.info.printinfo.sum_receipt != 0 || Res.info.printinfo.round != 0))
                 try
                 {
                     var pay = new Payment(pR) { IsSuccess = true, TypePay = eTypePay.FiscalInfo, SumPay = Res.info.printinfo.sum_receipt, SumExt = Res.info.printinfo.round, PosAddAmount = Res.info.printinfo.pays?.FirstOrDefault()?.change ?? 0 };

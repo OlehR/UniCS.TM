@@ -38,8 +38,9 @@ namespace SharedLib
             {
                 db = WDB_SQLite.GetInstance;
                 ds = new DataSync(this);
-                AsyncHelper.RunSync(() => DataSync.SetIsSyncAsync());
+                // Спочатку завантажуємо робочі місця (Global.Settings.Api), інакше IsSync йде на порожній URI
                 Global.BildWorkplace(db.GetWorkPlace());
+                AsyncHelper.RunSync(() => DataSync.SetIsSyncAsync());
                 if (!File.Exists(db.LastMidFile))
                 {
                     bool res = true;
@@ -677,7 +678,7 @@ namespace SharedLib
                 {
                     pL.Id = Id;
                     var r = await ds.SendLogRRO(pL);
-                    if (r.Success)
+                    if (r?.Success == true)
                         try
                         {
                             db.SetStateLogRRO(Id);
@@ -726,6 +727,7 @@ namespace SharedLib
                 if (IsRefund)
                     R.TypeReceipt = eTypeReceipt.Refund;
                 R.StateReceipt = eStateReceipt.Prepare;
+                R.SumFiscal = 0; // інакше фіскальна сума оригіналу додається до суми повернення (BLF.PrintAndCloseReceipt: SumFiscal += res.SUM)
                 R.RefundId = new IdReceipt(R);
                 R.SetIdReceipt(NewR);
                 db.ReplaceReceipt(R);
@@ -934,7 +936,7 @@ namespace SharedLib
         }*/
         public Result SQLQuery(SQLQuery pQ)
         {
-            if (pQ == null && pQ.SQL == null)
+            if (pQ == null || pQ.SQL == null)
                 return new(-1, "Відсутні дані");
             try
             {

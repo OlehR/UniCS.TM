@@ -134,7 +134,8 @@ namespace Front
             }
             finally
             {
-                FileLogger.WriteLogMessage(this, message, exception);
+                // ToString() містить InnerException (TargetInvocationException / AggregateException без нього неінформативні)
+                FileLogger.WriteLogMessage($"{message} ({source}){Environment.NewLine}{exception}", eTypeLog.Error);
             }
             if (!source.Equals("TaskScheduler.UnobservedTaskException"))
                 try
