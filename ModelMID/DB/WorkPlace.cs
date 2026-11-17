@@ -39,8 +39,16 @@ namespace ModelMID.DB
                 }
                 if (!string.IsNullOrEmpty(value)) Task.Run(async () =>
             {
-                var el = await Dns.GetHostEntryAsync(DNSName);
-                if (el?.AddressList?.Length > 0) IP = el?.AddressList[0];
+                try
+                {
+                    var el = await Dns.GetHostEntryAsync(value);
+                    if (el?.AddressList?.Length > 0) IP = el.AddressList[0];
+                }
+                catch (Exception e)
+                {
+                    // Нерезолвлене ім'я не повинно давати UnobservedTaskException
+                    FileLogger.WriteLogMessage($"WorkPlace.DNSName IdWorkplace={IdWorkplace} DNSName={value} {e.Message}", eTypeLog.Expanded);
+                }
             });
             }
         }

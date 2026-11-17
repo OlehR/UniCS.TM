@@ -1173,7 +1173,8 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                     var res = await response.Content.ReadAsStringAsync();
                     if (!string.IsNullOrEmpty(res))
                     {
-                        var r = Newtonsoft.Json.JsonConvert.DeserializeObject<Result<bool>>(res);
+                        // Сервер повертає "data":null - Result<bool> на цьому падав, тому беремо лише State/TextError
+                        var r = Newtonsoft.Json.JsonConvert.DeserializeObject<Result>(res);
                         return r;
                     }
                 }
@@ -1212,7 +1213,7 @@ Replace("{Kassa}", Math.Abs(pReceiptWares.IdWorkplace - 60).ToString()).Replace(
                             {
                                 var Res = await SendLogRRO(el);
                                 if (Res != null && Res.Success)
-                                    db.SetStateLogRRO(el.Id);
+                                    ldb.SetStateLogRRO(el.Id); // Id унікальний лише в межах файлу дня - позначаємо в тій же БД, звідки прочитали
                                 else
                                 {
                                     FileLogger.WriteLogMessage(this, "SendLogRROAsync=>", Res?.ToJSON());

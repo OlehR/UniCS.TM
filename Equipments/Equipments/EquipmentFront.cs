@@ -463,7 +463,6 @@ namespace Front
         /// </summary>
         public LogRRO PrintReceipt(Receipt pReceipt)
         {
-            var aa = pReceipt.Payment.ToList();
             string NameMetod = System.Reflection.MethodBase.GetCurrentMethod().Name;
             if (pReceipt == null || pReceipt.Payment == null || !pReceipt.Payment.Any(el => el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Cash || el.TypePay==eTypePay.CashMachine || el.TypePay == eTypePay.Postpaid))
                 return new LogRRO(pReceipt) { CodeError = -1, Error = $"Відсутня оплата по Робочому місцю № ({pReceipt.IdWorkplacePay})" };
@@ -495,8 +494,8 @@ namespace Front
                 {
                     FileLogger.WriteLogMessage(this, NameMetod, e);
                     if (RRO != null) RRO.State = eStateEquipment.Error;
-                    SetStatus?.Invoke(new StatusEquipment(RRO.Model, eStateEquipment.Error, e.Message) { IsСritical = true });
-                    Res = new LogRRO(pReceipt) { TypeOperation = eTypeOperation.Sale, TypeRRO = RRO.Model.ToString(), CodeError = -1, Error = e.Message };
+                    SetStatus?.Invoke(new StatusEquipment(RRO?.Model ?? eModelEquipment.NotDefine, eStateEquipment.Error, e.Message) { IsСritical = true });
+                    Res = new LogRRO(pReceipt) { TypeOperation = eTypeOperation.Sale, TypeRRO = RRO?.Model.ToString(), CodeError = -1, Error = e.Message };
                 }
                 finally
                 {
@@ -976,7 +975,7 @@ namespace Front
             if (ww is CashMachineStatus status)
             {
                 SetStatus?.Invoke(ww /*new StatusEquipment(Terminal.Model, status.Status.GetStateEquipment(), $"{status.TextState} {status.Status.GetDescription}")*/);
-                FileLogger.WriteLogMessage($"EquipmentFront.CashMachineStatus {Terminal.Model} {status.TextState} {status.Status}");
+                FileLogger.WriteLogMessage($"EquipmentFront.CashMachineStatus {CashMachine?.Model} {status.TextState} {status.Status}");
             }
         }
         public void CashMachineCancel() { CashMachine?.Cancel(); }
