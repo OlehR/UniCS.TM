@@ -181,6 +181,7 @@ namespace Front.Equipments
                             if (pTP == eTypePay.Cash)
                             {
                                 var SumCash = R.WorkplacePays[i].SumCash;
+                                if (SumCash <= 0) SumCash = EF.SumCashReceiptFiscal(R);
                                 pay = new Payment(R) { IsSuccess = true, TypePay = eTypePay.Cash, SumPay = SumCash, SumExt = (i == IdWorkplacePays.Length - 1 ? Rro.GetSumRoundCash(pSumCash) : Rro.GetSumRoundCash(SumCash)) };
                                 pSumCash -= SumCash;
                                 if (pSumCash < 0) pSumCash = 0;
