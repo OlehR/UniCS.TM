@@ -432,7 +432,7 @@ namespace Front.Equipments.Implementation
                 }
             }
             eTypePay TP = (TypePay != eTypePay.None ? TypePay : pR?.Payment?.Any(el => el.TypePay == eTypePay.Card) == true ? eTypePay.Card : eTypePay.Cash);
-            return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, SUM = pR.SumCash, CodeError = 0, TypeRRO = "VirtualRRO", JSON = pR.ToJSON(), FiscalNumber = pR.Fiscal.Number, TextReceipt = string.Join(Environment.NewLine, TextReport), TypePay = TP };
+            return new LogRRO(pR) { TypeOperation = pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, SUM = (pR.SumCreditCard > 0 ? pR.SumCreditCard : SumCash),CodeError = 0, TypeRRO = "VirtualRRO", JSON = pR.ToJSON(), FiscalNumber = pR.Fiscal.Number, TextReceipt = string.Join(Environment.NewLine, TextReport), TypePay = TP };
         }
         public override void GetFiscalInfo(Receipt pR, object pRes)
         {
