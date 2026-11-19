@@ -279,6 +279,10 @@ namespace Front.Equipments.Implementation
         /// <returns></returns>
         override public LogRRO PrintReceipt(Receipt pR)
         {
+            decimal SumCash = pR.SumCash;
+            //!!!TMP Баг якщо сума готівки не передана тоді розрахувати її
+            if (pR.SumCreditCard==0 && SumCash==0)
+                SumCash = SumCashReceiptFiscal(pR);
             TextReport.Clear();
             GetFiscalInfo(pR, null);
 
@@ -331,17 +335,18 @@ namespace Front.Equipments.Implementation
             }
             TextReport.Add(PrintCenter($"------------------------"));
 
-            TextReport.Add(PrintTwoColums("Сума", (pR.SumCreditCard > 0 ? pR.SumCreditCard : pR.SumCash).ToString("F2")));
+            TextReport.Add(PrintTwoColums("Сума", (pR.SumCreditCard > 0 ? pR.SumCreditCard : SumCash).ToString("F2")));
             decimal sumReceiptFiscal = SumReceiptFiscal(pR);
 
             decimal roundFiscal = 0;
-            if (pR.SumCash > 0)
+            if (SumCash > 0)
             {
-                roundFiscal = Math.Abs(pR.SumCash - sumReceiptFiscal);
+                roundFiscal = Math.Abs(SumCash - sumReceiptFiscal);
                 if ( roundFiscal > 0.5m)
                 {
-                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Помилка при розрахунку чеку! Округлення не може бути більше 50 копійок!");
-                    throw new Exception(Environment.NewLine + "Помилка при розрахунку чеку! Округлення не може бути більше 50 копійок!" + Environment.NewLine + StrError);
+                    string  Text=$"Помилка при розрахунку чеку! Округлення не може бути більше 50 копійок! SumCash=>{SumCash} sumReceiptFiscal=>{sumReceiptFiscal}";
+                    FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, Text);
+                    throw new Exception(Environment.NewLine + Text + Environment.NewLine + StrError);
                 }
             }
 
