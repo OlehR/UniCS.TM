@@ -341,15 +341,14 @@ namespace Front.Equipments.Implementation
             decimal roundFiscal = 0;
             if (SumCash > 0)
             {
-                roundFiscal = Math.Abs(SumCash - sumReceiptFiscal);
-                if ( roundFiscal > 0.5m)
+                roundFiscal = SumCash - sumReceiptFiscal;
+                if (Math.Abs(roundFiscal) > 0.5m)
                 {
                     string  Text=$"Помилка при розрахунку чеку! Округлення не може бути більше 50 копійок! SumCash=>{SumCash} sumReceiptFiscal=>{sumReceiptFiscal}";
                     FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, Text);
                     throw new Exception(Environment.NewLine + Text + Environment.NewLine + StrError);
                 }
             }
-
 
             if (pR.SumCreditCard == 0 && roundFiscal != 0)
                 TextReport.Add(PrintTwoColums("Заокруглення", roundFiscal.ToString("F2")));
