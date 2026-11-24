@@ -955,7 +955,7 @@ namespace Front
         public Payment CashMachinePay(IdReceipt pIdR, decimal pSum, Payment pP = null, eTypeReceipt pTypeReceipt = eTypeReceipt.Sale )
         {
             if (CashMachine.GetStatus().Status != eStatusChangeEvent.Idle)
-                return new() { IsSuccess = false };
+                return new() { IsSuccess = false,Error= "CashMachine.GetStatus().Status != eStatusChangeEvent.Idle" };
 
             var pay = pTypeReceipt == eTypeReceipt.Sale
                 ? CashMachine.Purchase(pSum, pIdR.IdWorkplacePay)
@@ -1024,7 +1024,7 @@ namespace Front
                         if (Terminal?.IsInstallment != true)
                         {
                             FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Немає термінала з підтримкою {pTypeInstallment}", eTypeLog.Error);
-                            r = new Payment() { IsSuccess = false, TypeInstallment = pTypeInstallment };
+                            r = new Payment() { IsSuccess = false, TypeInstallment = pTypeInstallment,Error = $"Немає термінала з підтримкою {pTypeInstallment}" };
                         }
                         else if (pSum < 0)
                             r = Terminal.RefundInstallment(-pSum, pTypeInstallment, pAgreementNum, pIsPartialRefund, pIdR.IdWorkplacePay);
@@ -1039,7 +1039,7 @@ namespace Front
                 }
                 if (r.IsSuccess)
                 {
-                    
+
                     var LP = new List<Payment>() { r };
                     if (pIssuingCash > 0)
                     {
@@ -1047,7 +1047,7 @@ namespace Front
                         Payment C = (Payment)r.Clone();
                         C.TypePay = eTypePay.IssueOfCash;
                         C.SumPay = pIssuingCash;
-                        C.SumExt = pIssuingCash;                        
+                        C.SumExt = pIssuingCash;
                         LP.Add(C);
                     }
 
@@ -1059,10 +1059,16 @@ namespace Front
                             r.Receipt = Terminal?.GetLastReceipt();
                         LogRRO d = new(pIdR)
                         { TypeOperation = pSum > 0 ? eTypeOperation.SalePOS : eTypeOperation.RefundPOS, TypeRRO = r.TypePay == eTypePay.Card ? "Ingenico" : "Cash", JSON = r.ToJSON(), TextReceipt = r.Receipt == null ? null : string.Join(Environment.NewLine, r.Receipt) };
-                        Bl.InsertLogRRO(d);
+                       
                         FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"(pIdR=>{pIdR.ToJSON()},pSum={pSum})=>{r.ToJSON()}", eTypeLog.Expanded);
 
                     });
+                }
+                else
+                {
+                    LogRRO d = new(pIdR)
+                    { TypeOperation = pSum > 0 ? eTypeOperation.SalePOS : eTypeOperation.RefundPOS, TypeRRO = r.TypePay == eTypePay.Card ? "Ingenico" : "Cash", Error=r.Error, CodeError=-1 };
+                    Bl.InsertLogRRO(d);
                 }
             }
             catch (Exception e)

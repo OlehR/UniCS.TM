@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Front.Equipments;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -87,5 +88,7 @@ namespace ModelMID
         /// Кількість платежів (частин)
         /// </summary>
         public int AmountOfParts { get; set; }
+
+        public string  Error { get; set; }
     }
 }

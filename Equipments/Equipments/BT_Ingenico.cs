@@ -87,7 +87,7 @@ namespace Front.Equipments
             }
             catch (Exception ex)
             {
-                return new Payment() { IsSuccess = false };
+                return new Payment() { IsSuccess = false,Error=ex.Message };
             }
             finally
             {
@@ -248,7 +248,7 @@ namespace Front.Equipments
                     BPOS.Cancel();
                     Thread.Sleep(1000);
                     OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.TransactionCanceledByUser });
-                    return new Payment() { IsSuccess = false, IsCashBack= pIsCashBack };
+                    return new Payment() { IsSuccess = false, IsCashBack= pIsCashBack,Error= eStatusPos.TransactionCanceledByUser .ToString()};
                 }
                 Thread.Sleep(500);
                 pTime--;
@@ -257,7 +257,7 @@ namespace Front.Equipments
                 if (BPOS == null)
                 {
                     OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.TransactionCanceledByUser });
-                    return new Payment() { IsSuccess = false, IsCashBack = pIsCashBack };
+                    return new Payment() { IsSuccess = false, IsCashBack = pIsCashBack ,Error = eStatusPos.TransactionCanceledByUser .ToString()};
                 }
 
                 //List<string[]> xx = new();//!!!!TMP
@@ -278,7 +278,7 @@ namespace Front.Equipments
                             Thread.Sleep(1000);
                             OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.TerminalNotReadyCashBack });
                             FileLogger.WriteLogMessage("BT_Ingenico", "WaitPosRespone", $"pIsCashBack=>{pIsCashBack} IsCashBackCard=>{IsCashBackCard} {BPOS.PAN}");
-                            return new Payment() { IsSuccess = false, IsCashBack = pIsCashBack };
+                            return new Payment() { IsSuccess = false, IsCashBack = pIsCashBack,Error = eStatusPos.TerminalNotReadyCashBack.ToString()};
                         }
                         if (pIsCashBack != IsCashBackCard )
                         {
@@ -286,7 +286,7 @@ namespace Front.Equipments
                             Thread.Sleep(1000);
                             OnStatus?.Invoke(new PosStatus() { Status = pIsCashBack ? eStatusPos.NoCashBackCard:eStatusPos.CashBackCardUseProhibited });
                             FileLogger.WriteLogMessage("BT_Ingenico", "WaitPosRespone", $"pIsCashBack=>{pIsCashBack} IsCashBackCard=>{IsCashBackCard} {BPOS.PAN}");
-                            return new Payment() { IsSuccess = false, IsCashBack = pIsCashBack };
+                            return new Payment() { IsSuccess = false, IsCashBack = pIsCashBack,Error= (pIsCashBack ? eStatusPos.NoCashBackCard : eStatusPos.CashBackCardUseProhibited).ToString() };
                         }
                     }
                     BPOS.CorrectTransaction(pSum, 0);
@@ -360,7 +360,7 @@ namespace Front.Equipments
                         State = eStateEquipment.Error;
                 }
             }
-            return new Payment() { IsSuccess = false };
+            return new Payment() { IsSuccess = false,Error= $"BPOS.LastResult=>1" };
         }
 
         private void InvokeResponseCode(uint pResponseCode)
@@ -492,7 +492,7 @@ namespace Front.Equipments
             {
                 byte MechantId = GetMechantIdByIdWorkPlace(pIdWorkPlace, pIsCashBack);
                 if (!StartBPOS())
-                    return Task.FromResult<Payment>(new Payment() { IsSuccess = false });
+                    return Task.FromResult<Payment>(new Payment() { IsSuccess = false,Error= "PurchaseAsync =>StartBPOS==false" });
                 CancelRequested = false;
                 if (SumCash > 0)
                 {
@@ -529,7 +529,7 @@ namespace Front.Equipments
             catch (Exception ex)
             {
                 LoggerExtensions.LogError((ILogger)Logger, ex, "[Ingenico] " + ex.Message);
-                return Task.FromResult<Payment>(new Payment() { IsSuccess = false });
+                return Task.FromResult<Payment>(new Payment() { IsSuccess = false,Error= ex.Message });
             }
             finally
             {

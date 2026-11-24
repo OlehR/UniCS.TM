@@ -115,7 +115,8 @@ namespace Front.Equipments
                         {
                             IsSuccess = false,
                             DateCreate = DateTime.Now,
-                            TransactionStatus = GetErrorText(resp.Result)
+                            TransactionStatus = GetErrorText(resp.Result),
+                            Error= GetErrorText(resp.Result)
                         };
                     }
 
@@ -131,7 +132,7 @@ namespace Front.Equipments
             {
                 GloryNetworkUtilities.IsListening = false;
             }
-            return new Payment() { IsSuccess = false };
+            return new Payment() { IsSuccess = false,Error= "Glory.PurchaseAsync" };
         }
 
         public override void Cancel() => AsyncHelper.RunSync(async () => await CancelAsync());

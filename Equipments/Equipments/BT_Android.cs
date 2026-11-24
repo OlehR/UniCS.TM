@@ -237,8 +237,9 @@ namespace Front.Equipments.Implementation
             };
             if (Command == eCommand.NotDefine || pAmountOfParts <= 0)
             {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Некоректні параметри pTypeInstallment=>{pTypeInstallment} pAmountOfParts=>{pAmountOfParts}", eTypeLog.Error);
-                return new Payment() { IsSuccess = false, CodeBank = CodeBank, TypeInstallment = pTypeInstallment };
+                string s = $"Некоректні параметри pTypeInstallment=>{pTypeInstallment} pAmountOfParts=>{pAmountOfParts}";
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, s, eTypeLog.Error);
+                return new Payment() { IsSuccess = false, CodeBank = CodeBank, TypeInstallment = pTypeInstallment , Error = s};
             }
             CurSum = pAmount;
             CurIsCashBack = false;
@@ -261,8 +262,9 @@ namespace Front.Equipments.Implementation
             };
             if (Command == eCommand.NotDefine || string.IsNullOrEmpty(pAgreementNum))
             {
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"Некоректні параметри pTypeInstallment=>{pTypeInstallment} pAgreementNum=>{pAgreementNum}", eTypeLog.Error);
-                return new Payment() { IsSuccess = false, CodeBank = CodeBank, TypeInstallment = pTypeInstallment };
+                string s = $"Некоректні параметри pTypeInstallment=>{pTypeInstallment} pAgreementNum=>{pAgreementNum}";
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, s, eTypeLog.Error);
+                return new Payment() { IsSuccess = false, CodeBank = CodeBank, TypeInstallment = pTypeInstallment,Error=s };
             }
             CurSum = pAmount;
             CurIsCashBack = false;
@@ -305,11 +307,11 @@ namespace Front.Equipments.Implementation
                 else
                 {
                     OnStatus?.Invoke(new PosStatus() { Status = CancelStatus.Value });
-                    return new Payment() { IsSuccess = false, CodeBank = CodeBank, IsCashBack = pIsCashBack };
+                    return new Payment() { IsSuccess = false, CodeBank = CodeBank, IsCashBack = pIsCashBack, Error = CancelStatus.Value.ToString()};
                 }
             }
             if (r == null)
-                return new Payment() { IsSuccess = false, CodeBank = CodeBank, IsCashBack = pIsCashBack };
+                return new Payment() { IsSuccess = false, CodeBank = CodeBank, IsCashBack = pIsCashBack,Error= "GetPaymentResult r=null" };
             r.IsCashBack = pIsCashBack;
             if (r.IsSuccess)
                 OnStatus?.Invoke(new PosStatus() { Status = eStatusPos.SuccessfullyFulfilled });
