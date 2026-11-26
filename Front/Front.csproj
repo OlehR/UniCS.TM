@@ -15,8 +15,8 @@
     <ApplicationIcon />
     <Win32Resource />
     <NeutralLanguage>uk-UA</NeutralLanguage>
-    <AssemblyVersion>2.4.1.296</AssemblyVersion>
-    <FileVersion>2.4.1.296</FileVersion>
+    <AssemblyVersion>2.4.1.297</AssemblyVersion>
+    <FileVersion>2.4.1.297</FileVersion>
     <LangVersion>12.0</LangVersion>
   </PropertyGroup>
 

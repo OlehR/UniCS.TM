@@ -1576,7 +1576,7 @@ from RECEIPT r
             {
                 if (resMes)
                 {
-                    // Код який видаляє оплату
+                       Bl.db.db.ExecuteNonQuery("UPDATE PAYMENT SET code_receipt=-@CodeReceipt WHERE id_workplace=@IdWorkplace and  code_period =@CodePeriod and  code_receipt=@CodeReceipt", curReceipt);                   
                 }
             };
         }
