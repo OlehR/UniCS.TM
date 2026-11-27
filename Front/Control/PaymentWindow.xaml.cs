@@ -273,7 +273,7 @@ namespace Front.Control
         /// <summary>
         /// Чи є підключений термінал з підтримкою оплати частинами / миттєвої розстрочки (для видимості кнопок)
         /// </summary>
-        public bool IsInstallment => MW?.EF?.GetBankTerminal?.Any(el => el.IsInstallment) == true;
+        public bool IsInstallment => Global.Settings.IsInstallment; // MW?.EF?.GetBankTerminal?.Any(el => el.IsInstallment) == true;
 
         /// <summary>
         /// Кнопка "Оплата частинами" / "Миттєва розстрочка". Тип сервісу в Tag кнопки: "PayByParts" або "InstantInstallment".

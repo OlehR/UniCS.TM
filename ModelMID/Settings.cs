@@ -110,6 +110,10 @@ namespace ModelMID
         /// </summary>
         public bool IsManagementCard { get; set; }
         /// <summary>
+        /// Чи доступна Розстрочка
+        /// </summary>
+        public bool  IsInstallment { get; set; }
+        /// <summary>
         /// В який IdWorkPlace конвертуємо "Управлінські" чеки.
         /// </summary>
         public int IdWorkPlaceManagement { get; set; }

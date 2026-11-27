@@ -279,6 +279,7 @@ namespace Front.Equipments.Implementation
         /// <returns></returns>
         override public LogRRO PrintReceipt(Receipt pR)
         {
+            eTypePay TypePay=this.TypePay;
             decimal SumCash = pR.SumCash;
             //!!!TMP Баг якщо сума готівки не передана тоді розрахувати її
             if (pR.SumCreditCard==0 && SumCash==0)
@@ -373,6 +374,7 @@ namespace Front.Equipments.Implementation
                     string CodeAuthorization = "Код авт.";
                     if (item.TypePay == eTypePay.Card)
                     {
+                        TypePay = eTypePay.Card;
                         TextReport.Add(PrintTwoColums(IDTerminal, item.NumberTerminal));
                         TextReport.Add(PrintTwoColums(EPZ, item.NumberCard));
                         TextReport.Add(PrintTwoColums(CardHolder, item.CardHolder));
