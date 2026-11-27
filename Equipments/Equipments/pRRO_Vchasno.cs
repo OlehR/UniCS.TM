@@ -13,6 +13,7 @@ using System.Net.Http.Headers;
 using ModelMID.DB;
 using Utils;
 using SharedLib;
+
 //using ModernExpo.SelfCheckout.Utils;
 
 namespace Front.Equipments.Implementation
@@ -109,7 +110,7 @@ namespace Front.Equipments.Implementation
                 }
             if (IsOpenDrawerProgram)
                 OpenMoneyBox();
-            return GetLogRRO(pR, Res, pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, Res?.info?.printinfo?.sum_topay ?? 0m);
+            return GetLogRRO(pR, Res, pR.TypeReceipt == eTypeReceipt.Sale ? eTypeOperation.Sale : eTypeOperation.Refund, Res?.info?.printinfo?.sum_topay ?? 0m,0, pR.GetTypePay );
 
         }
 
@@ -247,7 +248,7 @@ namespace Front.Equipments.Implementation
             return r.info?.safe ?? -1m;
         }
 
-        LogRRO GetLogRRO<Ob>(IdReceipt pIdR, Responce<Ob> pR, eTypeOperation pTypeOperation, decimal pSum = 0m, decimal pRefund = 0m)
+        LogRRO GetLogRRO<Ob>(IdReceipt pIdR, Responce<Ob> pR, eTypeOperation pTypeOperation, decimal pSum = 0m, decimal pRefund = 0m, eTypePay pTypePay=eTypePay.None)
         {
             var aa = pR.info as ResponseInfo;
             var rr = pR.info as ResponceReceipt;
@@ -262,7 +263,7 @@ namespace Front.Equipments.Implementation
                 }
             }
             var Res = new LogRRO(pIdR)
-            {
+            {              
                 TypeOperation = pTypeOperation,
                 TypeRRO = "pRRO_Vchasno",
                 FiscalNumber = rr?.doccode,
@@ -271,7 +272,8 @@ namespace Front.Equipments.Implementation
                 TextReceipt = TextReceipt,
                 JSON = pR.ToJSON(),
                 SUM = pSum,
-                SumRefund = pRefund
+                SumRefund = pRefund,
+                TypePay= pTypePay
             };
             return Res;
         }

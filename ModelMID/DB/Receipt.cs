@@ -472,6 +472,17 @@ namespace ModelMID
         public decimal SumCashBack { get { return Wares?.Where(el=>el.Country==-2)?.Sum(el => el.SumTotal)??0; } }
 
         public bool IsProductionLocation => Wares?.Where(x => x.ProductionLocation != 0)?.Any()??false;
+
+
+        public eTypePay GetTypePay
+        {
+            get
+            {
+                var RealPay = Payment?.Where(el => el.TypePay == eTypePay.Card || el.TypePay == eTypePay.Cash || el.TypePay == eTypePay.Wallet || el.TypePay == eTypePay.CashMachine || el.TypePay == eTypePay.Postpaid).FirstOrDefault();
+                if (RealPay != null) return RealPay.TypePay;
+                return eTypePay.None;
+            }
+        }
     }
     public class WorkplacePay
     {
